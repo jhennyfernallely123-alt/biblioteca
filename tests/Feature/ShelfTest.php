@@ -58,6 +58,37 @@ it('mueve los libros a Pendientes al eliminar una estantería', function () {
     expect($book->fresh()->shelf_id)->toBe($pendientes->id);
 });
 
+it('coloca los libros al final del respaldo al eliminar una estantería', function () {
+    $pendientes = Shelf::factory()->for($this->user)->create([
+        'name' => 'Pendientes',
+        'position' => 0,
+    ]);
+    $otra = Shelf::factory()->for($this->user)->create(['position' => 1]);
+
+    $existente = Book::factory()->for($this->user)->for($pendientes)->create([
+        'title' => 'Ya estaba',
+        'position' => 0,
+    ]);
+    $primero = Book::factory()->for($this->user)->for($otra)->create([
+        'title' => 'Primero',
+        'position' => 0,
+    ]);
+    $segundo = Book::factory()->for($this->user)->for($otra)->create([
+        'title' => 'Segundo',
+        'position' => 1,
+    ]);
+
+    $this->delete(route('shelves.destroy', $otra))->assertRedirect();
+
+    expect($primero->fresh()->position)->toBe(1)
+        ->and($segundo->fresh()->position)->toBe(2)
+        ->and($pendientes->books()->pluck('id')->all())->toBe([
+            $existente->id,
+            $primero->id,
+            $segundo->id,
+        ]);
+});
+
 it('cambia el modo de vista de una estantería', function () {
     $shelf = Shelf::factory()->for($this->user)->create(['view_mode' => 'covers']);
 

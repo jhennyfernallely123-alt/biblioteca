@@ -25,7 +25,7 @@ const { t } = useI18n();
         <h1 class="mb-6 text-3xl">{{ t('ui.profile_title') }}</h1>
 
         <div class="space-y-6">
-            <div class="rounded-card border border-madera/25 bg-crema/70 p-4">
+            <div class="rounded-card border border-line bg-panel p-4">
                 <UpdateProfileInformationForm
                     :must-verify-email="mustVerifyEmail"
                     :status="status"
@@ -33,11 +33,11 @@ const { t } = useI18n();
                 />
             </div>
 
-            <div class="rounded-card border border-madera/25 bg-crema/70 p-4">
+            <div class="rounded-card border border-line bg-panel p-4">
                 <UpdatePasswordForm class="max-w-xl" />
             </div>
 
-            <div class="rounded-card border border-madera/25 bg-crema/70 p-4">
+            <div class="rounded-card border border-line bg-panel p-4">
                 <DeleteUserForm class="max-w-xl" />
             </div>
         </div>

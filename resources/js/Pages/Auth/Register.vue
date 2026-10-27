@@ -25,8 +25,8 @@ const submit = () => {
         <Head title="Crear cuenta" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-bosque">Crear cuenta</h1>
-            <p class="mt-1 text-sm text-tinta/65">
+            <h1 class="font-serif text-2xl text-gold">Crear cuenta</h1>
+            <p class="mt-1 text-sm text-mist">
                 Empieza tu biblioteca personal con tres estanterías listas.
             </p>
         </div>
@@ -108,9 +108,9 @@ const submit = () => {
             </PrimaryButton>
         </form>
 
-        <div class="mt-6 border-t border-madera/20 pt-5 text-center text-sm text-tinta/70">
+        <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
             ¿Ya tienes cuenta?
-            <Link href="/login" class="font-medium text-oliva underline hover:text-bosque">
+            <Link href="/login" class="font-medium text-magic underline hover:text-gold">
                 Inicia sesión
             </Link>
         </div>

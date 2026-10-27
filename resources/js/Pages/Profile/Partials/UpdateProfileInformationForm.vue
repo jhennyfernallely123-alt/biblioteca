@@ -27,11 +27,11 @@ const form = useForm({
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gold">
                 {{ t('ui.profile_info_heading') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-mist">
                 {{ t('ui.profile_info_help') }}
             </p>
         </header>
@@ -72,13 +72,13 @@ const form = useForm({
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
+                <p class="mt-2 text-sm text-moon">
                     {{ t('ui.profile_unverified') }}
                     <Link
                         :href="'/email/verification-notification'"
                         method="post"
                         as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        class="rounded-md text-sm text-mist underline hover:text-gold focus:outline-none focus:ring-2 focus:ring-magic focus:ring-offset-2 focus:ring-offset-night"
                     >
                         {{ t('ui.profile_resend') }}
                     </Link>
@@ -86,7 +86,7 @@ const form = useForm({
 
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
+                    class="mt-2 text-sm font-medium text-success"
                 >
                     {{ t('ui.profile_verification_sent') }}
                 </div>
@@ -103,7 +103,7 @@ const form = useForm({
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="text-sm text-mist"
                     >
                         {{ t('ui.profile_saved') }}
                     </p>

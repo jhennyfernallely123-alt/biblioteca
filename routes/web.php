@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
+    Route::patch('/books/reorder', [BookController::class, 'reorder'])->name('books.reorder');
     Route::patch('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::patch('/books/{book}/move', [BookController::class, 'move'])->name('books.move');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');

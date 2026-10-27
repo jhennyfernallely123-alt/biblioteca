@@ -185,16 +185,16 @@ function submit() {
         <div class="mb-4 flex gap-2">
             <button
                 type="button"
-                class="rounded-control px-3 py-2"
-                :class="tab === 'search' ? 'bg-oliva text-crema' : 'bg-crema text-tinta'"
+                class="rounded-control border border-line px-3 py-2"
+                :class="tab === 'search' ? 'bg-arcane text-moon' : 'bg-panel text-mist'"
                 @click="tab = 'search'"
             >
                 {{ t('ui.search_tab') }}
             </button>
             <button
                 type="button"
-                class="rounded-control px-3 py-2"
-                :class="tab === 'manual' ? 'bg-oliva text-crema' : 'bg-crema text-tinta'"
+                class="rounded-control border border-line px-3 py-2"
+                :class="tab === 'manual' ? 'bg-arcane text-moon' : 'bg-panel text-mist'"
                 @click="tab = 'manual'"
             >
                 {{ t('ui.manual_tab') }}
@@ -206,7 +206,7 @@ function submit() {
                 <BarcodeScanner @detected="onDetected" />
                 <button
                     type="button"
-                    class="min-h-11 rounded-control border border-madera/35 px-4 py-2 text-sm text-tinta hover:bg-pergamino"
+                    class="min-h-11 rounded-control border border-line px-4 py-2 text-sm text-moon hover:bg-panel-raised"
                     @click="closeScanner"
                 >
                     {{ t('ui.close_camera') }}
@@ -215,7 +215,7 @@ function submit() {
             <button
                 v-else
                 type="button"
-                class="min-h-11 rounded-control border border-madera/35 px-4 py-2 text-sm text-tinta hover:bg-pergamino"
+                class="min-h-11 rounded-control border border-line px-4 py-2 text-sm text-moon hover:bg-panel-raised"
                 @click="scannerOpen = true"
             >
                 {{ t('ui.scan_camera') }}
@@ -224,13 +224,13 @@ function submit() {
             <div class="flex flex-col gap-2 sm:flex-row">
                 <input
                     v-model="form.isbn"
-                    class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2"
+                    class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist"
                     :placeholder="t('ui.isbn')"
                     @keyup.enter="lookupIsbn(form.isbn)"
                 >
                 <button
                     type="button"
-                    class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover"
+                    class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong"
                     :disabled="searching"
                     @click="lookupIsbn(form.isbn)"
                 >
@@ -241,13 +241,13 @@ function submit() {
             <div class="flex flex-col gap-2 sm:flex-row">
                 <input
                     v-model="form.title"
-                    class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2"
+                    class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist"
                     :placeholder="t('ui.search_placeholder')"
                     @keyup.enter="search()"
                 >
                 <button
                     type="button"
-                    class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover"
+                    class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong"
                     :disabled="searching"
                     @click="search()"
                 >
@@ -255,19 +255,19 @@ function submit() {
                 </button>
             </div>
 
-            <p v-if="searching" class="text-sm text-tinta/60">{{ t('ui.searching') }}</p>
-            <p v-else class="text-sm text-tinta/60">{{ t('ui.search_hint') }}</p>
+            <p v-if="searching" class="text-sm text-mist">{{ t('ui.searching') }}</p>
+            <p v-else class="text-sm text-mist">{{ t('ui.search_hint') }}</p>
 
-            <p v-if="error" class="text-sm text-terracota">{{ error }}</p>
+            <p v-if="error" class="text-sm text-danger">{{ error }}</p>
 
             <ul class="space-y-2">
                 <li v-for="(book, index) in results" :key="index">
                     <button
                         type="button"
-                        class="flex w-full items-start gap-3 rounded-control border border-madera/35 bg-crema p-3 text-left hover:bg-pergamino"
+                        class="flex w-full items-start gap-3 rounded-control border border-line bg-panel p-3 text-left text-moon hover:bg-panel-raised"
                         @click="select(book)"
                     >
-                        <span class="relative flex h-20 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-pergamino font-serif text-xl text-madera shadow-soft">
+                        <span class="relative flex h-20 w-14 shrink-0 items-center justify-center overflow-hidden rounded bg-panel-raised font-serif text-xl text-gold shadow-soft">
                             {{ book.title.charAt(0) }}
                             <img
                                 v-if="book.cover_url"
@@ -282,10 +282,10 @@ function submit() {
                         </span>
                         <span class="min-w-0">
                             <strong class="block font-serif text-base leading-snug">{{ book.title }}</strong>
-                            <span class="block text-sm text-tinta/65">{{ book.author || t('ui.unknown_author') }}</span>
+                            <span class="block text-sm text-mist">{{ book.author || t('ui.unknown_author') }}</span>
                             <span
                                 v-if="book.publisher || book.published_year"
-                                class="mt-1 block text-xs text-tinta/50"
+                                class="mt-1 block text-xs text-mist/80"
                             >
                                 {{ [book.publisher, book.published_year].filter(Boolean).join(' · ') }}
                             </span>
@@ -296,27 +296,27 @@ function submit() {
         </section>
 
         <form v-if="tab === 'manual'" class="space-y-4" @submit.prevent="submit">
-            <input v-model="form.title" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.title_placeholder')">
-            <input v-model="form.author" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.author_placeholder')">
-            <input v-model="form.isbn" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.isbn')">
-            <input v-model="form.publisher" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.publisher_placeholder')">
-            <input v-model.number="form.published_year" type="number" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.year_placeholder')">
-            <select v-model="form.shelf_id" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2">
+            <input v-model="form.title" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.title_placeholder')">
+            <input v-model="form.author" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.author_placeholder')">
+            <input v-model="form.isbn" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.isbn')">
+            <input v-model="form.publisher" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.publisher_placeholder')">
+            <input v-model.number="form.published_year" type="number" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.year_placeholder')">
+            <select v-model="form.shelf_id" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon">
                 <option v-for="shelf in props.shelves" :key="shelf.id" :value="shelf.id">{{ shelf.display_name ?? shelf.name }}</option>
             </select>
             <div>
-                <span class="mb-1 block text-sm text-tinta/65">{{ t('ui.rating_heading') }}</span>
+                <span class="mb-1 block text-sm text-mist">{{ t('ui.rating_heading') }}</span>
                 <RatingStars v-model="form.rating" editable />
             </div>
             <textarea
                 v-model="form.notes"
                 rows="3"
-                class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2"
+                class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist"
                 :placeholder="t('ui.notes_placeholder')"
             />
-            <input type="file" accept="image/jpeg,image/png,image/webp" @change="form.cover = $event.target.files[0]">
-            <p v-if="form.errors.title" class="text-sm text-terracota">{{ form.errors.title }}</p>
-            <button type="submit" class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover" :disabled="form.processing">
+            <input type="file" accept="image/jpeg,image/png,image/webp" class="text-sm text-mist file:me-3 file:rounded-control file:border-0 file:bg-panel-raised file:px-3 file:py-1 file:text-moon" @change="form.cover = $event.target.files[0]">
+            <p v-if="form.errors.title" class="text-sm text-danger">{{ form.errors.title }}</p>
+            <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="form.processing">
                 {{ t('ui.save') }}
             </button>
         </form>

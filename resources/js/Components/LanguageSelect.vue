@@ -48,27 +48,27 @@ const filtered = computed(() => {
         <input
             v-model="query"
             type="search"
-            class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2"
+            class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist"
             :placeholder="t('ui.language_search')"
             :aria-label="t('ui.language_search')"
             :disabled="disabled"
         >
-        <div class="max-h-64 overflow-y-auto rounded-control border border-madera/35 bg-crema">
+        <div class="max-h-64 overflow-y-auto rounded-control border border-line bg-panel">
             <button
                 v-for="item in filtered"
                 :key="item.code"
                 type="button"
-                class="flex w-full items-center justify-between gap-2 border-b border-madera/15 px-3 py-2 text-start last:border-b-0 hover:bg-pergamino disabled:opacity-50"
-                :class="item.code === modelValue ? 'bg-pergamino font-semibold' : ''"
+                class="flex w-full items-center justify-between gap-2 border-b border-line px-3 py-2 text-start text-moon last:border-b-0 hover:bg-panel-raised disabled:opacity-50"
+                :class="item.code === modelValue ? 'bg-panel-raised font-semibold' : ''"
                 :disabled="disabled"
                 @click="emit('update:modelValue', item.code)"
             >
                 <span>{{ item.label }}</span>
-                <span class="text-xs text-tinta/60">
+                <span class="text-xs text-mist">
                     {{ item.curated ? t('ui.language_reviewed') : t('ui.language_automatic') }}
                 </span>
             </button>
-            <p v-if="filtered.length === 0" class="p-3 text-sm text-tinta/60">
+            <p v-if="filtered.length === 0" class="p-3 text-sm text-mist">
                 {{ t('ui.language_no_results') }}
             </p>
         </div>

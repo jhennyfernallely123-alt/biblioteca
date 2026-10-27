@@ -141,35 +141,35 @@ async function applyLanguage() {
 
         <form class="mb-8 space-y-3" @submit.prevent="saveProfile">
             <h2 class="text-2xl">{{ t('ui.profile_heading') }}</h2>
-            <input v-model="profile.name" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.name')">
-            <p v-if="profile.errors.name" class="text-sm text-terracota">{{ profile.errors.name }}</p>
-            <input v-model="profile.email" type="email" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.email')">
-            <p v-if="profile.errors.email" class="text-sm text-terracota">{{ profile.errors.email }}</p>
-            <select v-model="profile.default_view_mode" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2">
+            <input v-model="profile.name" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.name')">
+            <p v-if="profile.errors.name" class="text-sm text-danger">{{ profile.errors.name }}</p>
+            <input v-model="profile.email" type="email" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.email')">
+            <p v-if="profile.errors.email" class="text-sm text-danger">{{ profile.errors.email }}</p>
+            <select v-model="profile.default_view_mode" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist">
                 <option value="covers">{{ t('ui.covers') }}</option>
                 <option value="spines">{{ t('ui.spines') }}</option>
             </select>
-            <button type="submit" class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover" :disabled="profile.processing">
+            <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="profile.processing">
                 {{ t('ui.save_profile') }}
             </button>
         </form>
 
         <form class="mb-8 space-y-3" @submit.prevent="savePassword">
             <h2 class="text-2xl">{{ t('ui.password_heading') }}</h2>
-            <input v-model="password.current_password" type="password" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.current_password')">
-            <p v-if="password.errors.current_password" class="text-sm text-terracota">{{ password.errors.current_password }}</p>
-            <input v-model="password.password" type="password" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.new_password')">
-            <p v-if="password.errors.password" class="text-sm text-terracota">{{ password.errors.password }}</p>
-            <input v-model="password.password_confirmation" type="password" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.confirm_password')">
-            <button type="submit" class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover" :disabled="password.processing">
+            <input v-model="password.current_password" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.current_password')">
+            <p v-if="password.errors.current_password" class="text-sm text-danger">{{ password.errors.current_password }}</p>
+            <input v-model="password.password" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.new_password')">
+            <p v-if="password.errors.password" class="text-sm text-danger">{{ password.errors.password }}</p>
+            <input v-model="password.password_confirmation" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.confirm_password')">
+            <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="password.processing">
                 {{ t('ui.change_password') }}
             </button>
         </form>
 
         <section class="mb-8 space-y-3">
             <h2 class="text-2xl">{{ t('ui.language_heading') }}</h2>
-            <p class="text-sm text-tinta/65">{{ t('ui.language_help') }}</p>
-            <p class="text-sm text-tinta/65">{{ t('ui.language_current') }}: {{ currentLanguage }}</p>
+            <p class="text-sm text-mist">{{ t('ui.language_help') }}</p>
+            <p class="text-sm text-mist">{{ t('ui.language_current') }}: {{ currentLanguage }}</p>
             <LanguageSelect
                 v-model="language"
                 :languages="languages"
@@ -179,47 +179,47 @@ async function applyLanguage() {
             />
             <button
                 type="button"
-                class="rounded-control bg-oliva px-4 py-2 text-crema hover:bg-oliva-hover disabled:opacity-50"
+                class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong disabled:opacity-50"
                 :disabled="preparing"
                 @click="applyLanguage"
             >
                 {{ t('ui.language_apply') }}
             </button>
-            <p v-if="preparing" class="text-sm text-tinta/65">
+            <p v-if="preparing" class="text-sm text-mist">
                 {{ t('ui.language_preparing', { percent: progress }) }}
             </p>
-            <p v-if="languageError" class="text-sm text-terracota">{{ languageError }}</p>
-            <p v-if="languageSuccess" class="text-sm text-oliva">{{ t('ui.language_updated') }}</p>
+            <p v-if="languageError" class="text-sm text-danger">{{ languageError }}</p>
+            <p v-if="languageSuccess" class="text-sm text-success">{{ t('ui.language_updated') }}</p>
         </section>
 
         <section>
             <h2 class="mb-3 text-2xl">{{ t('ui.shelves_heading') }}</h2>
 
             <form class="mb-3 flex gap-2" @submit.prevent="createShelf">
-                <input v-model="newShelf.name" class="w-full rounded-control border border-madera/35 bg-crema px-3 py-2" :placeholder="t('ui.new_shelf_placeholder')">
-                <button type="submit" class="rounded-control bg-bosque px-4 py-2 text-crema" :disabled="newShelf.processing">
+                <input v-model="newShelf.name" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.new_shelf_placeholder')">
+                <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="newShelf.processing">
                     {{ t('ui.create') }}
                 </button>
             </form>
-            <p v-if="newShelf.errors.name" class="mb-2 text-sm text-terracota">{{ newShelf.errors.name }}</p>
+            <p v-if="newShelf.errors.name" class="mb-2 text-sm text-danger">{{ newShelf.errors.name }}</p>
 
             <ul class="space-y-2">
                 <li
                     v-for="(shelf, index) in props.shelves"
                     :key="shelf.id"
-                    class="flex flex-wrap items-center gap-2 rounded-card border border-madera/35 bg-crema p-3"
+                    class="flex flex-wrap items-center gap-2 rounded-card border border-line bg-panel p-3"
                 >
-                    <input v-model="names[shelf.id]" class="min-w-0 flex-1 rounded-control border border-madera/30 bg-white/50 px-2 py-1" @keyup.enter="renameShelf(shelf)">
-                    <button type="button" class="rounded-control border border-madera/35 px-2 py-1 text-sm" @click="renameShelf(shelf)">
+                    <input v-model="names[shelf.id]" class="min-w-0 flex-1 rounded-control border border-line bg-panel-raised px-2 py-1 text-moon" @keyup.enter="renameShelf(shelf)">
+                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised" @click="renameShelf(shelf)">
                         {{ t('ui.rename') }}
                     </button>
-                    <button type="button" class="rounded-control border border-madera/35 px-2 py-1 text-sm disabled:opacity-40" :disabled="index === 0" @click="moveShelf(index, -1)">
+                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40" :disabled="index === 0" @click="moveShelf(index, -1)">
                         {{ t('ui.up') }}
                     </button>
-                    <button type="button" class="rounded-control border border-madera/35 px-2 py-1 text-sm disabled:opacity-40" :disabled="index === props.shelves.length - 1" @click="moveShelf(index, 1)">
+                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40" :disabled="index === props.shelves.length - 1" @click="moveShelf(index, 1)">
                         {{ t('ui.down') }}
                     </button>
-                    <button type="button" class="rounded-control border border-terracota px-2 py-1 text-sm text-terracota" @click="destroyShelf(shelf)">
+                    <button type="button" class="rounded-control border border-danger px-2 py-1 text-sm text-danger hover:bg-danger/10" @click="destroyShelf(shelf)">
                         {{ t('ui.delete') }}
                     </button>
                 </li>

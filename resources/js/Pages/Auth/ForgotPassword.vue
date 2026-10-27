@@ -26,13 +26,13 @@ const submit = () => {
         <Head title="Recuperar contraseña" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-bosque">Recuperar contraseña</h1>
-            <p class="mt-1 text-sm text-tinta/65">
+            <h1 class="font-serif text-2xl text-gold">Recuperar contraseña</h1>
+            <p class="mt-1 text-sm text-mist">
                 Escribe tu correo y te enviaremos un enlace para elegir una nueva contraseña.
             </p>
         </div>
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-oliva">
+        <div v-if="status" class="mb-4 text-sm font-medium text-success">
             {{ status }}
         </div>
 
@@ -62,8 +62,8 @@ const submit = () => {
             </PrimaryButton>
         </form>
 
-        <div class="mt-6 border-t border-madera/20 pt-5 text-center text-sm text-tinta/70">
-            <Link href="/login" class="font-medium text-oliva underline hover:text-bosque">
+        <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
+            <Link href="/login" class="font-medium text-magic underline hover:text-gold">
                 Volver a iniciar sesión
             </Link>
         </div>

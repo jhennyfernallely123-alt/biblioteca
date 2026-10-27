@@ -1,3 +1,6 @@
 <template>
-    <div class="wood-board mt-1 h-3 rounded-b-sm" aria-hidden="true" />
+    <div class="shelf-board" aria-hidden="true">
+        <span class="shelf-board__top" />
+        <span class="shelf-board__front" />
+    </div>
 </template>

@@ -6,6 +6,6 @@ const { t } = useI18n();
 
 <template>
     <div class="rounded-md border border-dashed border-madera/35 p-6 text-center">
-        <p class="font-serif text-lg text-bosque">{{ t('ui.empty_shelf') }}</p>
+        <p class="font-serif text-lg text-crema">{{ t('ui.empty_shelf') }}</p>
     </div>
 </template>

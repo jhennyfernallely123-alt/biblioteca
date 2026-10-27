@@ -34,11 +34,11 @@ const submit = () => {
         <Head title="Iniciar sesión" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-bosque">Iniciar sesión</h1>
-            <p class="mt-1 text-sm text-tinta/65">Entra para ver tus estanterías.</p>
+            <h1 class="font-serif text-2xl text-gold">Iniciar sesión</h1>
+            <p class="mt-1 text-sm text-mist">Entra para ver tus estanterías.</p>
         </div>
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-oliva">
+        <div v-if="status" class="mb-4 text-sm font-medium text-success">
             {{ status }}
         </div>
 
@@ -77,13 +77,13 @@ const submit = () => {
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <label class="flex min-h-11 items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-tinta/70">Recordarme</span>
+                    <span class="ms-2 text-sm text-mist">Recordarme</span>
                 </label>
 
                 <Link
                     v-if="canResetPassword"
                     href="/forgot-password"
-                    class="text-sm text-oliva underline hover:text-bosque focus:outline-none focus:ring-2 focus:ring-salvia"
+                    class="text-sm text-magic underline hover:text-gold focus:outline-none focus:ring-2 focus:ring-magic"
                 >
                     ¿Olvidaste tu contraseña?
                 </Link>
@@ -98,9 +98,9 @@ const submit = () => {
             </PrimaryButton>
         </form>
 
-        <div class="mt-6 border-t border-madera/20 pt-5 text-center text-sm text-tinta/70">
+        <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
             ¿Aún no tienes cuenta?
-            <Link href="/register" class="font-medium text-oliva underline hover:text-bosque">
+            <Link href="/register" class="font-medium text-magic underline hover:text-gold">
                 Crear cuenta
             </Link>
         </div>

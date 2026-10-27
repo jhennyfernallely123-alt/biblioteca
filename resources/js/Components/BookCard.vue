@@ -4,6 +4,8 @@ import { useI18n } from '@/i18n';
 
 const props = defineProps({
     book: { type: Object, required: true },
+    dragging: { type: Boolean, default: false },
+    dropPosition: { type: String, default: null },
 });
 
 const { t } = useI18n();
@@ -15,9 +17,20 @@ const coverUrl = computed(() =>
 </script>
 
 <template>
-    <a :href="`/books/${book.id}/edit`" class="group block w-full">
+    <a
+        :href="`/books/${book.id}/edit`"
+        class="book-drag-source group relative block w-full cursor-grab"
+        draggable="false"
+        :data-book-id="book.id"
+        :class="{
+            'opacity-30': dragging,
+            'book-drop-before': dropPosition === 'before',
+            'book-drop-after': dropPosition === 'after',
+        }"
+        :title="`${book.title} — ${book.author}`"
+    >
         <div
-            class="aspect-[2/3] overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-madera/35 transition group-hover:-translate-y-0.5 group-hover:shadow-cover"
+            class="book-glow aspect-[2/3] overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-madera/35"
         >
             <img
                 v-if="coverUrl"
@@ -32,7 +45,5 @@ const coverUrl = computed(() =>
                 <span class="mt-1 text-xs text-tinta/65">{{ book.author }}</span>
             </div>
         </div>
-        <h3 class="mt-2 truncate font-serif text-[18px] leading-6 text-tinta">{{ book.title }}</h3>
-        <p class="truncate text-sm text-tinta/65">{{ book.author }}</p>
     </a>
 </template>

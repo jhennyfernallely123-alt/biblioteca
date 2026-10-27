@@ -20,6 +20,8 @@ class Shelf extends Model
 
     public function books(): HasMany
     {
-        return $this->hasMany(Book::class)->orderBy('title');
+        return $this->hasMany(Book::class)
+            ->orderBy('position')
+            ->orderBy('title');
     }
 }

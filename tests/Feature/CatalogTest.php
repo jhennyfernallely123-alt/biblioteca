@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Services\CatalogService;
 use App\Services\CatalogTranslationService;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 
 it('tiene todas las claves en los idiomas revisados', function () {
@@ -18,8 +19,12 @@ it('tiene todas las claves en los idiomas revisados', function () {
 
 it('prepara un idioma automático por lotes', function () {
     $catalog = app(CatalogService::class);
+    $locale = 'zz-test';
+    $staging = $catalog->stagingPath($locale);
 
-    $missing = $catalog->missing('af');
+    File::delete($staging);
+
+    $missing = $catalog->missing($locale);
     $batch = array_slice($missing, 0, 2);
 
     Http::fake([
@@ -28,9 +33,13 @@ it('prepara un idioma automático por lotes', function () {
         ]),
     ]);
 
-    app(CatalogTranslationService::class)->translateKeys('af', $batch);
+    try {
+        app(CatalogTranslationService::class)->translateKeys($locale, $batch);
 
-    expect(count($catalog->missing('af')))->toBeLessThan(count($missing));
+        expect(count($catalog->missing($locale)))->toBeLessThan(count($missing));
+    } finally {
+        File::delete($staging);
+    }
 });
 
 it('no activa un idioma incompleto', function () {

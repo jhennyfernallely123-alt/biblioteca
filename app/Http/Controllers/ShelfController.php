@@ -59,8 +59,14 @@ class ShelfController extends Controller
         $this->authorize('delete', $shelf);
 
         DB::transaction(function () use ($request, $shelf) {
-            $fallback = $request->user()->shelves()->where('name', 'Pendientes')->first()
-                ?? $request->user()->shelves()->where('id', '!=', $shelf->id)->orderBy('position')->first();
+            $fallback = $request->user()->shelves()
+                ->where('id', '!=', $shelf->id)
+                ->where('name', 'Pendientes')
+                ->first()
+                ?? $request->user()->shelves()
+                    ->where('id', '!=', $shelf->id)
+                    ->orderBy('position')
+                    ->first();
 
             if (! $fallback) {
                 $fallback = $request->user()->shelves()->create([
@@ -70,8 +76,27 @@ class ShelfController extends Controller
                 ]);
             }
 
-            $shelf->books()->update(['shelf_id' => $fallback->id]);
+            $start = $fallback->books()->max('position');
+            $start = $start === null ? 0 : (int) $start + 1;
+
+            $shelf->books()
+                ->orderBy('position')
+                ->orderBy('title')
+                ->get()
+                ->each(function ($book, int $index) use ($fallback, $start) {
+                    $book->update([
+                        'shelf_id' => $fallback->id,
+                        'position' => $start + $index,
+                    ]);
+                });
+
             $shelf->delete();
+
+            $fallback->books()
+                ->orderBy('position')
+                ->orderBy('title')
+                ->get()
+                ->each(fn ($book, int $position) => $book->update(['position' => $position]));
 
             $request->user()->shelves()->orderBy('position')->get()
                 ->each(fn (Shelf $remaining, int $position) => $remaining->update(['position' => $position]));

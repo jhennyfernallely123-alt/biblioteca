@@ -16,6 +16,22 @@
   --color-terracota: #A9714B;
   --color-dorado: #C2A878;
 
+  --color-night: #12101F;
+  --color-night-raised: #1A1730;
+  --color-panel: #211D3A;
+  --color-panel-raised: #2B2550;
+  --color-line: #3A3363;
+  --color-moon: #F1ECFF;
+  --color-mist: #B7AED6;
+  --color-arcane: #7C5CE0;
+  --color-arcane-strong: #6A4AC9;
+  --color-magic: #74D8C9;
+  --color-magic-strong: #5FC7B8;
+  --color-gold: #E8C887;
+  --color-danger: #F2A0B0;
+  --color-danger-strong: #A8455C;
+  --color-success: #8FE3B8;
+
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -31,14 +47,14 @@
 
 @layer base {
   body {
-    @apply bg-pergamino text-tinta font-sans antialiased;
+    @apply bg-night text-moon font-sans antialiased;
   }
 
   h1, h2, h3 {
-    @apply font-serif text-bosque;
+    @apply font-serif text-gold;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-dorado ring-offset-2 ring-offset-pergamino;
+    @apply outline-none ring-2 ring-magic ring-offset-2 ring-offset-night;
   }
 }

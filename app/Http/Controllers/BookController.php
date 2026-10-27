@@ -10,6 +10,8 @@ use App\Services\Isbn;
 use App\Services\TranslationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -56,6 +58,8 @@ class BookController extends Controller
             ? Isbn::normalize($request->input('isbn'))
             : null;
 
+        $data['position'] = $this->nextPosition((int) $data['shelf_id']);
+
         $request->user()->books()->create($data);
 
         return redirect()->route('library.index');
@@ -85,7 +89,19 @@ class BookController extends Controller
             ? Isbn::normalize($request->input('isbn'))
             : null;
 
+        $oldShelfId = (int) $book->shelf_id;
+        $shelfChanged = isset($data['shelf_id']) && (int) $data['shelf_id'] !== $oldShelfId;
+
+        if ($shelfChanged) {
+            $data['position'] = $this->nextPosition((int) $data['shelf_id']);
+        }
+
         $book->update($data);
+
+        if ($shelfChanged) {
+            $this->resequenceShelf($oldShelfId);
+            $this->resequenceShelf((int) $book->shelf_id);
+        }
 
         if ($oldCover && $book->cover_path !== $oldCover) {
             $this->covers->delete($oldCover);
@@ -104,7 +120,49 @@ class BookController extends Controller
 
         $this->ensureShelfOwnership($request, $data['shelf_id']);
 
-        $book->update(['shelf_id' => $data['shelf_id']]);
+        $sourceShelfId = (int) $book->shelf_id;
+        $targetShelfId = (int) $data['shelf_id'];
+
+        DB::transaction(function () use ($book, $sourceShelfId, $targetShelfId) {
+            $book->update([
+                'shelf_id' => $targetShelfId,
+                'position' => $this->nextPosition($targetShelfId),
+            ]);
+
+            $this->resequenceShelf($sourceShelfId);
+            $this->resequenceShelf($targetShelfId);
+        });
+
+        return back();
+    }
+
+    public function reorder(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'shelf_id' => ['required', 'integer'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['required', 'integer', 'distinct'],
+        ]);
+
+        $this->ensureShelfOwnership($request, $data['shelf_id']);
+
+        $shelf = $request->user()->shelves()->findOrFail($data['shelf_id']);
+        $expected = $shelf->books()->pluck('id')->sort()->values()->all();
+        $submitted = collect($data['ids'])->sort()->values()->all();
+
+        if ($expected !== $submitted) {
+            throw ValidationException::withMessages([
+                'ids' => __('ui.book_reorder_error'),
+            ]);
+        }
+
+        DB::transaction(function () use ($data, $shelf) {
+            foreach ($data['ids'] as $position => $id) {
+                Book::where('id', $id)
+                    ->where('shelf_id', $shelf->id)
+                    ->update(['position' => $position]);
+            }
+        });
 
         return back();
     }
@@ -117,6 +175,23 @@ class BookController extends Controller
         $book->delete();
 
         return back();
+    }
+
+    private function nextPosition(int $shelfId): int
+    {
+        $max = Book::where('shelf_id', $shelfId)->max('position');
+
+        return $max === null ? 0 : (int) $max + 1;
+    }
+
+    private function resequenceShelf(int $shelfId): void
+    {
+        Book::where('shelf_id', $shelfId)
+            ->orderBy('position')
+            ->orderBy('title')
+            ->orderBy('id')
+            ->get(['id'])
+            ->each(fn (Book $book, int $position) => $book->update(['position' => $position]));
     }
 
     private function ensureShelfOwnership(Request $request, int $shelfId): void

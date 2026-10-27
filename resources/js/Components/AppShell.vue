@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import ArcaneStars from './ArcaneStars.vue';
 import LocaleSync from './LocaleSync.vue';
 import { useI18n } from '@/i18n';
 
@@ -10,7 +11,6 @@ const { t } = useI18n();
 
 const links = computed(() => [
     { label: t('ui.nav_library'), href: '/' },
-    { label: t('ui.nav_add'), href: '/books/create' },
     { label: t('ui.nav_settings'), href: '/settings' },
 ]);
 
@@ -23,10 +23,11 @@ function logout() {
 </script>
 
 <template>
-    <div class="paper-texture min-h-screen md:flex">
+    <div class="arcane-sky min-h-screen md:flex">
+        <ArcaneStars />
         <LocaleSync />
-        <aside class="hidden bg-bosque p-4 text-crema md:flex md:w-60 md:flex-col">
-            <Link :href="links[0].href" class="mb-8 font-serif text-2xl">
+        <aside class="hidden border-e border-line bg-night-raised/95 p-4 text-moon md:flex md:w-60 md:flex-col">
+            <Link href="/" class="mb-8 font-serif text-2xl text-gold">
                 Biblioteca
             </Link>
             <nav class="space-y-2">
@@ -34,25 +35,25 @@ function logout() {
                     v-for="link in links"
                     :key="link.href"
                     :href="link.href"
-                    class="block rounded-control border-s-2 px-3 py-2 hover:bg-white/10"
-                    :class="isActive(link.href) ? 'border-dorado bg-white/10' : 'border-transparent'"
+                    class="block rounded-control border-s-2 px-3 py-2 text-mist hover:bg-panel hover:text-moon"
+                    :class="isActive(link.href) ? 'border-magic bg-panel text-moon' : 'border-transparent'"
                     :aria-current="isActive(link.href) ? 'page' : undefined"
                 >
                     {{ link.label }}
                 </Link>
             </nav>
-            <div class="mt-auto pt-6 text-sm text-crema/70">
+            <div class="mt-auto pt-6 text-sm text-mist">
                 <p class="mb-2">{{ user?.name }}</p>
-                <button type="button" class="min-h-11 w-full rounded-control border border-crema/30 px-3 py-2 text-start hover:bg-white/10" @click="logout">
+                <button type="button" class="min-h-11 w-full rounded-control border border-line px-3 py-2 text-start text-moon hover:bg-panel" @click="logout">
                     {{ t('ui.logout') }}
                 </button>
             </div>
         </aside>
 
         <div class="flex-1 pb-20 md:pb-0">
-            <header class="flex items-center justify-between bg-bosque px-4 py-3 text-crema md:hidden">
-                <span class="font-serif text-xl">Biblioteca</span>
-                <button type="button" class="min-h-11 rounded-control border border-crema/30 px-3 py-2 text-sm" @click="logout">
+            <header class="flex items-center justify-between border-b border-line bg-night-raised/95 px-4 py-3 text-moon md:hidden">
+                <span class="font-serif text-xl text-gold">Biblioteca</span>
+                <button type="button" class="min-h-11 rounded-control border border-line px-3 py-2 text-sm text-moon hover:bg-panel" @click="logout">
                     {{ t('ui.exit') }}
                 </button>
             </header>
@@ -61,13 +62,13 @@ function logout() {
             </main>
         </div>
 
-        <nav class="fixed inset-x-0 bottom-0 flex justify-around bg-bosque py-2 text-crema md:hidden">
+        <nav class="fixed inset-x-0 bottom-0 flex justify-around border-t border-line bg-night-raised/95 py-2 text-moon md:hidden">
             <Link
                 v-for="link in links"
                 :key="link.href"
                 :href="link.href"
                 class="flex min-h-11 items-center border-b-2 px-3 py-2 text-sm"
-                :class="isActive(link.href) ? 'border-dorado' : 'border-transparent'"
+                :class="isActive(link.href) ? 'border-magic text-gold' : 'border-transparent'"
                 :aria-current="isActive(link.href) ? 'page' : undefined"
             >
                 {{ link.label }}

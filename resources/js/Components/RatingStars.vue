@@ -28,7 +28,7 @@ function select(value) {
             type="button"
             data-star
             class="leading-none disabled:cursor-default"
-            :class="star <= modelValue ? 'text-dorado' : 'text-dorado/40'"
+            :class="star <= modelValue ? 'text-gold' : 'text-gold/40'"
             :disabled="!editable"
             :aria-label="t('ui.rating_star', { star })"
             @click="select(star)"
