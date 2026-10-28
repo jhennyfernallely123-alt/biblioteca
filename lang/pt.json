@@ -15,6 +15,7 @@
     "ui.book_move_error": "Não foi possível mover o livro. Tente novamente.",
     "ui.book_reordered": "Livro reordenado.",
     "ui.book_reorder_error": "Não foi possível alterar a ordem. Tente novamente.",
+    "ui.book_updated": "Livro atualizado.",
     "ui.drag_hint": "Arraste um livro para movê-lo para outra estante ou alterar a posição dentro da mesma estante. No celular, mantenha pressionado e arraste.",
     "ui.empty_shelf": "Ainda não há livros nesta estante.",
     "ui.cover_alt": "Capa de :title",
@@ -146,9 +147,15 @@
     "auth.failed": "Estas credenciais não correspondem aos nossos registos.",
     "auth.password": "A palavra-passe não está correta.",
     "auth.throttle": "Demasiadas tentativas. Tenta novamente em :seconds segundos.",
+    "auth.social_failed": "Não foi possível concluir o início de sessão social. Tenta novamente.",
+    "auth.social_email_missing": "O fornecedor não nos deu um e-mail verificado. Entra com e-mail e palavra-passe.",
     "passwords.reset": "A tua palavra-passe foi redefinida.",
     "passwords.sent": "Enviámos-te o link para redefinir a palavra-passe.",
     "passwords.throttled": "Aguarda um momento antes de tentar novamente.",
     "passwords.token": "O link para redefinir a palavra-passe não é válido.",
-    "passwords.user": "Não encontrámos um utilizador com esse email."
+    "passwords.user": "Não encontrámos um utilizador com esse email.",
+    "ui.welcome_title": "Bem-vinda, :name",
+    "ui.welcome_subtitle": "O teu mundo mágico espera por ti.",
+    "ui.enter": "Entrar",
+    "ui.nickname": "Alcunha"
 }

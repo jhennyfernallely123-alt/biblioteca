@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\CompleteNicknameController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookLookupController;
 use App\Http\Controllers\CoverController;
@@ -11,15 +12,22 @@ use App\Http\Controllers\ShelfController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware('auth')->group(function () {
+    Route::get('/complete-profile', [CompleteNicknameController::class, 'edit'])
+        ->name('profile.complete');
+    Route::post('/complete-profile', [CompleteNicknameController::class, 'update'])
+        ->name('profile.complete.store');
+});
+
 Route::get('/', [LibraryController::class, 'index'])
-    ->middleware('auth')
+    ->middleware(['auth', 'nickname'])
     ->name('library.index');
 
 Route::get('/dashboard', fn () => redirect()->route('library.index'))
-    ->middleware('auth')
+    ->middleware(['auth', 'nickname'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'nickname'])->group(function () {
     Route::get('/books/lookup', BookLookupController::class)->middleware('throttle:60,1')->name('books.lookup');
     Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');

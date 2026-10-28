@@ -15,6 +15,7 @@
     "ui.book_move_error": "No s'ha pogut moure el llibre. Torna-ho a provar.",
     "ui.book_reordered": "Llibre reordenat.",
     "ui.book_reorder_error": "No s'ha pogut canviar l'ordre. Torna-ho a provar.",
+    "ui.book_updated": "Llibre actualitzat.",
     "ui.drag_hint": "Arrossega un llibre per moure'l a una altra prestatgeria o canviar-ne la posició dins de la mateixa. Al mòbil, mantén premut i arrossega.",
     "ui.empty_shelf": "Encara no hi ha llibres en aquesta prestatgeria.",
     "ui.cover_alt": "Coberta de :title",
@@ -146,9 +147,15 @@
     "auth.failed": "Aquestes credencials no coincideixen amb els nostres registres.",
     "auth.password": "La contrasenya no és correcta.",
     "auth.throttle": "Massa intents. Torna-ho a provar d'aquí a :seconds segons.",
+    "auth.social_failed": "No hem pogut completar l'accés social. Torna-ho a provar.",
+    "auth.social_email_missing": "El proveïdor no ens ha donat un correu verificat. Entra amb correu i contrasenya.",
     "passwords.reset": "S'ha restablert la teva contrasenya.",
     "passwords.sent": "T'hem enviat l'enllaç per restablir la contrasenya.",
     "passwords.throttled": "Espera un moment abans de tornar-ho a provar.",
     "passwords.token": "L'enllaç per restablir la contrasenya no és vàlid.",
-    "passwords.user": "No hem trobat cap usuari amb aquest correu electrònic."
+    "passwords.user": "No hem trobat cap usuari amb aquest correu electrònic.",
+    "ui.welcome_title": "Benvinguda, :name",
+    "ui.welcome_subtitle": "El teu món màgic t'espera.",
+    "ui.enter": "Entra",
+    "ui.nickname": "Sobrenom"
 }

@@ -18,6 +18,7 @@ const { t } = useI18n();
 
 const profile = useForm({
     name: props.user.name,
+    nickname: props.user.nickname ?? props.user.name,
     email: props.user.email,
     default_view_mode: props.user.default_view_mode ?? 'covers',
 });
@@ -143,6 +144,8 @@ async function applyLanguage() {
             <h2 class="text-2xl">{{ t('ui.profile_heading') }}</h2>
             <input v-model="profile.name" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.name')">
             <p v-if="profile.errors.name" class="text-sm text-danger">{{ profile.errors.name }}</p>
+            <input v-model="profile.nickname" maxlength="50" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.nickname')">
+            <p v-if="profile.errors.nickname" class="text-sm text-danger">{{ profile.errors.nickname }}</p>
             <input v-model="profile.email" type="email" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.email')">
             <p v-if="profile.errors.email" class="text-sm text-danger">{{ profile.errors.email }}</p>
             <select v-model="profile.default_view_mode" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist">

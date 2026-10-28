@@ -107,7 +107,7 @@ class BookController extends Controller
             $this->covers->delete($oldCover);
         }
 
-        return back();
+        return back()->with('success', __('ui.book_updated'));
     }
 
     public function move(Request $request, Book $book): RedirectResponse

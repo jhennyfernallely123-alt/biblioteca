@@ -1,18 +1,35 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import ArcaneStars from '@/Components/ArcaneStars.vue';
+import LibraryEmblem from '@/Components/LibraryEmblem.vue';
+
+const page = usePage();
 </script>
 
 <template>
-    <div class="arcane-sky flex min-h-screen flex-col items-center justify-center px-4 py-8">
+    <div class="arcane-sky min-h-screen md:grid md:grid-cols-2">
         <ArcaneStars />
-        <div class="mb-6 text-center">
-            <Link href="/" class="font-serif text-3xl text-gold">Biblioteca</Link>
-            <p class="mt-1 text-sm text-mist">Tu biblioteca personal</p>
+
+        <div class="relative flex h-56 items-center justify-center overflow-hidden md:hidden">
+            <LibraryEmblem compact />
         </div>
 
-        <div class="w-full max-w-[420px] rounded-card border border-line bg-panel p-6 shadow-modal">
-            <slot />
-        </div>
+        <aside class="relative hidden overflow-hidden md:flex md:items-center md:justify-center md:p-8">
+            <LibraryEmblem />
+        </aside>
+
+        <main class="relative flex min-h-[calc(100vh-14rem)] flex-col justify-center bg-night-raised px-4 py-10 md:min-h-screen md:px-10">
+            <div class="mx-auto w-full max-w-[420px]">
+                <div
+                    v-if="page.props.flash?.error"
+                    role="alert"
+                    class="mb-5 rounded-control border border-danger/50 bg-danger/10 px-4 py-3 text-sm text-danger"
+                >
+                    {{ page.props.flash.error }}
+                </div>
+
+                <slot />
+            </div>
+        </main>
     </div>
 </template>

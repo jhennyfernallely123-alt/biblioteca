@@ -1,13 +1,40 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import ArcaneStars from './ArcaneStars.vue';
+import FlashToast from './FlashToast.vue';
 import LocaleSync from './LocaleSync.vue';
+import MagicWelcome from './MagicWelcome.vue';
+import { resetWelcome, shouldShowWelcome } from './welcomeIntro';
 import { useI18n } from '@/i18n';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const { t } = useI18n();
+const showWelcome = ref(shouldShowWelcome());
+const notice = ref(null);
+let noticeId = 0;
+let noticeTimer = null;
+
+watch(
+    () => page.props.flash,
+    (flash) => {
+        if (!flash?.success) {
+            return;
+        }
+
+        window.clearTimeout(noticeTimer);
+        notice.value = { id: ++noticeId, text: flash.success };
+        noticeTimer = window.setTimeout(() => {
+            notice.value = null;
+        }, 4000);
+    },
+    { immediate: true, deep: true }
+);
+
+onBeforeUnmount(() => {
+    window.clearTimeout(noticeTimer);
+});
 
 const links = computed(() => [
     { label: t('ui.nav_library'), href: '/' },
@@ -18,7 +45,7 @@ const isActive = (href) =>
     href === '/' ? page.url === '/' : page.url.startsWith(href);
 
 function logout() {
-    router.post('/logout');
+    router.post('/logout', {}, { onSuccess: resetWelcome });
 }
 </script>
 
@@ -26,10 +53,17 @@ function logout() {
     <div class="arcane-sky min-h-screen md:flex">
         <ArcaneStars />
         <LocaleSync />
+        <FlashToast v-if="notice" :key="notice.id" :text="notice.text" />
+        <MagicWelcome v-if="showWelcome" :nickname="user?.nickname || user?.name || ''" @close="showWelcome = false" />
         <aside class="hidden border-e border-line bg-night-raised/95 p-4 text-moon md:flex md:w-60 md:flex-col">
-            <Link href="/" class="mb-8 font-serif text-2xl text-gold">
-                Biblioteca
-            </Link>
+            <div class="mb-8">
+                <Link href="/" class="font-serif text-2xl text-gold">
+                    Biblioteca
+                </Link>
+                <button type="button" class="mt-4 min-h-11 w-full rounded-control border border-line px-3 py-2 text-start text-moon hover:bg-panel" @click="logout">
+                    {{ t('ui.logout') }}
+                </button>
+            </div>
             <nav class="space-y-2">
                 <Link
                     v-for="link in links"
@@ -42,12 +76,6 @@ function logout() {
                     {{ link.label }}
                 </Link>
             </nav>
-            <div class="mt-auto pt-6 text-sm text-mist">
-                <p class="mb-2">{{ user?.name }}</p>
-                <button type="button" class="min-h-11 w-full rounded-control border border-line px-3 py-2 text-start text-moon hover:bg-panel" @click="logout">
-                    {{ t('ui.logout') }}
-                </button>
-            </div>
         </aside>
 
         <div class="flex-1 pb-20 md:pb-0">

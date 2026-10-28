@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureNicknameIsSet;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -20,7 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        $middleware->alias([
+            'nickname' => EnsureNicknameIsSet::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

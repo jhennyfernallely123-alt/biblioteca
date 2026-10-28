@@ -15,6 +15,7 @@
     "ui.book_move_error": "Non se puido mover o libro. Téntao de novo.",
     "ui.book_reordered": "Libro reordenado.",
     "ui.book_reorder_error": "Non se puido cambiar a orde. Téntao de novo.",
+    "ui.book_updated": "Libro actualizado.",
     "ui.drag_hint": "Arrastra un libro para movelo a outra estantería ou cambiar a súa posición dentro da mesma. No móbil, mantén premido e arrastra.",
     "ui.empty_shelf": "Aínda non hai libros nesta estantería.",
     "ui.cover_alt": "Portada de :title",
@@ -146,9 +147,15 @@
     "auth.failed": "Estas credenciais non coinciden cos nosos rexistros.",
     "auth.password": "O contrasinal non é correcto.",
     "auth.throttle": "Demasiados intentos. Téntao de novo en :seconds segundos.",
+    "auth.social_failed": "Non puidemos completar o acceso social. Ténteo de novo.",
+    "auth.social_email_missing": "O provedor non nos deu un correo verificado. Entra con correo e contrasinal.",
     "passwords.reset": "O teu contrasinal restableceuse.",
     "passwords.sent": "Enviámosche a ligazón para restablecer o contrasinal.",
     "passwords.throttled": "Espera un momento antes de tentalo de novo.",
     "passwords.token": "A ligazón para restablecer o contrasinal non é válida.",
-    "passwords.user": "Non atopamos un usuario con ese correo electrónico."
+    "passwords.user": "Non atopamos un usuario con ese correo electrónico.",
+    "ui.welcome_title": "Benvida, :name",
+    "ui.welcome_subtitle": "O teu mundo máxico agarda por ti.",
+    "ui.enter": "Entrar",
+    "ui.nickname": "Alcume"
 }

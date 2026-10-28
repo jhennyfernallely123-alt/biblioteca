@@ -1,6 +1,6 @@
 # DISEÑO — Biblioteca
 
-**Última actualización:** 2026-10-27
+**Última actualización:** 2026-10-28
 **Estado:** vigente
 **Alcance:** identidad visual, componentes, estructura de interfaz y convenciones de diseño de la aplicación Biblioteca.
 
@@ -146,7 +146,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Navegación
 
-- **Escritorio:** barra lateral fija de 240 px, fondo `night-raised` con borde final `line`, texto `mist`. Logo en Cormorant `gold`. Enlaces con icono y etiqueta.
+- **Escritorio:** barra lateral fija de 240 px, fondo `night-raised` con borde final `line`, texto `mist`. Logo en Cormorant `gold`. Enlaces con icono y etiqueta. El botón **Cerrar sesión** va en la parte superior, bajo el logo; no se muestra el nombre real en la barra lateral.
 - **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, dos acciones: Biblioteca y Configuraciones. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
 - Enlace activo: fondo `panel`, borde inicial `magic` y texto `moon` (escritorio); texto `gold` y subrayado `magic` (móvil).
 
@@ -226,6 +226,17 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Fondo `night-raised`, borde `line`, texto `moon`, radio 6 px, duración 4 s.
 - Éxito con acento `success`; error con acento `danger`.
 - `aria-live="polite"`.
+- El aviso global de éxito se muestra flotando abajo, centrado, con ancho máximo de 384 px y sin capturar clics. Al guardar la ficha de un libro aparece «Libro actualizado.».
+
+### Intro de bienvenida (`MagicWelcome`)
+
+- Velo a pantalla completa `night` al 80 % con desenfoque, aura radial `arcane`, `magic` y `gold`, y diez destellos dorados flotando en los bordes.
+- Placa de cristal centrada de hasta 480 px: fondo `panel` al 70 %, borde `magic` al 30 %, desenfoque, sombra de modal con halo arcano y filo superior dorado.
+- Sello circular con estrella `gold`, título «Bienvenida, {apodo}» en Cormorant `gold` y subtítulo «Tu mundo mágico te espera.» en `mist`.
+- Botón **Entrar** en `arcane`, con resplandor suave y hover `arcane-strong`.
+- Aparece una vez por carga de la aplicación autenticada: al iniciar sesión y al abrir o recargar. No se repite al navegar entre Biblioteca y Ajustes.
+- Se cierra con **Entrar** o Escape; el foco inicial está en el botón, Tab se mantiene dentro de la intro y el desplazamiento del fondo queda bloqueado.
+- En móvil ocupa el ancho disponible con 16 px de margen. Con `prefers-reduced-motion: reduce`, sin animaciones.
 
 ### Esqueletos de carga
 
@@ -251,14 +262,20 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Configuraciones
 
 - Secciones apiladas: Perfil, Contraseña, Estanterías, Idioma, Vista por defecto.
+- **Perfil:** nombre real, apodo, correo y vista por defecto. El apodo es obligatorio, admite hasta 50 caracteres y es el que aparece en la intro de bienvenida.
 - Guardado por sección con confirmación visual.
 - **Idioma:** selector con búsqueda, revisados primero (etiqueta “Revisado”) y resto con “Automático”. Al elegir un idioma automático se muestra el progreso de preparación y, si falla, un aviso en `danger` sin cambiar el idioma activo. Los nombres de estanterías se muestran traducidos, pero en esta sección se editan siempre en su idioma original.
 
 ### Autenticación
 
-- Fondo `night` con el cielo arcano.
-- Tarjeta centrada `panel` con borde `line`, 420 px máximo, título en Cormorant `gold`.
-- Enlaces en `magic`; errores en `danger`.
+- Diseño a dos columnas en escritorio: cielo arcano con emblema de la biblioteca a la izquierda (libro abierto en `gold` y `magic`, arco con la palabra «Biblioteca» y chispas animadas) y formulario a la derecha sobre `night-raised`.
+- Móvil: franja superior de 14rem con el emblema compacto; debajo, el formulario.
+- Tarjeta interna de 420 px máximo, título en Cormorant `gold` y texto de apoyo en `mist`.
+- Campo de contraseña con botón de ojo para mostrar u ocultar (`PasswordInput`); el botón usa `mist`/`moon` y anillo `magic`.
+- Botones sociales Google y Facebook (`SocialLoginButtons`): visibles en Login y Registro; deshabilitados con la etiqueta «Próximamente» mientras no haya credenciales. Separador «o continúa con» con líneas `line`.
+- Tras el primer acceso social, pantalla `CompleteNickname` para elegir apodo antes de entrar a la biblioteca.
+- Enlaces en `magic`; errores en `danger`. Los errores flash de OAuth se muestran en una alerta superior del layout.
+- Se mantiene la paleta existente (`night`, `night-raised`, `panel`, `line`, `moon`, `mist`, `gold`, `magic`, `arcane`); no se introducen azules ni blancos de las referencias externas.
 
 ---
 
@@ -283,6 +300,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Hover de portada o lomo: halo `dorado` de 2 px con resplandor suave; sin elevación ni desplazamiento.
 - Aparición de modales: opacidad + escala de 0.98 a 1.
 - La miniatura de arrastre sigue al puntero sin transición; la atenuación del libro de origen y el resplandor del destino usan 140–160 ms.
+- La intro de bienvenida entra con opacidad y escala suave; el aura respira y los destellos parpadean de forma lenta y desfasada.
 - Respetar `prefers-reduced-motion: reduce`: sin transformaciones ni brillos animados.
 
 ---
@@ -292,6 +310,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Contraste AA en texto y controles.
 - Foco visible con anillo `magic` de 2 px y offset `night`.
 - Navegación completa con teclado; modales con trampa de foco y Escape.
+- La intro de bienvenida es un diálogo modal: foco inicial en **Entrar**, cierre con Escape y bloqueo del desplazamiento del fondo.
 - `aria-label` en botones de icono, estrellas y lomos con título recortado.
 - Textos alternativos descriptivos en portadas.
 - No usar color como único indicador de estado.
@@ -350,3 +369,8 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-10-27 | El cielo arcano gana movimiento sutil: cuatro capas de estrellas con deriva diagonal lenta y parpadeo desfasado, solo con `transform` y `opacity`, detrás del contenido y sin capturar clics. Con `prefers-reduced-motion: reduce` quedan fijas. | Agente |
 | 2026-10-27 | Arrastrar y soltar libros entre estanterías: gesto con ratón o pulsación larga en móvil, miniatura de portada o lomo, resaltado de destinos con «Suelta aquí», auto-scroll en los bordes, actualización optimista con aviso `role="status"` y reversión si falla. El clic normal conserva la edición y la ficha mantiene el selector de estantería como alternativa accesible. | Agente |
 | 2026-10-27 | Reordenar libros dentro de una estantería: línea de inserción `magic`, cálculo antes/después, orden persistente por posición, actualización optimista y reversión con aviso. Los libros nuevos y los movidos a otra estantería se añaden al final. | Agente |
+| 2026-10-27 | Aviso global de éxito al guardar la ficha de un libro: toast flotante abajo, centrado, con borde `success`, texto «Libro actualizado.» y duración de 4 s. | Agente |
+| 2026-10-27 | Intro de bienvenida mágica al abrir o recargar la aplicación autenticada: velo nocturno translúcido, aura arcana, destellos dorados y placa de cristal con «Bienvenida, {nombre}», «Tu mundo mágico te espera.» y botón **Entrar**. No se repite al navegar dentro de la app; se cierra con Entrar o Escape y respeta `prefers-reduced-motion`. | Agente |
+| 2026-10-28 | Apodo de cuenta: campo obligatorio en el registro (máximo 50 caracteres), editable en Ajustes → Perfil y usado en la intro con «Bienvenida, {apodo}». Las cuentas existentes reciben su nombre actual como apodo. | Agente |
+| 2026-10-28 | La barra lateral deja de mostrar el nombre real bajo la navegación; el botón **Cerrar sesión** sube a la parte superior, justo debajo del logo. En móvil se mantiene **Salir** en la cabecera. | Agente |
+| 2026-10-28 | Acceso y registro a dos columnas: emblema arcano de la biblioteca sobre cielo estrellado a la izquierda y formulario a la derecha; en móvil, franja superior con el emblema. Campo de contraseña con ojo, botones Google/Facebook con «Próximamente» mientras falten credenciales y pantalla de apodo tras el primer acceso social. | Agente |

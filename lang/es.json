@@ -15,6 +15,7 @@
     "ui.book_move_error": "No se pudo mover el libro. Inténtalo de nuevo.",
     "ui.book_reordered": "Libro reordenado.",
     "ui.book_reorder_error": "No se pudo cambiar el orden. Inténtalo de nuevo.",
+    "ui.book_updated": "Libro actualizado.",
     "ui.drag_hint": "Arrastra un libro para moverlo a otra estantería o cambiar su posición dentro de la misma. En el móvil, mantén pulsado y arrastra.",
     "ui.empty_shelf": "Aún no hay libros en esta estantería.",
     "ui.cover_alt": "Portada de :title",
@@ -97,5 +98,9 @@
     "ui.profile_delete_confirm_title": "¿Seguro que quieres eliminar tu cuenta?",
     "ui.profile_delete_confirm_help": "Una vez eliminada tu cuenta, todos sus recursos y datos se borrarán permanentemente. Escribe tu contraseña para confirmar.",
     "ui.profile_password": "Contraseña",
-    "ui.cancel": "Cancelar"
+    "ui.cancel": "Cancelar",
+    "ui.welcome_title": "Bienvenida, :name",
+    "ui.welcome_subtitle": "Tu mundo mágico te espera.",
+    "ui.enter": "Entrar",
+    "ui.nickname": "Apodo"
 }

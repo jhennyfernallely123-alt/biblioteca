@@ -15,6 +15,7 @@
     "ui.book_move_error": "The book could not be moved. Please try again.",
     "ui.book_reordered": "Book reordered.",
     "ui.book_reorder_error": "Could not change the order. Try again.",
+    "ui.book_updated": "Book updated.",
     "ui.drag_hint": "Drag a book to move it to another shelf or change its position within the same shelf. On mobile, press and hold, then drag.",
     "ui.empty_shelf": "There are no books on this shelf yet.",
     "ui.cover_alt": "Cover of :title",
@@ -146,9 +147,15 @@
     "auth.failed": "These credentials do not match our records.",
     "auth.password": "The password is incorrect.",
     "auth.throttle": "Too many attempts. Please try again in :seconds seconds.",
+    "auth.social_failed": "We could not complete the social sign-in. Please try again.",
+    "auth.social_email_missing": "The provider did not give us a verified email. Sign in with email and password.",
     "passwords.reset": "Your password has been reset.",
     "passwords.sent": "We have emailed your password reset link.",
     "passwords.throttled": "Please wait before retrying.",
     "passwords.token": "This password reset token is invalid.",
-    "passwords.user": "We cannot find a user with that email address."
+    "passwords.user": "We cannot find a user with that email address.",
+    "ui.welcome_title": "Welcome, :name",
+    "ui.welcome_subtitle": "Your magical world awaits.",
+    "ui.enter": "Enter",
+    "ui.nickname": "Nickname"
 }

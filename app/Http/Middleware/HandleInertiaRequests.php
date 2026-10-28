@@ -40,8 +40,13 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'direction' => in_array($locale, config('languages.rtl'), true) ? 'rtl' : 'ltr',
             'translations' => app(CatalogService::class)->ui($locale),
+            'socialProviders' => [
+                'google' => filled(config('services.google.client_id')) && filled(config('services.google.client_secret')),
+                'facebook' => filled(config('services.facebook.client_id')) && filled(config('services.facebook.client_secret')),
+            ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }

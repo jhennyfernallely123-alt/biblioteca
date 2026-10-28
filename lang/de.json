@@ -15,6 +15,7 @@
     "ui.book_move_error": "Das Buch konnte nicht verschoben werden. Bitte versuche es erneut.",
     "ui.book_reordered": "Buch neu angeordnet.",
     "ui.book_reorder_error": "Die Reihenfolge konnte nicht geändert werden. Versuche es erneut.",
+    "ui.book_updated": "Buch aktualisiert.",
     "ui.drag_hint": "Ziehe ein Buch, um es in ein anderes Regal zu verschieben oder seine Position im selben Regal zu ändern. Halte es auf dem Handy gedrückt und ziehe es.",
     "ui.empty_shelf": "Noch keine Bücher in diesem Regal.",
     "ui.cover_alt": "Cover von :title",
@@ -146,9 +147,15 @@
     "auth.failed": "Diese Anmeldedaten stimmen nicht mit unseren Aufzeichnungen überein.",
     "auth.password": "Das Passwort ist falsch.",
     "auth.throttle": "Zu viele Versuche. Bitte versuche es in :seconds Sekunden erneut.",
+    "auth.social_failed": "Die soziale Anmeldung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
+    "auth.social_email_missing": "Der Anbieter hat uns keine bestätigte E-Mail-Adresse übermittelt. Melde dich mit E-Mail und Passwort an.",
     "passwords.reset": "Dein Passwort wurde zurückgesetzt.",
     "passwords.sent": "Wir haben dir den Link zum Zurücksetzen des Passworts geschickt.",
     "passwords.throttled": "Bitte warte einen Moment, bevor du es erneut versuchst.",
     "passwords.token": "Dieser Link zum Zurücksetzen des Passworts ist ungültig.",
-    "passwords.user": "Wir können keinen Benutzer mit dieser E-Mail-Adresse finden."
+    "passwords.user": "Wir können keinen Benutzer mit dieser E-Mail-Adresse finden.",
+    "ui.welcome_title": "Willkommen, :name",
+    "ui.welcome_subtitle": "Deine magische Welt wartet auf dich.",
+    "ui.enter": "Eintreten",
+    "ui.nickname": "Spitzname"
 }

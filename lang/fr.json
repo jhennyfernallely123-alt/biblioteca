@@ -15,6 +15,7 @@
     "ui.book_move_error": "Impossible de déplacer le livre. Réessayez.",
     "ui.book_reordered": "Livre réorganisé.",
     "ui.book_reorder_error": "Impossible de modifier l'ordre. Réessayez.",
+    "ui.book_updated": "Livre mis à jour.",
     "ui.drag_hint": "Faites glisser un livre pour le déplacer vers une autre étagère ou changer sa position dans la même étagère. Sur mobile, maintenez puis faites glisser.",
     "ui.empty_shelf": "Aucun livre sur cette étagère pour le moment.",
     "ui.cover_alt": "Couverture de :title",
@@ -146,9 +147,15 @@
     "auth.failed": "Ces identifiants ne correspondent pas à nos enregistrements.",
     "auth.password": "Le mot de passe est incorrect.",
     "auth.throttle": "Trop de tentatives. Veuillez réessayer dans :seconds secondes.",
+    "auth.social_failed": "Nous n'avons pas pu terminer la connexion sociale. Réessaie.",
+    "auth.social_email_missing": "Le fournisseur ne nous a pas donné d'e-mail vérifié. Connecte-toi avec ton e-mail et ton mot de passe.",
     "passwords.reset": "Votre mot de passe a été réinitialisé.",
     "passwords.sent": "Nous vous avons envoyé le lien de réinitialisation du mot de passe.",
     "passwords.throttled": "Veuillez patienter avant de réessayer.",
     "passwords.token": "Ce lien de réinitialisation du mot de passe n'est pas valide.",
-    "passwords.user": "Nous ne trouvons aucun utilisateur avec cette adresse e-mail."
+    "passwords.user": "Nous ne trouvons aucun utilisateur avec cette adresse e-mail.",
+    "ui.welcome_title": "Bienvenue, :name",
+    "ui.welcome_subtitle": "Ton monde magique t'attend.",
+    "ui.enter": "Entrer",
+    "ui.nickname": "Surnom"
 }

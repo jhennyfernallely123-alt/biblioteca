@@ -1,17 +1,24 @@
 <script setup>
+import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SocialLoginButtons from '@/Components/SocialLoginButtons.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
+    nickname: '',
     email: '',
     password: '',
     password_confirmation: '',
 });
+
+const page = usePage();
+const socialProviders = computed(() => page.props.socialProviders ?? { google: false, facebook: false });
 
 const submit = () => {
     form.post('/register', {
@@ -49,6 +56,26 @@ const submit = () => {
             </div>
 
             <div>
+                <InputLabel for="nickname" value="Apodo" />
+
+                <TextInput
+                    id="nickname"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.nickname"
+                    required
+                    maxlength="50"
+                    autocomplete="nickname"
+                />
+
+                <p class="mt-1 text-xs text-mist">
+                    Así te saludaremos al entrar.
+                </p>
+
+                <InputError class="mt-2" :message="form.errors.nickname" />
+            </div>
+
+            <div>
                 <InputLabel for="email" value="Correo electrónico" />
 
                 <TextInput
@@ -66,10 +93,9 @@ const submit = () => {
             <div>
                 <InputLabel for="password" value="Contraseña" />
 
-                <TextInput
+                <PasswordInput
                     id="password"
-                    type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -84,10 +110,9 @@ const submit = () => {
                     value="Confirmar contraseña"
                 />
 
-                <TextInput
+                <PasswordInput
                     id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
@@ -107,6 +132,14 @@ const submit = () => {
                 Crear cuenta
             </PrimaryButton>
         </form>
+
+        <div class="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-mist">
+            <span class="h-px flex-1 bg-line" />
+            o continúa con
+            <span class="h-px flex-1 bg-line" />
+        </div>
+
+        <SocialLoginButtons :providers="socialProviders" />
 
         <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
             ¿Ya tienes cuenta?

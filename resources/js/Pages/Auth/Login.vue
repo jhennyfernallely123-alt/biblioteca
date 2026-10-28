@@ -1,11 +1,14 @@
 <script setup>
+import { computed } from 'vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PasswordInput from '@/Components/PasswordInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SocialLoginButtons from '@/Components/SocialLoginButtons.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: {
@@ -15,6 +18,9 @@ defineProps({
         type: String,
     },
 });
+
+const page = usePage();
+const socialProviders = computed(() => page.props.socialProviders ?? { google: false, facebook: false });
 
 const form = useForm({
     email: '',
@@ -62,10 +68,9 @@ const submit = () => {
             <div>
                 <InputLabel for="password" value="Contraseña" />
 
-                <TextInput
+                <PasswordInput
                     id="password"
-                    type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
@@ -97,6 +102,14 @@ const submit = () => {
                 Entrar
             </PrimaryButton>
         </form>
+
+        <div class="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-mist">
+            <span class="h-px flex-1 bg-line" />
+            o continúa con
+            <span class="h-px flex-1 bg-line" />
+        </div>
+
+        <SocialLoginButtons :providers="socialProviders" />
 
         <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
             ¿Aún no tienes cuenta?

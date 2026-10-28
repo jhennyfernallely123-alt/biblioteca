@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\DefaultShelvesService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,8 @@ use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
+    public function __construct(private DefaultShelvesService $defaultShelves) {}
+
     /**
      * Display the registration view.
      */
@@ -34,6 +37,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'nickname' => 'required|string|max:50',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -41,13 +45,12 @@ class RegisteredUserController extends Controller
         $user = DB::transaction(function () use ($request) {
             $user = User::create([
                 'name' => $request->name,
+                'nickname' => $request->nickname,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
 
-            foreach (['Pendientes', 'Leyendo', 'Leídos'] as $position => $name) {
-                $user->shelves()->create(['name' => $name, 'position' => $position]);
-            }
+            $this->defaultShelves->createFor($user);
 
             return $user;
         });

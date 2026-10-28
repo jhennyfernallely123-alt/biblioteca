@@ -73,6 +73,18 @@ it('actualiza un libro propio', function () {
         ->and($book->fresh()->rating)->toBe(4);
 });
 
+it('muestra un aviso al actualizar un libro', function () {
+    app()->setLocale('es');
+
+    $book = Book::factory()->for($this->user)->create(['title' => 'Viejo']);
+
+    $this->patch(route('books.update', $book), [
+        'title' => 'Nuevo',
+    ])->assertSessionHas('success', 'Libro actualizado.');
+
+    expect($book->fresh()->title)->toBe('Nuevo');
+});
+
 it('elimina un libro propio', function () {
     $book = Book::factory()->for($this->user)->create();
 
