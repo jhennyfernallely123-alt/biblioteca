@@ -1,0 +1,6 @@
+FTP_HOST=ftpupload.net
+FTP_USER=
+FTP_PASS=
+FTP_PATH=/htdocs
+VITE_ENABLED=true
+EXTRA_UPLOADS=
