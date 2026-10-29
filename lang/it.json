@@ -4,6 +4,7 @@
     "ui.nav_settings": "Impostazioni",
     "ui.logout": "Esci",
     "ui.exit": "Esci",
+    "ui.back": "Indietro",
     "ui.library_title": "La mia biblioteca",
     "ui.add_book": "Aggiungi libro",
     "ui.books_count": ":count libri",

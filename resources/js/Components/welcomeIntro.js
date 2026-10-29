@@ -1,15 +1,21 @@
-let shownThisLoad = false;
+const KEY = 'biblioteca:welcome-shown';
 
 export function shouldShowWelcome() {
-    if (shownThisLoad) {
+    if (typeof localStorage === 'undefined') {
         return false;
     }
 
-    shownThisLoad = true;
+    if (localStorage.getItem(KEY)) {
+        return false;
+    }
+
+    localStorage.setItem(KEY, '1');
 
     return true;
 }
 
 export function resetWelcome() {
-    shownThisLoad = false;
+    if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(KEY);
+    }
 }

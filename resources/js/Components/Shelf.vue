@@ -81,7 +81,7 @@ function toggleView() {
 
                 <div
                     v-else-if="shelf.view_mode === 'covers'"
-                    class="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] items-end gap-4"
+                    class="flex flex-row items-end gap-4 overflow-x-auto pb-1 [&>a]:min-w-[100px] sm:grid sm:grid-cols-[repeat(auto-fill,minmax(88px,1fr))] sm:overflow-visible sm:pb-0"
                 >
                     <BookCard
                         v-for="book in shelf.books"

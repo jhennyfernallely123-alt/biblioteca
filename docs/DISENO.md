@@ -44,6 +44,7 @@ Principios:
 | `danger` | `#F2A0B0` | Errores, texto y bordes destructivos |
 | `danger-strong` | `#A8455C` | Fondo de botones destructivos |
 | `success` | `#8FE3B8` | Mensajes de éxito |
+| `orquidea` | `#9E61AB` | Cuadro del emblema en Acceso y Registro y botón **Entrar** |
 
 ### Paleta del mueble (estanterías y libros)
 
@@ -136,7 +137,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ## 5. Texturas
 
-- **Cielo arcano:** clase `.arcane-sky` sobre `night`, con dos resplandores radiales (`arcane` al 30 % arriba a la izquierda y `magic` al 16 % abajo a la derecha) y el componente decorativo `ArcaneStars` con cuatro capas de estrellas de 0.7–1.8 px en `moon` y acentos `gold`. Las capas derivan en diagonal durante 70–150 s y parpadean suavemente cada 6–14 s, con desfases entre capas. Solo se animan `transform` y `opacity`; sin canvas ni imágenes. La capa va detrás del contenido (`z-index: -1`) y no captura clics. Con `prefers-reduced-motion: reduce` las estrellas quedan fijas.
+- **Cielo arcano:** clase `.arcane-sky` sobre `night`, con dos resplandores radiales (`arcane` al 30 % arriba a la izquierda y `magic` al 16 % abajo a la derecha) y el componente decorativo `ArcaneStars` con cuatro capas de estrellas de 0.7–1.8 px en `moon` y acentos `gold`. Las capas derivan en diagonal durante 70–150 s y parpadean suavemente cada 6–14 s, con desfases entre capas. Solo se animan `transform` y `opacity`; sin canvas ni imágenes. La capa va detrás del contenido (`z-index: -1`) y no captura clics. Con `prefers-reduced-motion: reduce` las estrellas quedan fijas. En Acceso y Registro, `ArcaneStars` se reutiliza dentro del cuadro `orquidea` en posición absoluta, recortado al cuadro; la columna sigue con el cielo oscuro de fondo.
 - **Madera:** degradado vertical `#6B4F3A → #8B6B4F` con vetas hechas con `repeating-linear-gradient` a baja opacidad. Sin imágenes bitmap.
 - **Peso:** ninguna textura debe superar 50 KB en total; preferir CSS/SVG inline.
 
@@ -152,7 +153,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Botones
 
-- **Primario:** fondo `arcane`, texto `moon`, radio 4 px, altura mínima 44 px. Hover y activo `arcane-strong`. Foco con anillo `magic` de 2 px y offset `night`.
+- **Primario:** fondo `arcane`, texto `moon`, radio 4 px, altura mínima 44 px. Hover y activo `arcane-strong`. Foco con anillo `magic` de 2 px y offset `night`. Variante `orquidea`: fondo `orquidea` y texto `night`, hover al 85 % y activo al 75 %; se usa en el botón **Entrar** del acceso.
 - **Secundario:** fondo `panel`, borde `line`, texto `moon`. Hover `panel-raised`.
 - **Peligro:** borde y texto `danger`; en confirmaciones, fondo `danger-strong` y texto `moon`.
 - **Icono:** cuadrado de 44 × 44 px, sin borde, hover con fondo `panel`.
@@ -186,7 +187,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 - Contenedor con título `h2`, contador de libros y control de modo (portadas/lomos).
 - **Espaldar:** panel de madera oscura detrás de los libros, con veta vertical sutil y sombras interiores arriba y a los lados que simulan profundidad. Junto con la balda forma un perfil en L.
-- **Modo portadas:** rejilla con `auto-fill`, mínimo 88 px por portada, separación 12–20 px; máximo 7 columnas en escritorio. Los libros se alinean al fondo de la balda.
+- **Modo portadas:** rejilla con `auto-fill`, mínimo 88 px por portada, separación 12–20 px; máximo 7 columnas en escritorio. Los libros se alinean al fondo de la balda. En móvil se dibujan en fila horizontal con scroll (`overflow-x-auto`), con un ancho mínimo de ~100 px por portada para que quepan tres visibles y se deslice al resto. En móvil la lista de libros de cada estantería se dibuja en fila horizontal con scroll (`overflow-x-auto`) para ver todos los libros sin salir de la pantalla.
 - **Modo lomos:** fila horizontal con scroll si hace falta; libros apoyados en la balda.
 - **Balda:** volumen de 20–24 px con dos caras: superficie superior en perspectiva (`rotateX` suave, de `madera-clara` a `madera`) y frente más oscuro con bisel claro arriba, veta horizontal sutil, sombra interior en los extremos y abajo, y sombra proyectada. La cara superior lleva una sombra interior que simula el contacto de los libros. Debe parecer que sostiene los libros.
 - Estado vacío: `EmptyShelf` con borde discontinuo `madera` al 35 %, frase breve en `crema` y enlace para añadir.
@@ -238,6 +239,18 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Se cierra con **Entrar** o Escape; el foco inicial está en el botón, Tab se mantiene dentro de la intro y el desplazamiento del fondo queda bloqueado.
 - En móvil ocupa el ancho disponible con 16 px de margen. Con `prefers-reduced-motion: reduce`, sin animaciones.
 
+### Emblema de acceso (`LibraryEmblem`)
+
+- Un único lienzo SVG de 560 × 480 que compone toda la escena; el arco y el libro comparten coordenadas y no hay piezas recortadas ni placas superpuestas.
+- Arco «BIBLIOTECA» en mayúsculas, Cormorant Garamond 600 a 70 px sobre `textPath` (curva `M 24 132 Q 280 4 536 132`), relleno en degradado `gold`/`dorado` y doble sombra dorada para leerse sobre el cielo.
+- Libro abierto en 3D visto desde arriba y en perspectiva: tapas `night`/`panel` con canto de cartón visible, filo dorado y filigrana en la esquina delantera; bloque de páginas `crema`/`pergamino` con canto apilado de líneas finas y sombra proyectada sobre la tapa; páginas curvadas con degradado hacia el lomo, sombra interior en los bordes, brillo de canto y grano de papel.
+- Lomo en valle: pliegue oscuro central, dos luces paralelas y pozo de sombra en el pie, sin sello ni ilustraciones impresas.
+- Sin letras manuscritas, sellos, astrolabios, chispas ni haz de luz: sobre las páginas solo queda el papel.
+- Sombra de contacto doble bajo el libro y halo `gold`/`arcane` difuminado detrás.
+- Tamaño máximo 480 px de ancho en escritorio y 214 px en la versión compacta, siempre con proporción 560:480. Ningún SVG puede quedar sin ancho definido: eso estiraba el dibujo a todo el contenedor.
+- Ids SVG únicas por instancia (`useId`) para que la versión compacta y la de escritorio convivan en el mismo documento.
+- Movimiento: solo respiración del halo y pulso del resplandor dorado. Con `prefers-reduced-motion: reduce` queda estático.
+
 ### Esqueletos de carga
 
 - Bloques `mist` al 20 % con animación de brillo de 1.2 s. Con `prefers-reduced-motion`, sin animación.
@@ -268,7 +281,9 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Autenticación
 
-- Diseño a dos columnas en escritorio: cielo arcano con emblema de la biblioteca a la izquierda (libro abierto en `gold` y `magic`, arco con la palabra «Biblioteca» y chispas animadas) y formulario a la derecha sobre `night-raised`.
+- Diseño a dos columnas a altura completa en escritorio: cielo arcano con el emblema de la biblioteca a la izquierda (arco «BIBLIOTECA» sobre un libro abierto en 3D) y formulario a la derecha sobre `night-raised`. Las dos columnas se centran verticalmente en la misma línea, sin que la página entera se desplace; si el formulario no cabe, solo esa columna tiene desplazamiento interno.
+- Emblema sin placa de cristal ni rectángulos: el libro flota sobre el cielo.
+- La columna del emblema mantiene el cielo arcano oscuro. Encima flota un cuadro redondeado de hasta 528 px con fondo `orquidea` (`#9E61AB`), degradado suave hacia `moon` en el centro y `night` en el borde inferior, filo dorado y sombra, que contiene el título y el libro con estrellas en movimiento dentro. En móvil, la franja superior muestra el mismo cuadro en versión compacta. La columna del formulario sigue en `night-raised`.
 - Móvil: franja superior de 14rem con el emblema compacto; debajo, el formulario.
 - Tarjeta interna de 420 px máximo, título en Cormorant `gold` y texto de apoyo en `mist`.
 - Campo de contraseña con botón de ojo para mostrar u ocultar (`PasswordInput`); el botón usa `mist`/`moon` y anillo `magic`.
@@ -374,3 +389,12 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-10-28 | Apodo de cuenta: campo obligatorio en el registro (máximo 50 caracteres), editable en Ajustes → Perfil y usado en la intro con «Bienvenida, {apodo}». Las cuentas existentes reciben su nombre actual como apodo. | Agente |
 | 2026-10-28 | La barra lateral deja de mostrar el nombre real bajo la navegación; el botón **Cerrar sesión** sube a la parte superior, justo debajo del logo. En móvil se mantiene **Salir** en la cabecera. | Agente |
 | 2026-10-28 | Acceso y registro a dos columnas: emblema arcano de la biblioteca sobre cielo estrellado a la izquierda y formulario a la derecha; en móvil, franja superior con el emblema. Campo de contraseña con ojo, botones Google/Facebook con «Próximamente» mientras falten credenciales y pantalla de apodo tras el primer acceso social. | Agente |
+| 2026-10-29 | Emblema de acceso rehecho: arco «Biblioteca» visible sobre un libro abierto en 3D, sin placa ni rectángulo, con halo, haz mágico y chispas. Se corrigen los SVG sin ancho definido que se estiraban a todo el contenedor (creaban un rectángulo gigante y obligaban a desplazarse para llegar al formulario); ahora tienen proporción fija, ids únicos por instancia y el acceso ocupa la altura de la pantalla con las dos columnas centradas. | Agente |
+| 2026-10-29 | Ajuste del emblema: el libro se dibuja boca arriba, apoyado y visto desde arriba (páginas en perspectiva con el borde cercano más ancho, lomo central y canto del bloque de páginas). El arco «Biblioteca» crece a 50 px con una curva más profunda sobre un lienzo de 440 × 130. | Agente |
+| 2026-10-29 | Emblema igualado a la referencia de la usuaria: un solo lienzo de 560 × 480 con arco «Biblioteca» a 80 px, libro abierto con tapas oscuras y filigrana dorada, canto de páginas apilado, renglones y astrolabios, sello mágico central con anillo de marcas giratorio y ojo de cerradura, haz de luz, 18 destellos de cuatro puntas y polvo estrellado sobre viñeta `night`. Ancho máximo 480 px en escritorio y 214 px en compacto. | Agente |
+| 2026-10-29 | El título pasa a mayúsculas («BIBLIOTECA», 70 px) y el libro se redibuja como un libro real en 3D: tapas `night`/`panel` con canto de cartón y filo dorado, bloque de páginas con canto apilado y sombra sobre la tapa, páginas curvadas con sombra interior, brillo de canto y grano de papel, y lomo en valle con pliegue y luces. Se retiran de las páginas los renglones manuscritos, los astrolabios, el sello mágico, el haz de luz, las chispas y el polvo: solo queda el libro bajo el arco. | Agente |
+| 2026-10-29 | La columna del emblema en Acceso y Registro pasa a un fondo morado más claro: degradado vertical `line`/`panel` con un halo radial `line`/`arcane` detrás del libro. Solo cambia ese lado; el formulario sigue en `night-raised`. En móvil la franja superior usa el mismo fondo. | Agente |
+| 2026-10-29 | El fondo de la columna del emblema pasa al nuevo token `orquidea` (`#9E61AB`), con degradado suave hacia `moon` en el centro y `night` en el borde inferior. Se añade `ArcaneStars` dentro de la columna (en absoluto y recortado) para que las estrellas derivan y parpadeen solo en ese lado; se retira la capa global de estrellas del layout de acceso porque ambas columnas son opacas. | Agente |
+| 2026-10-29 | El morado `orquidea` se limita a un cuadro redondeado de hasta 528 px que enmarca el título y el libro, con filo dorado, sombra y estrellas en movimiento dentro; la columna recupera el cielo arcano oscuro con sus estrellas. El botón **Entrar** del acceso usa la nueva variante `orquidea` (fondo `orquidea`, texto `night`). | Agente |
+| 2026-10-29 | En móvil, las estanterías se mantienen apiladas en vertical, pero los libros de cada una (modo portadas y lomos) se disponen en fila horizontal con scroll para ver todos los libros de la estantería sin salir de la pantalla; se fija un ancho mínimo de ~100 px por portada para que quepan unos tres libros visibles y se deslice al resto. En escritorio se mantienen en rejilla de `auto-fill`. | Agente |
+| 2026-10-29 | En la ficha de editar libro, la portada en móvil se limita a ~200 px de ancho y se centra, y el título usa `text-2xl` (crece a `text-3xl` en escritorio), evitando scroll horizontal en pantallas pequeñas. | Agente |

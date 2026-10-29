@@ -4,6 +4,7 @@
     "ui.nav_settings": "Definições",
     "ui.logout": "Terminar sessão",
     "ui.exit": "Sair",
+    "ui.back": "Voltar",
     "ui.library_title": "A minha biblioteca",
     "ui.add_book": "Adicionar livro",
     "ui.books_count": ":count livros",

@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import RatingStars from '@/Components/RatingStars.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -47,11 +47,16 @@ function destroy() {
 <template>
     <Head :title="t('ui.edit_page_title', { title: book.title })" />
     <AuthenticatedLayout>
-        <h1 class="mb-4 text-3xl">{{ t('ui.edit_book_title') }}</h1>
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <h1 class="text-2xl sm:text-3xl">{{ t('ui.edit_book_title') }}</h1>
+            <Link href="/" class="rounded-control bg-arcane px-3 py-2 text-sm sm:px-4 sm:py-2 text-moon sm:text-base hover:bg-arcane-strong">
+                {{ t('ui.back') }}
+            </Link>
+        </div>
 
-        <div class="grid gap-6 md:grid-cols-[180px_1fr]">
-            <div>
-                <div class="aspect-[2/3] overflow-hidden rounded-card bg-panel shadow-card ring-1 ring-line">
+        <div class="grid gap-6 md:grid-cols-[180px_1fr] items-start">
+            <div class="flex flex-col items-center">
+                <div class="aspect-[2/3] overflow-hidden rounded-card bg-panel shadow-card ring-1 ring-line w-full max-w-[200px] sm:max-w-none">
                     <img
                         v-if="coverUrl"
                         :src="coverUrl"
@@ -62,7 +67,7 @@ function destroy() {
                         {{ book.title }}
                     </div>
                 </div>
-                <p class="mt-2 text-xs text-mist">{{ book.isbn }}</p>
+                <p class="mt-2 text-xs text-mist text-center">{{ book.isbn }}</p>
             </div>
 
             <form class="space-y-3" @submit.prevent="submit">

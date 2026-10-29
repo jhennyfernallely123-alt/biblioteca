@@ -4,6 +4,7 @@
     "ui.nav_settings": "Settings",
     "ui.logout": "Log out",
     "ui.exit": "Exit",
+    "ui.back": "Back",
     "ui.library_title": "My library",
     "ui.add_book": "Add book",
     "ui.books_count": ":count books",

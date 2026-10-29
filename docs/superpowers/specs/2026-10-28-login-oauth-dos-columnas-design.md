@@ -38,7 +38,7 @@ Componente reutilizable, decorativo (`aria-hidden="true"`):
 - **Arco «Biblioteca»:** texto SVG sobre `textPath`, en Cormorant Garamond 600 y color `gold`. Debe leerse claramente como un arco, no como una línea recta.
 - **Libro abierto:** SVG propio con dos páginas, lomo central, líneas de páginas y un resplandor `magic` suave entre ellas. Debe evocar un libro que se abre, no un icono plano.
 - **Destellos:** entre 10 y 12 puntos y estrellas pequeñas en `gold` y `magic`, distribuidos alrededor del arco y del libro.
-- **Placa de cristal:** fondo `panel` translúcido, borde `magic` suave, filo superior dorado, `backdrop-blur`, sombra de modal y halo arcano. Contiene el arco y el libro.
+- **Placa de cristal:** ~~fondo `panel` translúcido, borde `magic` suave, filo superior dorado, `backdrop-blur`, sombra de modal y halo arcano. Contiene el arco y el libro.~~ Revisado el 2026-10-29: se retira la placa; el emblema flota sobre el cielo con un halo arcano. Ver `docs/DISENO.md`.
 - **Movimiento:** parpadeo lento y desfasado de los destellos y respiración muy sutil del halo. Con `prefers-reduced-motion: reduce` quedan estáticos.
 - **Móvil:** versión compacta, con el arco y el libro más pequeños, sin perder los destellos.
 

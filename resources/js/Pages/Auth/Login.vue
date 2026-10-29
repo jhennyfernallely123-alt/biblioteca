@@ -95,6 +95,7 @@ const submit = () => {
             </div>
 
             <PrimaryButton
+                tone="orquidea"
                 class="w-full justify-center"
                 :class="{ 'opacity-50': form.processing }"
                 :disabled="form.processing"
