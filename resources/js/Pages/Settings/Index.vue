@@ -29,8 +29,6 @@ const password = useForm({
     password_confirmation: '',
 });
 
-const newShelf = useForm({ name: '' });
-
 const names = ref(Object.fromEntries(props.shelves.map((shelf) => [shelf.id, shelf.name])));
 
 const language = ref(props.locale);
@@ -55,13 +53,6 @@ function savePassword() {
     password.put('/settings/password', {
         preserveScroll: true,
         onSuccess: () => password.reset(),
-    });
-}
-
-function createShelf() {
-    newShelf.post('/shelves', {
-        preserveScroll: true,
-        onSuccess: () => newShelf.reset(),
     });
 }
 
@@ -198,31 +189,47 @@ async function applyLanguage() {
         <section>
             <h2 class="mb-3 text-2xl">{{ t('ui.shelves_heading') }}</h2>
 
-            <form class="mb-3 flex gap-2" @submit.prevent="createShelf">
-                <input v-model="newShelf.name" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.new_shelf_placeholder')">
-                <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="newShelf.processing">
-                    {{ t('ui.create') }}
-                </button>
-            </form>
-            <p v-if="newShelf.errors.name" class="mb-2 text-sm text-danger">{{ newShelf.errors.name }}</p>
-
             <ul class="space-y-2">
                 <li
                     v-for="(shelf, index) in props.shelves"
                     :key="shelf.id"
                     class="flex flex-wrap items-center gap-2 rounded-card border border-line bg-panel p-3"
+                    :class="{ 'opacity-60': shelf.is_fixed }"
                 >
-                    <input v-model="names[shelf.id]" class="min-w-0 flex-1 rounded-control border border-line bg-panel-raised px-2 py-1 text-moon" @keyup.enter="renameShelf(shelf)">
-                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised" @click="renameShelf(shelf)">
+                    <input
+                        v-model="names[shelf.id]"
+                        :disabled="shelf.is_fixed"
+                        class="min-w-0 flex-1 rounded-control border border-line bg-panel-raised px-2 py-1 text-moon"
+                        @keyup.enter="renameShelf(shelf)"
+                    />
+                    <button
+                        type="button"
+                        :disabled="shelf.is_fixed"
+                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        @click="renameShelf(shelf)"
+                    >
                         {{ t('ui.rename') }}
                     </button>
-                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40" :disabled="index === 0" @click="moveShelf(index, -1)">
+                    <button
+                        type="button"
+                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        :disabled="index === 0" @click="moveShelf(index, -1)"
+                    >
                         {{ t('ui.up') }}
                     </button>
-                    <button type="button" class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40" :disabled="index === props.shelves.length - 1" @click="moveShelf(index, 1)">
+                    <button
+                        type="button"
+                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        :disabled="index === props.shelves.length - 1" @click="moveShelf(index, 1)"
+                    >
                         {{ t('ui.down') }}
                     </button>
-                    <button type="button" class="rounded-control border border-danger px-2 py-1 text-sm text-danger hover:bg-danger/10" @click="destroyShelf(shelf)">
+                    <button
+                        type="button"
+                        :disabled="shelf.is_fixed"
+                        class="rounded-control border border-danger px-2 py-1 text-sm text-danger hover:bg-danger/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                        @click="destroyShelf(shelf)"
+                    >
                         {{ t('ui.delete') }}
                     </button>
                 </li>

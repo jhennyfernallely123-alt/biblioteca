@@ -15,7 +15,6 @@ class UpdateShelfRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:60'],
-            'view_mode' => ['sometimes', 'in:covers,spines'],
         ];
     }
 }

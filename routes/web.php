@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\CompleteNicknameController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookLookupController;
 use App\Http\Controllers\CoverController;
+use App\Http\Controllers\DecorationController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
@@ -35,8 +36,15 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::patch('/books/reorder', [BookController::class, 'reorder'])->name('books.reorder');
     Route::patch('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::patch('/books/{book}/move', [BookController::class, 'move'])->name('books.move');
+    Route::patch('/books/{book}/view-mode', [BookController::class, 'viewMode'])->name('books.view-mode');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
     Route::get('/covers/{book}', CoverController::class)->name('covers.show');
+
+    Route::get('/decorations', [DecorationController::class, 'index'])->name('decorations.index');
+    Route::post('/decorations', [DecorationController::class, 'store'])->name('decorations.store');
+    Route::patch('/decorations/{decoration}', [DecorationController::class, 'update'])->name('decorations.update');
+    Route::delete('/decorations', [DecorationController::class, 'clear'])->name('decorations.clear');
+    Route::delete('/decorations/{decoration}', [DecorationController::class, 'destroy'])->name('decorations.destroy');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');

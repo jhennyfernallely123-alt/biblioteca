@@ -11,7 +11,7 @@ class Book extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shelf_id', 'position', 'title', 'author', 'isbn', 'publisher',
+        'shelf_id', 'position', 'view_mode', 'title', 'author', 'isbn', 'publisher',
         'published_year', 'cover_path', 'rating', 'notes',
     ];
 

@@ -19,7 +19,6 @@ class ShelfController extends Controller
         $request->user()->shelves()->create([
             'name' => $request->validated('name'),
             'position' => $position,
-            'view_mode' => $request->user()->default_view_mode ?? 'covers',
         ]);
 
         return back();
@@ -72,7 +71,6 @@ class ShelfController extends Controller
                 $fallback = $request->user()->shelves()->create([
                     'name' => 'Pendientes',
                     'position' => 0,
-                    'view_mode' => 'covers',
                 ]);
             }
 

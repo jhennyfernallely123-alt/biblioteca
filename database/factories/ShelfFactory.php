@@ -17,7 +17,6 @@ class ShelfFactory extends Factory
             'user_id' => User::factory(),
             'name' => ucfirst(fake()->words(2, true)),
             'position' => 0,
-            'view_mode' => 'covers',
         ];
     }
 }

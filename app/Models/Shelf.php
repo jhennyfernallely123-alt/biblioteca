@@ -11,7 +11,7 @@ class Shelf extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'position', 'view_mode'];
+    protected $fillable = ['name', 'position', 'is_fixed'];
 
     public function user(): BelongsTo
     {
@@ -23,5 +23,12 @@ class Shelf extends Model
         return $this->hasMany(Book::class)
             ->orderBy('position')
             ->orderBy('title');
+    }
+
+    public function decorations(): HasMany
+    {
+        return $this->hasMany(Decoration::class)
+            ->orderBy('sort')
+            ->orderBy('id');
     }
 }

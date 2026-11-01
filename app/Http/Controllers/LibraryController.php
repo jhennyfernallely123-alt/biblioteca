@@ -13,7 +13,7 @@ class LibraryController extends Controller
     {
         $shelves = $request->user()
             ->shelves()
-            ->with('books')
+            ->with(['books', 'decorations'])
             ->get()
             ->each(function ($shelf) use ($translator) {
                 $shelf->setAttribute(

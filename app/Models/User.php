@@ -33,6 +33,11 @@ class User extends Authenticatable
         return $this->hasMany(Book::class);
     }
 
+    public function decorations(): HasMany
+    {
+        return $this->hasMany(Decoration::class);
+    }
+
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);

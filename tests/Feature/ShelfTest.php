@@ -37,7 +37,42 @@ it('renombra una estantería propia', function () {
     expect($shelf->fresh()->name)->toBe('Nueva');
 });
 
-it('reordena las estanterías del usuario', function () {
+    it('no permite renombrar una estantería fija', function () {
+        $fixed = Shelf::factory()->for($this->user)->create(['name' => 'Pendientes', 'is_fixed' => true]);
+
+        $this->patch(route('shelves.update', $fixed), ['name' => 'Cambiada'])
+            ->assertForbidden();
+
+        expect($fixed->fresh()->name)->toBe('Pendientes');
+    });
+
+    it('no permite eliminar una estantería fija', function () {
+        $fixed = Shelf::factory()->for($this->user)->create(['name' => 'En biblioteca', 'is_fixed' => true]);
+
+        $this->delete(route('shelves.destroy', $fixed))
+            ->assertForbidden();
+
+        expect($fixed->fresh()->exists)->toBeTrue();
+    });
+
+    it('permite renombrar una estantería normal propia', function () {
+        $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Vieja', 'is_fixed' => false]);
+
+        $this->patch(route('shelves.update', $shelf), ['name' => 'Nueva'])
+            ->assertRedirect();
+
+        expect($shelf->fresh()->name)->toBe('Nueva');
+    });
+
+    it('permite eliminar una estantería normal propia', function () {
+        $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Otra', 'is_fixed' => false]);
+
+        $this->delete(route('shelves.destroy', $shelf))->assertRedirect();
+
+        expect($shelf->fresh())->toBeNull();
+    });
+
+    it('reordena las estanterías del usuario', function () {
     $a = Shelf::factory()->for($this->user)->create(['name' => 'A', 'position' => 0]);
     $b = Shelf::factory()->for($this->user)->create(['name' => 'B', 'position' => 1]);
 
@@ -87,13 +122,4 @@ it('coloca los libros al final del respaldo al eliminar una estantería', functi
             $primero->id,
             $segundo->id,
         ]);
-});
-
-it('cambia el modo de vista de una estantería', function () {
-    $shelf = Shelf::factory()->for($this->user)->create(['view_mode' => 'covers']);
-
-    $this->patch(route('shelves.update', $shelf), ['name' => $shelf->name, 'view_mode' => 'spines'])
-        ->assertRedirect();
-
-    expect($shelf->fresh()->view_mode)->toBe('spines');
 });

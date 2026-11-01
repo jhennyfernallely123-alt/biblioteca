@@ -59,6 +59,7 @@ class BookController extends Controller
             : null;
 
         $data['position'] = $this->nextPosition((int) $data['shelf_id']);
+        $data['view_mode'] = $request->user()->default_view_mode ?? 'covers';
 
         $request->user()->books()->create($data);
 
@@ -133,7 +134,24 @@ class BookController extends Controller
             $this->resequenceShelf($targetShelfId);
         });
 
-        return back();
+        return back()->with('success', __('ui.book_moved', [
+            'shelf' => $request->user()->shelves()->findOrFail($targetShelfId)->name,
+        ]));
+    }
+
+    public function viewMode(Request $request, Book $book): RedirectResponse
+    {
+        $this->authorize('update', $book);
+
+        $data = $request->validate([
+            'view_mode' => ['required', 'in:covers,spines'],
+        ]);
+
+        $book->update(['view_mode' => $data['view_mode']]);
+
+        $message = $data['view_mode'] === 'spines' ? 'ui.view_mode_spine' : 'ui.view_mode_cover';
+
+        return back()->with('success', __($message, ['title' => $book->title]));
     }
 
     public function reorder(Request $request): RedirectResponse

@@ -59,3 +59,13 @@
     @apply outline-none ring-2 ring-magic ring-offset-2 ring-offset-night;
   }
 }
+
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}

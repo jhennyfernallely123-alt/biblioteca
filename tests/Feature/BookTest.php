@@ -128,7 +128,8 @@ it('coloca al final un libro movido a otra estantería', function () {
     $book = Book::factory()->for($this->user)->for($from)->create(['position' => 4]);
 
     $this->patch(route('books.move', $book), ['shelf_id' => $to->id])
-        ->assertRedirect();
+        ->assertRedirect()
+        ->assertSessionHas('success', __('ui.book_moved', ['shelf' => $to->name]));
 
     expect($book->fresh()->position)->toBe(1);
 });
@@ -194,4 +195,46 @@ it('rechaza IDs repetidos al reordenar', function () {
         'shelf_id' => $shelf->id,
         'ids' => [$book->id, $book->id],
     ])->assertSessionHasErrors('ids.1');
+});
+
+it('crea un libro con el modo de vista por defecto del perfil', function () {
+    $this->user->update(['default_view_mode' => 'spines']);
+    $shelf = Shelf::factory()->for($this->user)->create();
+
+    $this->post(route('books.store'), [
+        'title' => 'Lomo nuevo',
+        'shelf_id' => $shelf->id,
+    ])->assertRedirect();
+
+    expect($this->user->books()->where('title', 'Lomo nuevo')->first()->view_mode)->toBe('spines');
+});
+
+it('cambia el modo de vista de un libro propio', function () {
+    $book = Book::factory()->for($this->user)->create(['view_mode' => 'covers']);
+
+    $this->patch(route('books.view-mode', $book), ['view_mode' => 'spines'])
+        ->assertRedirect()
+        ->assertSessionHas('success', __('ui.view_mode_spine', ['title' => $book->title]));
+
+    expect($book->fresh()->view_mode)->toBe('spines');
+
+    $this->patch(route('books.view-mode', $book), ['view_mode' => 'covers'])
+        ->assertRedirect()
+        ->assertSessionHas('success', __('ui.view_mode_cover', ['title' => $book->title]));
+
+    expect($book->fresh()->view_mode)->toBe('covers');
+});
+
+it('no permite cambiar el modo de vista de un libro ajeno', function () {
+    $book = Book::factory()->for(User::factory())->create();
+
+    $this->patch(route('books.view-mode', $book), ['view_mode' => 'spines'])
+        ->assertForbidden();
+});
+
+it('rechaza un modo de vista inválido', function () {
+    $book = Book::factory()->for($this->user)->create();
+
+    $this->patch(route('books.view-mode', $book), ['view_mode' => 'diagonal'])
+        ->assertSessionHasErrors('view_mode');
 });

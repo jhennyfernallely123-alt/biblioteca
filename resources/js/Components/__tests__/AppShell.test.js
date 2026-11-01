@@ -47,6 +47,20 @@ describe('AppShell', () => {
         expect(wrapper.text()).toContain('Libro actualizado.');
     });
 
+    it('enlaza el módulo de decoraciones entre la biblioteca y los ajustes', async () => {
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+        await wrapper.get('[data-welcome-enter]').trigger('click');
+
+        const nav = wrapper.get('nav');
+        const links = nav.findAll('a');
+
+        expect(links.map((link) => link.attributes('href'))).toEqual(['/', '/decorations', '/settings']);
+        expect(nav.text()).toContain('Decoraciones');
+    });
+
     it('muestra la intro en la primera carga y la cierra con Entrar', async () => {
         const wrapper = mount(AppShell, {
             slots: { default: '<p>Contenido</p>' },

@@ -8,10 +8,11 @@ class DefaultShelvesService
 {
     public function createFor(User $user): void
     {
-        foreach (['Pendientes', 'Leyendo', 'Leídos'] as $position => $name) {
+        foreach (['En biblioteca', 'Pendientes', 'Leyendo', 'Leídos'] as $position => $name) {
             $user->shelves()->create([
                 'name' => $name,
                 'position' => $position,
+                'is_fixed' => true,
             ]);
         }
     }

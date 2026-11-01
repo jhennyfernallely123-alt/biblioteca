@@ -298,6 +298,18 @@ body.book-dragging .book-drag-source {
   cursor: grabbing;
 }
 
+.decoration-drag-source {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  transition: opacity 140ms ease-out;
+}
+
+body.book-dragging .decoration-drag-source {
+  cursor: grabbing;
+}
+
+
 .shelf-drag-active {
   outline: 1px dashed color-mix(in srgb, var(--color-magic) 28%, transparent);
   outline-offset: 8px;

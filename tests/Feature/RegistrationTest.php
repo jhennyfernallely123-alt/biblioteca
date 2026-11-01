@@ -17,7 +17,8 @@ it('crea las estanterías iniciales al registrarse', function () {
 
     expect($user->nickname)->toBe('Anita')
         ->and($user->shelves()->pluck('name')->all())
-        ->toBe(['Pendientes', 'Leyendo', 'Leídos']);
+        ->toBe(['En biblioteca', 'Pendientes', 'Leyendo', 'Leídos'])
+        ->and($user->shelves()->where('is_fixed', false)->count())->toBe(0);
 });
 
 it('muestra los errores de registro en español', function () {

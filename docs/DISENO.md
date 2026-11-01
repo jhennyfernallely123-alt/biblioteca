@@ -1,6 +1,6 @@
 # DISEÑO — Biblioteca
 
-**Última actualización:** 2026-10-28
+**Última actualización:** 2026-10-31
 **Estado:** vigente
 **Alcance:** identidad visual, componentes, estructura de interfaz y convenciones de diseño de la aplicación Biblioteca.
 
@@ -148,7 +148,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Navegación
 
 - **Escritorio:** barra lateral fija de 240 px, fondo `night-raised` con borde final `line`, texto `mist`. Logo en Cormorant `gold`. Enlaces con icono y etiqueta. El botón **Cerrar sesión** va en la parte superior, bajo el logo; no se muestra el nombre real en la barra lateral.
-- **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, dos acciones: Biblioteca y Configuraciones. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
+- **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, tres acciones: Biblioteca, Decoraciones y Configuraciones. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
 - Enlace activo: fondo `panel`, borde inicial `magic` y texto `moon` (escritorio); texto `gold` y subrayado `magic` (móvil).
 
 ### Botones
@@ -183,23 +183,33 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - El color del texto se elige automáticamente entre `crema` y `tinta` según el brillo del fondo.
 - Al pasar el cursor: halo `dorado` alrededor del lomo, sin desplazamiento, y tooltip con título y autor.
 
+### Objeto decorativo (`DecorationArt` + `ShelfDecoration`)
+
+- Quince dibujos SVG planos en un lienzo de 64 × 80: taza, rosas, planta, vela, reloj de arena, bola de cristal, lámpara, gato, calavera, jaula, astrolabio, set de té, caja de música, pluma y tintero, marco de fotos.
+- La pieza principal usa el color elegido entre seis tokens existentes: `orquidea` (rosa), `crema`, `salvia` (verde), `bosque`, `gold` (dorado) y `terracota`. Los neutros salen de `madera`, `tinta` y `pergamino`; no se añaden colores nuevos.
+- En la balda ocupa ~56 px de ancho (64 px desde `sm`) y se apoya en el fondo como los libros, con halo `dorado` al pasar el cursor y sombra suave.
+- Al pasar el ratón aparece una **×** circular arriba a la derecha (solo escritorio) para quitarlo; en móvil se quita desde Ajustes.
+- `title` y `aria-label` con el nombre traducido del objeto.
+
 ### Estantería (`Shelf` + `ShelfBoard`)
 
-- Contenedor con título `h2`, contador de libros y control de modo (portadas/lomos).
+- Contenedor con título `h2` y contador de libros. Cada libro decide por sí mismo si se ve como portada o como lomo; no hay control de modo por estantería.
 - **Espaldar:** panel de madera oscura detrás de los libros, con veta vertical sutil y sombras interiores arriba y a los lados que simulan profundidad. Junto con la balda forma un perfil en L.
-- **Modo portadas:** rejilla con `auto-fill`, mínimo 88 px por portada, separación 12–20 px; máximo 7 columnas en escritorio. Los libros se alinean al fondo de la balda. En móvil se dibujan en fila horizontal con scroll (`overflow-x-auto`), con un ancho mínimo de ~100 px por portada para que quepan tres visibles y se deslice al resto. En móvil la lista de libros de cada estantería se dibuja en fila horizontal con scroll (`overflow-x-auto`) para ver todos los libros sin salir de la pantalla.
-- **Modo lomos:** fila horizontal con scroll si hace falta; libros apoyados en la balda.
+- **Balda mixta:** todos los libros de la estantería se dibujan en una sola fila respetando su orden, con portadas y lomos intercalados y alineados por la base. Las portadas ocupan ~100 px en móvil y ~110 px en escritorio; los lomos conservan su ancho calculado. En móvil la fila se desliza en horizontal (`overflow-x-auto`); en escritorio hace saltos de línea (`flex-wrap`). Máximo orientativo de 7 columnas de portada en escritorio.
+- **Cambio rápido (escritorio):** al pasar el ratón por un libro aparece en su esquina superior derecha un botón circular con icono (portada o lomo) que alterna ese libro al instante. En móvil no se muestra; el cambio se hace desde la ficha del libro.
+- **Objetos intercalados:** los objetos decorativos comparten la fila con los libros y se ordenan por su ancla: sin ancla van antes del primer libro; con ancla, justo después de ese libro; si el libro ancla no está en la balda, van al final.
 - **Balda:** volumen de 20–24 px con dos caras: superficie superior en perspectiva (`rotateX` suave, de `madera-clara` a `madera`) y frente más oscuro con bisel claro arriba, veta horizontal sutil, sombra interior en los extremos y abajo, y sombra proyectada. La cara superior lleva una sombra interior que simula el contacto de los libros. Debe parecer que sostiene los libros.
 - Estado vacío: `EmptyShelf` con borde discontinuo `madera` al 35 %, frase breve en `crema` y enlace para añadir.
 
 ### Arrastrar libros entre estanterías
 
-- Origen: cualquier `BookCard` o `BookSpine`. En escritorio se arrastra con el botón principal y el gesto se activa tras 6 px. En móvil se mantiene pulsado 320 ms y después se arrastra; si hay un desplazamiento mayor de 8 px antes de ese tiempo, el gesto se cancela y la página puede hacer scroll.
-- Al activarse, el libro de origen se atenúa al 30 %, el cursor pasa a `grabbing` y aparece una miniatura flotante sobre el puntero: la portada (76 px de ancho) o el lomo (28 × 148 px) según el modo de la estantería de origen. La miniatura no intercepta eventos y lleva un resplandor `magic` suave.
+- Origen: cualquier `BookCard`, `BookSpine` o `ShelfDecoration`. En escritorio se arrastra con el botón principal y el gesto se activa tras 6 px. En móvil se mantiene pulsado 320 ms y después se arrastra; si hay un desplazamiento mayor de 8 px antes de ese tiempo, el gesto se cancela y la página puede hacer scroll.
+- Al activarse, el libro de origen se atenúa al 30 %, el cursor pasa a `grabbing` y aparece una miniatura flotante sobre el puntero: la portada (76 px de ancho) o el lomo (28 × 148 px) según cómo se muestre ese libro. La miniatura no intercepta eventos y lleva un resplandor `magic` suave.
 - Todas las estanterías se delinean con un trazo discontinuo `magic` al 28 %. La estantería bajo el puntero usa un trazo continuo de 2 px `magic`, un resplandor exterior `magic` al 24 % y la etiqueta **Suelta aquí** en `magic` con texto `night`.
 - Cerca de los bordes superior o inferior de la ventana, la página se desplaza automáticamente hasta 18 px por fotograma mientras se mantiene el arrastre.
 - Soltar fuera de una estantería, en el mismo hueco o pulsar Escape cancela el movimiento sin hacer peticiones ni abrir la ficha.
 - Al soltar en otra estantería, el cambio se aplica de forma optimista y se anuncia con un aviso `role="status"`; si la petición falla, el libro vuelve a su posición y se muestra el aviso en `danger`.
+- Los objetos decorativos usan el mismo gesto: se pueden soltar entre dos libros, antes del primero, al final o en otra estantería. La miniatura flotante muestra el propio objeto.
 
 ### Reordenar libros dentro de una estantería
 
@@ -271,6 +281,16 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Modal con pestañas **Buscar** y **Manual**.
 - En **Buscar**: escáner, ISBN, búsqueda por título/autor y resultados.
 - Pie fijo con selector de estantería y botón **Guardar**.
+
+### Decoraciones (`Decorations/Index`)
+
+- Módulo propio, con entrada **Decoraciones** en la barra lateral y en la barra inferior móvil, entre Biblioteca y Configuraciones.
+- Título “Decoraciones” y una línea de ayuda. Después, una barra de filtros en la parte superior con seis botones circulares de 48 px: **Todos**, **Mesa y té**, **Flores y plantas**, **Luz y velas**, **Curiosidades** y **Mascotas y recuerdos**. Cada círculo contiene únicamente un icono de línea de 24 px trazado con `currentColor` (retícula, taza, flor, vela, destello y corazón), sin texto visible; el nombre de la categoría se expone con `aria-label` y `title`. En móvil la barra se desliza en horizontal sin barra de desplazamiento visible (utilidad `scrollbar-hidden`, que oculta el scroll nativo pero mantiene el gesto) y en escritorio pasa a varias líneas.
+- El botón activo usa borde `magic`, fondo `panel` y texto `gold`, con `aria-pressed`. Al elegir una categoría la cuadrícula muestra solo sus objetos; **Todos** muestra los quince en una sola cuadrícula, sin encabezados de sección. Hasta 3 columnas en escritorio, 2 en tablet y 1 en móvil.
+- **Mesa y té:** taza, set de té y caja de música. **Flores y plantas:** rosas y planta. **Luz y velas:** vela y lámpara. **Curiosidades:** reloj de arena, bola de cristal, calavera, jaula, astrolabio, pluma y tintero. **Mascotas y recuerdos:** gato y marco de fotos.
+- Cada tarjeta repite el patrón del catálogo: dibujo y botón. El nombre del objeto va dentro del recuadro, en el borde izquierdo y en vertical (mismo `writing-mode: vertical-rl` que los lomos), centrado, en Cormorant `gold` y con una pastilla `night` al 60 % detrás. El recuadro mide 128 px de alto y reserva 40 px a la izquierda para el nombre, así la etiqueta acompaña al dibujo tanto en los objetos altos como en los bajos. Dentro del recuadro, en su esquina superior derecha, hay un círculo de 24 px con el color actual; al pulsarlo se despliega un pequeño panel flotante de 3×2 con los seis colores, y al elegir uno el dibujo cambia y el panel se cierra. El color elegido se mantiene al cambiar de categoría.
+- Si ese objeto ya está colocado, el botón **Añadir** pasa a **Quitar** (borde y texto `danger`) y elimina la última copia añadida de ese tipo. No hay listado de objetos colocados ni botón **Quitar todas**.
+- La sección deja de mostrarse en Configuraciones, que vuelve a quedar en Perfil, Contraseña, Idioma y Estanterías.
 
 ### Configuraciones
 
@@ -398,3 +418,24 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-10-29 | El morado `orquidea` se limita a un cuadro redondeado de hasta 528 px que enmarca el título y el libro, con filo dorado, sombra y estrellas en movimiento dentro; la columna recupera el cielo arcano oscuro con sus estrellas. El botón **Entrar** del acceso usa la nueva variante `orquidea` (fondo `orquidea`, texto `night`). | Agente |
 | 2026-10-29 | En móvil, las estanterías se mantienen apiladas en vertical, pero los libros de cada una (modo portadas y lomos) se disponen en fila horizontal con scroll para ver todos los libros de la estantería sin salir de la pantalla; se fija un ancho mínimo de ~100 px por portada para que quepan unos tres libros visibles y se deslice al resto. En escritorio se mantienen en rejilla de `auto-fill`. | Agente |
 | 2026-10-29 | En la ficha de editar libro, la portada en móvil se limita a ~200 px de ancho y se centra, y el título usa `text-2xl` (crece a `text-3xl` en escritorio), evitando scroll horizontal en pantallas pequeñas. | Agente |
+| 2026-10-29 | En la ficha de editar libro, todos los inputs, textarea y selects usan `max-w-full` y el contenedor del formulario usa `min-w-0` y `max-w-full`, para que en celular no se desborde horizontalmente y no sea necesario hacer scroll lateral. | Agente |
+| 2026-10-29 | En la ficha de editar libro, el input de portada nativo se oculta y se usa un botón personalizado que dice "Cambiar portada", eliminando el texto "Ningún archivo seleccionado" del navegador. | Agente |
+| 2026-10-29 | Las estanterías se pueden marcar como fijas mediante la columna `is_fixed`. Las iniciales (Pendientes, Leyendo, Leídos) y la nueva "En biblioteca" se crean fijas; no se pueden renombrar ni eliminar. Las estanterías creadas por el usuario son editables y eliminables normalmente. | Agente |
+| 2026-10-30 | La estantería "En biblioteca" pasa a la primera posición de la biblioteca y de Ajustes, por delante de "Lista de deseos". Se reordena la posición de las estanterías existentes y el alta de nuevas usuarias crea "En biblioteca" como primera estantería fija. | Agente |
+| 2026-10-30 | Al mover un libro desde su ficha (sección "Mover a otra estantería"), se muestra el aviso "El libro se movió a «estantería»" en el toast de éxito, con el nombre de la estantería de destino. | Agente |
+| 2026-10-30 | Lomo o portada por libro: cada libro guarda su propio `view_mode` y se muestra como portada o como lomo de forma independiente. Desaparece el botón de modo de la estantería. La balda mezcla portadas y lomos en una sola fila respetando el orden, alineados por la base (scroll horizontal en móvil, varias filas en escritorio). En escritorio aparece un botón circular al pasar el ratón para alternar el libro; en móvil se cambia desde la ficha del libro con el selector "Mostrar como". | Agente |
+| 2026-10-30 | Al alternar entre portada y lomo (botón rápido o selector "Mostrar como") se muestra el aviso "«título» ahora se muestra como portada/lomo" en el toast de éxito, para confirmar el cambio. | Agente |
+| 2026-10-30 | Objetos decorativos: quince dibujos (taza, rosas, planta, vela, reloj de arena, bola de cristal, lámpara, gato, calavera, jaula, astrolabio, set de té, caja de música, pluma y tintero, marco de fotos) con seis colores de la paleta existente. Se añaden desde Ajustes de uno en uno, al final de la primera estantería, se intercalan con los libros, se arrastran dentro y entre estanterías, y se quitan con la × del objeto o desde la lista de Ajustes. | Agente |
+| 2026-10-31 | El catálogo de objetos decorativos pasa a un módulo propio **Decoraciones**, con entrada entre Biblioteca y Configuraciones en la barra lateral y en la barra inferior móvil. La página agrupa los quince objetos en cinco categorías (Mesa y té, Flores y plantas, Luz y velas, Curiosidades, Mascotas y recuerdos) para verlos todos sin bajar por Configuraciones, y conserva **Tus objetos** y **Quitar todas**. La sección desaparece de Configuraciones. | Agente |
+| 2026-10-31 | Las categorías de Decoraciones dejan de ser secciones apiladas y pasan a una barra de filtros superior con seis círculos (Todos + cinco categorías), cada uno con un dibujo representativo y su etiqueta. Al tocar uno, la cuadrícula muestra solo esa categoría; **Todos** muestra los quince objetos juntos. Evita desplazarse para encontrar una categoría y funciona con `aria-pressed`. | Agente |
+| 2026-10-31 | Los círculos de categoría dejan de mostrar el dibujo completo del objeto y pasan a un icono de línea simple que representa el grupo (retícula, taza, flor, vela, destello y corazón), con el mismo trazo fino de los SVG decorativos. | Agente |
+| 2026-10-31 | La barra de filtros de Decoraciones queda solo con los iconos: se quitan las etiquetas bajo cada círculo, que pasa a 48 px. El nombre de la categoría se conserva para lectores de pantalla con `aria-label` y como `title` al pasar el cursor. | Agente |
+| 2026-10-31 | Se oculta la barra de desplazamiento nativa de los filtros de Decoraciones con la utilidad `scrollbar-hidden`; el deslizamiento horizontal sigue funcionando pero sin la franja gris. | Agente |
+| 2026-10-31 | Las seis muestras de color de cada tarjeta de Decoraciones se guardan en un panel flotante: en la esquina del dibujo queda solo un círculo de 24 px con el color actual que, al pulsarlo, despliega los colores en una cuadrícula 3×2. Elegir un color actualiza el dibujo y cierra el panel. | Agente |
+| 2026-10-31 | El círculo de color se mueve dentro del recuadro del dibujo, separado 4 px de sus bordes, para que no parezca un elemento suelto de la tarjeta; el panel de colores se alinea con él. | Agente |
+| 2026-10-31 | Desaparece el listado **Tus objetos** y el botón **Quitar todas** de Decoraciones. Cuando un objeto ya está colocado, su tarjeta cambia el botón **Añadir** por **Quitar** (borde y texto `danger`) y elimina la última copia de ese tipo al pulsarlo. | Agente |
+| 2026-10-31 | El nombre de cada objeto de Decoraciones pasa del pie de la tarjeta al centro del recuadro del dibujo, superpuesto sobre la ilustración con una pastilla `night` al 60 % para mantener la legibilidad. | Agente |
+| 2026-10-31 | El nombre se sube a la parte superior del recuadro (dejando libre el espacio del círculo de color) para no tapar la parte baja de la ilustración. | Agente |
+| 2026-10-31 | El nombre pierde la pastilla de fondo y pasa a una franja propia en la parte alta del recuadro. El recuadro crece a 128 px (40 px para el nombre + 80 px para el dibujo) para que los objetos más altos se vean completos. | Agente |
+| 2026-10-31 | El nombre baja a una franja inferior dentro del recuadro para quedar siempre junto a la base del dibujo; en los objetos bajos ya no aparece separado por un hueco grande. El dibujo gana 8 px de altura (88 px). | Agente |
+| 2026-10-31 | El nombre pasa al borde izquierdo del recuadro en vertical, como los lomos, con pastilla `night` al 60 % detrás; el recuadro reserva 40 px a la izquierda para la etiqueta. | Agente |

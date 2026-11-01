@@ -5,6 +5,8 @@ import BookCard from './BookCard.vue';
 import BookSpine from './BookSpine.vue';
 import EmptyShelf from './EmptyShelf.vue';
 import ShelfBoard from './ShelfBoard.vue';
+import ShelfDecoration from './ShelfDecoration.vue';
+import { mergeShelfItems } from '@/shelfItems';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
@@ -12,16 +14,32 @@ const props = defineProps({
     dragActive: { type: Boolean, default: false },
     dropTargetId: { type: Number, default: null },
     draggingBookId: { type: Number, default: null },
+    draggingDecorationId: { type: Number, default: null },
     insertion: { type: Object, default: null },
 });
 const { t } = useI18n();
 
 const isDropTarget = computed(() => props.dropTargetId === props.shelf.id);
 
+const items = computed(() =>
+    mergeShelfItems(props.shelf.books ?? [], props.shelf.decorations ?? [])
+);
+
 function dropPositionFor(book) {
     if (
         props.insertion?.shelfId !== props.shelf.id ||
         props.insertion?.bookId !== book.id
+    ) {
+        return null;
+    }
+
+    return props.insertion.position;
+}
+
+function dropPositionForDecoration(decoration) {
+    if (
+        props.insertion?.shelfId !== props.shelf.id ||
+        props.insertion?.decorationId !== decoration.id
     ) {
         return null;
     }
@@ -35,14 +53,13 @@ const countLabel = computed(() =>
         : t('ui.books_count', { count: props.shelf.books.length })
 );
 
-function toggleView() {
+function toggleBook(book) {
     router.patch(
-        `/shelves/${props.shelf.id}`,
+        `/books/${book.id}/view-mode`,
         {
-            name: props.shelf.name,
-            view_mode: props.shelf.view_mode === 'covers' ? 'spines' : 'covers',
+            view_mode: book.view_mode === 'spines' ? 'covers' : 'spines',
         },
-        { preserveScroll: true }
+        { preserveScroll: true, preserveState: true }
     );
 }
 </script>
@@ -65,41 +82,72 @@ function toggleView() {
                     {{ t('ui.drop_here') }}
                 </span>
                 <span class="text-sm text-mist">{{ countLabel }}</span>
-                <button
-                    type="button"
-                    class="rounded-control border border-line px-2 py-1 text-xs text-moon/80 hover:bg-panel-raised"
-                    @click="toggleView"
-                >
-                    {{ shelf.view_mode === 'covers' ? t('ui.show_spines') : t('ui.show_covers') }}
-                </button>
             </div>
         </div>
 
         <div class="shelf-case">
             <div class="shelf-case__books">
-                <EmptyShelf v-if="shelf.books.length === 0" />
+                <EmptyShelf v-if="items.length === 0" />
 
                 <div
-                    v-else-if="shelf.view_mode === 'covers'"
-                    class="flex flex-row items-end gap-4 overflow-x-auto pb-1 [&>a]:min-w-[100px] sm:grid sm:grid-cols-[repeat(auto-fill,minmax(88px,1fr))] sm:overflow-visible sm:pb-0"
+                    v-else
+                    class="flex flex-row items-end gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
                 >
-                    <BookCard
-                        v-for="book in shelf.books"
-                        :key="book.id"
-                        :book="book"
-                        :dragging="draggingBookId === book.id"
-                        :drop-position="dropPositionFor(book)"
-                    />
-                </div>
+                    <template v-for="item in items" :key="item.key">
+                        <div
+                            v-if="item.type === 'book'"
+                            class="group relative shrink-0"
+                            :class="item.book.view_mode === 'spines' ? '' : 'w-[100px] sm:w-[110px]'"
+                        >
+                            <BookSpine
+                                v-if="item.book.view_mode === 'spines'"
+                                :book="item.book"
+                                :dragging="draggingBookId === item.book.id"
+                                :drop-position="dropPositionFor(item.book)"
+                            />
+                            <BookCard
+                                v-else
+                                :book="item.book"
+                                :dragging="draggingBookId === item.book.id"
+                                :drop-position="dropPositionFor(item.book)"
+                            />
 
-                <div v-else class="flex items-end gap-2 overflow-x-auto pb-1">
-                    <BookSpine
-                        v-for="book in shelf.books"
-                        :key="book.id"
-                        :book="book"
-                        :dragging="draggingBookId === book.id"
-                        :drop-position="dropPositionFor(book)"
-                    />
+                            <button
+                                type="button"
+                                class="absolute -right-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised text-moon opacity-0 shadow-card transition-opacity focus-visible:opacity-100 group-hover:opacity-100 sm:flex"
+                                :aria-label="t('ui.switch_view')"
+                                :title="t('ui.switch_view')"
+                                @click.prevent="toggleBook(item.book)"
+                            >
+                                <svg
+                                    v-if="item.book.view_mode === 'spines'"
+                                    class="h-4 w-4"
+                                    viewBox="0 0 14 14"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <rect x="3.5" y="1.5" width="7" height="11" rx="1.4" stroke="currentColor" stroke-width="1.3" />
+                                    <path d="M5.75 2v10" stroke="currentColor" stroke-width="1.3" />
+                                </svg>
+                                <svg
+                                    v-else
+                                    class="h-4 w-4"
+                                    viewBox="0 0 14 14"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M4 2.5v9M7 2.5v9M10 2.5v9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <ShelfDecoration
+                            v-else
+                            :decoration="item.decoration"
+                            :dragging="draggingDecorationId === item.decoration.id"
+                            :drop-position="dropPositionForDecoration(item.decoration)"
+                        />
+                    </template>
                 </div>
             </div>
 

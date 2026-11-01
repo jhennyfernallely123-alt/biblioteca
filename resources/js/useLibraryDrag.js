@@ -1,4 +1,5 @@
 import { onBeforeUnmount, ref } from 'vue';
+import { resolveDecorationAnchor } from '@/shelfItems';
 
 const LONG_PRESS_MS = 320;
 const TOUCH_TOLERANCE = 8;
@@ -8,7 +9,7 @@ const MAX_SCROLL = 18;
 const CLICK_SUPPRESSION_MS = 450;
 
 export function useLibraryDrag(getShelves, onDrop) {
-    const draggedBook = ref(null);
+    const draggedItem = ref(null);
     const dragMode = ref('covers');
     const pointer = ref({ x: 0, y: 0 });
     const isDragging = ref(false);
@@ -22,16 +23,36 @@ export function useLibraryDrag(getShelves, onDrop) {
     let scrollFrame = null;
     let suppressTimer = null;
 
-    function locateBook(id) {
+    function locateItem(type, id) {
         for (const shelf of getShelves()) {
-            const book = shelf.books.find((item) => item.id === id);
+            if (type === 'book') {
+                const book = (shelf.books ?? []).find((item) => item.id === id);
 
-            if (book) {
-                return { book, shelf };
+                if (book) {
+                    return { type: 'book', item: book, shelf };
+                }
+            } else {
+                const decoration = (shelf.decorations ?? []).find((item) => item.id === id);
+
+                if (decoration) {
+                    return { type: 'decoration', item: decoration, shelf };
+                }
             }
         }
 
         return null;
+    }
+
+    function dragElementFrom(event) {
+        return event.target.closest?.('[data-book-id], [data-decoration-id]');
+    }
+
+    function identifyDragElement(element) {
+        if (element.dataset.bookId) {
+            return { type: 'book', id: Number(element.dataset.bookId) };
+        }
+
+        return { type: 'decoration', id: Number(element.dataset.decorationId) };
     }
 
     function shelfIdAt(x, y) {
@@ -45,18 +66,20 @@ export function useLibraryDrag(getShelves, onDrop) {
             return;
         }
 
-        const element = event.target.closest?.('[data-book-id]');
+        const element = dragElementFrom(event);
         if (!element) {
             return;
         }
 
-        const found = locateBook(Number(element.dataset.bookId));
+        const { type, id } = identifyDragElement(element);
+        const found = locateItem(type, id);
         if (!found) {
             return;
         }
 
         candidate = {
-            book: found.book,
+            type,
+            item: found.item,
             shelf: found.shelf,
             startX: event.clientX,
             startY: event.clientY,
@@ -114,12 +137,13 @@ export function useLibraryDrag(getShelves, onDrop) {
             return;
         }
 
-        const element = event.target.closest?.('[data-book-id]');
+        const element = dragElementFrom(event);
         if (!element) {
             return;
         }
 
-        const found = locateBook(Number(element.dataset.bookId));
+        const { type, id } = identifyDragElement(element);
+        const found = locateItem(type, id);
         if (!found) {
             return;
         }
@@ -127,7 +151,8 @@ export function useLibraryDrag(getShelves, onDrop) {
         const touch = event.touches[0];
         lastPoint = { x: touch.clientX, y: touch.clientY };
         candidate = {
-            book: found.book,
+            type,
+            item: found.item,
             shelf: found.shelf,
             startX: touch.clientX,
             startY: touch.clientY,
@@ -196,8 +221,10 @@ export function useLibraryDrag(getShelves, onDrop) {
 
         candidate.activated = true;
         sourceShelf = candidate.shelf;
-        draggedBook.value = candidate.book;
-        dragMode.value = candidate.shelf.view_mode === 'spines' ? 'spines' : 'covers';
+        draggedItem.value = { type: candidate.type, item: candidate.item };
+        dragMode.value = candidate.type === 'book' && candidate.item.view_mode === 'spines'
+            ? 'spines'
+            : 'covers';
         isDragging.value = true;
         suppressClick.value = true;
         window.clearTimeout(suppressTimer);
@@ -225,6 +252,26 @@ export function useLibraryDrag(getShelves, onDrop) {
             return;
         }
 
+        if (draggedItem.value?.type === 'decoration') {
+            dropTargetId.value = target === sourceShelf.id ? null : target;
+
+            const shelf = getShelves().find((item) => item.id === target);
+            const element = document.elementFromPoint(x, y)?.closest?.('[data-book-id], [data-decoration-id]');
+            let hit = null;
+
+            if (element) {
+                const identified = identifyDragElement(element);
+
+                if (!(identified.type === 'decoration' && identified.id === draggedItem.value.item.id)) {
+                    hit = identified;
+                }
+            }
+
+            insertion.value = decorationInsertion(target, shelf, hit, x, y);
+
+            return;
+        }
+
         if (target !== sourceShelf.id) {
             dropTargetId.value = target;
             insertion.value = null;
@@ -248,7 +295,7 @@ export function useLibraryDrag(getShelves, onDrop) {
 
         const targetBookId = Number(element.dataset.bookId);
 
-        if (targetBookId === draggedBook.value?.id) {
+        if (targetBookId === draggedItem.value?.item.id) {
             insertion.value = null;
 
             return;
@@ -260,6 +307,41 @@ export function useLibraryDrag(getShelves, onDrop) {
             shelfId: target,
             bookId: targetBookId,
             position: x >= rect.left + rect.width / 2 ? 'after' : 'before',
+        };
+    }
+
+    function decorationInsertion(shelfId, shelf, hit, x, y) {
+        if (!shelf) {
+            return null;
+        }
+
+        let place = 'after';
+
+        if (hit) {
+            const selector = hit.type === 'book'
+                ? `[data-book-id="${hit.id}"]`
+                : `[data-decoration-id="${hit.id}"]`;
+            const rect = document.querySelector(selector)?.getBoundingClientRect();
+
+            if (rect) {
+                place = x >= rect.left + rect.width / 2 ? 'after' : 'before';
+            }
+        }
+
+        const anchor = resolveDecorationAnchor(
+            shelf.books ?? [],
+            shelf.decorations ?? [],
+            hit,
+            place,
+            draggedItem.value?.item.id ?? null
+        );
+
+        return {
+            shelfId,
+            bookId: hit?.type === 'book' ? hit.id : null,
+            decorationId: hit?.type === 'decoration' ? hit.id : null,
+            position: place,
+            anchor,
         };
     }
 
@@ -287,23 +369,29 @@ export function useLibraryDrag(getShelves, onDrop) {
 
     function finishDrag(x, y) {
         const targetId = shelfIdAt(x, y);
-        const book = draggedBook.value;
+        const current = draggedItem.value;
         const currentInsertion = insertion.value;
-        const shouldMove = Boolean(targetId && sourceShelf && targetId !== sourceShelf.id);
-        const shouldReorder = Boolean(
-            targetId && sourceShelf && targetId === sourceShelf.id && currentInsertion
-        );
+        const fromShelfId = sourceShelf?.id ?? null;
 
         cleanup();
 
-        if (!book) {
+        if (!current || !targetId) {
             return;
         }
 
+        if (current.type === 'decoration') {
+            onDrop(current, targetId, currentInsertion?.anchor ?? null);
+
+            return;
+        }
+
+        const shouldMove = Boolean(fromShelfId && targetId !== fromShelfId);
+        const shouldReorder = Boolean(fromShelfId && targetId === fromShelfId && currentInsertion);
+
         if (shouldMove) {
-            onDrop(book, targetId);
+            onDrop(current, targetId);
         } else if (shouldReorder) {
-            onDrop(book, targetId, currentInsertion);
+            onDrop(current, targetId, currentInsertion);
         }
     }
 
@@ -328,7 +416,7 @@ export function useLibraryDrag(getShelves, onDrop) {
 
         candidate = null;
         sourceShelf = null;
-        draggedBook.value = null;
+        draggedItem.value = null;
         isDragging.value = false;
         dropTargetId.value = null;
         insertion.value = null;
@@ -365,7 +453,7 @@ export function useLibraryDrag(getShelves, onDrop) {
     });
 
     return {
-        draggedBook,
+        draggedItem,
         dragMode,
         pointer,
         isDragging,

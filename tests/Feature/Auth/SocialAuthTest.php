@@ -47,7 +47,7 @@ class SocialAuthTest extends TestCase
             'provider' => 'google',
             'provider_id' => 'google-123',
         ]);
-        $this->assertDatabaseCount('shelves', 3);
+        $this->assertDatabaseCount('shelves', 4);
     }
 
     public function test_existing_email_is_linked_without_duplicating_the_account(): void

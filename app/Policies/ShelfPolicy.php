@@ -9,11 +9,11 @@ class ShelfPolicy
 {
     public function update(User $user, Shelf $shelf): bool
     {
-        return $user->id === $shelf->user_id;
+        return $user->id === $shelf->user_id && ! $shelf->is_fixed;
     }
 
     public function delete(User $user, Shelf $shelf): bool
     {
-        return $user->id === $shelf->user_id;
+        return $user->id === $shelf->user_id && ! $shelf->is_fixed;
     }
 }
