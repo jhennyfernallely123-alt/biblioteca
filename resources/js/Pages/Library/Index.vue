@@ -1,36 +1,48 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import BookcaseBand from '@/Components/BookcaseBand.vue';
 import BookDragGhost from '@/Components/BookDragGhost.vue';
 import DecorationDragGhost from '@/Components/DecorationDragGhost.vue';
-import Shelf from '@/Components/Shelf.vue';
+import EmptyShelf from '@/Components/EmptyShelf.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useI18n } from '@/i18n';
-import { moveBookWithin, sameBookOrder } from '@/libraryOrder';
+import { BOOKS_PER_BAND, buildBands, insertBookInBand } from '@/bookcaseBands';
 import { useLibraryDrag } from '@/useLibraryDrag';
+import { currentSeason } from '@/seasons';
 
-const props = defineProps({ shelves: { type: Array, required: true } });
+const props = defineProps({
+    books: { type: Array, default: () => [] },
+    decorations: { type: Array, default: () => [] },
+});
 
 const { t } = useI18n();
+const season = currentSeason();
 
-function cloneShelves(shelves) {
-    return shelves.map((shelf) => ({
-        ...shelf,
-        books: (shelf.books ?? []).map((book) => ({ ...book })),
-        decorations: (shelf.decorations ?? []).map((decoration) => ({ ...decoration })),
-    }));
-}
-
-const localShelves = ref(cloneShelves(props.shelves));
+const localBooks = ref(props.books.map((book) => ({ ...book })));
+const localDecorations = ref(props.decorations.map((decoration) => ({ ...decoration })));
 const notice = ref(null);
 let noticeTimer = null;
 
 watch(
-    () => props.shelves,
-    (shelves) => {
-        localShelves.value = cloneShelves(shelves);
+    () => props.books,
+    (books) => {
+        localBooks.value = (books ?? []).map((book) => ({ ...book }));
     },
     { deep: true }
+);
+
+watch(
+    () => props.decorations,
+    (decorations) => {
+        localDecorations.value = (decorations ?? []).map((decoration) => ({ ...decoration }));
+    },
+    { deep: true }
+);
+
+const bands = computed(() => buildBands(localBooks.value, localDecorations.value));
+const visibleBands = computed(() =>
+    bands.value.filter((band) => band.books.length > 0 || band.decorations.length > 0)
 );
 
 function showNotice(type, text) {
@@ -41,44 +53,46 @@ function showNotice(type, text) {
     }, 4000);
 }
 
-function moveBook(book, targetShelfId) {
-    const sourceShelf = localShelves.value.find((shelf) =>
-        shelf.books.some((item) => item.id === book.id)
-    );
-    const targetShelf = localShelves.value.find((shelf) => shelf.id === targetShelfId);
+function moveBook(book, insertion) {
+    const band = visibleBands.value.find((item) => item.id === insertion?.shelfId);
 
-    if (!sourceShelf || !targetShelf || sourceShelf.id === targetShelf.id) {
+    if (!band) {
         return;
     }
 
-    const snapshot = cloneShelves(localShelves.value);
-    const index = sourceShelf.books.findIndex((item) => item.id === book.id);
-    const [moved] = sourceShelf.books.splice(index, 1);
+    const others = band.books.filter((item) => item.id !== book.id);
+    const after = insertion?.position !== 'before';
+    let index = others.length;
 
-    moved.shelf_id = targetShelf.id;
-    targetShelf.books.push(moved);
+    if (insertion?.bookId) {
+        const target = others.findIndex((item) => item.id === insertion.bookId);
+
+        if (target !== -1) {
+            index = target + (after ? 1 : 0);
+        }
+    } else if (!after) {
+        index = 0;
+    }
+
+    index = Math.max(0, Math.min(index, others.length, BOOKS_PER_BAND - 1));
+
+    const snapshot = localBooks.value;
+    localBooks.value = insertBookInBand(localBooks.value, book, band.id, index);
 
     let settled = false;
 
     router.patch(
-        `/books/${book.id}/move`,
-        { shelf_id: targetShelf.id },
+        '/bookcase/move',
+        { book_id: book.id, band: band.id, position: index },
         {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
                 settled = true;
-                showNotice(
-                    'success',
-                    t('ui.book_moved', {
-                        title: book.title,
-                        shelf: targetShelf.display_name ?? targetShelf.name,
-                    })
-                );
             },
             onError: () => {
                 settled = true;
-                localShelves.value = snapshot;
+                localBooks.value = snapshot;
                 showNotice('error', t('ui.book_move_error'));
             },
             onFinish: () => {
@@ -86,111 +100,62 @@ function moveBook(book, targetShelfId) {
                     return;
                 }
 
-                localShelves.value = snapshot;
+                localBooks.value = snapshot;
                 showNotice('error', t('ui.book_move_error'));
             },
         }
     );
 }
 
-function reorderBook(book, shelfId, target) {
-    const shelf = localShelves.value.find((item) => item.id === shelfId);
+function moveDecoration(decoration, bandId, anchor) {
+    const band = visibleBands.value.find((item) => item.id === bandId);
 
-    if (!shelf) {
+    if (!band || !anchor) {
         return;
     }
 
-    const nextBooks = moveBookWithin(
-        shelf.books,
-        book.id,
-        target.bookId,
-        target.position
-    );
+    const anchorBook = band.books.find((book) => book.id === anchor.afterBookId);
+    const shelfId = anchorBook?.shelf_id ?? band.books[0]?.shelf_id ?? decoration.shelf_id;
 
-    if (sameBookOrder(shelf.books, nextBooks)) {
+    if (shelfId == null) {
         return;
     }
 
-    const snapshot = cloneShelves(localShelves.value);
-    shelf.books = nextBooks;
+    const next = localDecorations.value.map((item) => ({ ...item }));
+    const moved = next.find((item) => item.id === decoration.id);
 
-    let settled = false;
-
-    router.patch(
-        '/books/reorder',
-        {
-            shelf_id: shelf.id,
-            ids: nextBooks.map((item) => item.id),
-        },
-        {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                settled = true;
-                showNotice('success', t('ui.book_reordered'));
-            },
-            onError: () => {
-                settled = true;
-                localShelves.value = snapshot;
-                showNotice('error', t('ui.book_reorder_error'));
-            },
-            onFinish: () => {
-                if (settled) {
-                    return;
-                }
-
-                localShelves.value = snapshot;
-                showNotice('error', t('ui.book_reorder_error'));
-            },
-        }
-    );
-}
-
-function handleDrop(dragged, targetShelfId, target = null) {
-    if (dragged.type === 'decoration') {
-        moveDecoration(dragged.item, targetShelfId, target);
-
+    if (!moved) {
         return;
     }
 
-    if (target) {
-        reorderBook(dragged.item, targetShelfId, target);
-
-        return;
-    }
-
-    moveBook(dragged.item, targetShelfId);
-}
-
-function moveDecoration(decoration, targetShelfId, anchor) {
-    const sourceShelf = localShelves.value.find((shelf) =>
-        (shelf.decorations ?? []).some((item) => item.id === decoration.id)
-    );
-    const targetShelf = localShelves.value.find((shelf) => shelf.id === targetShelfId);
-
-    if (!sourceShelf || !targetShelf || !anchor) {
-        return;
-    }
-
-    const snapshot = cloneShelves(localShelves.value);
-    const index = sourceShelf.decorations.findIndex((item) => item.id === decoration.id);
-
-    if (index === -1) {
-        return;
-    }
-
-    const [moved] = sourceShelf.decorations.splice(index, 1);
-    moved.shelf_id = targetShelf.id;
+    moved.shelf_id = shelfId;
     moved.after_book_id = anchor.afterBookId;
-    moved.sort = anchor.sort;
-    targetShelf.decorations.push(moved);
+
+    const group = next
+        .filter(
+            (item) =>
+                item.id !== moved.id &&
+                item.shelf_id === shelfId &&
+                (item.after_book_id ?? null) === (anchor.afterBookId ?? null)
+        )
+        .sort((a, b) => a.sort - b.sort || a.id - b.id);
+
+    const index = Math.max(0, Math.min(anchor.sort, group.length));
+
+    group.splice(index, 0, moved);
+    group.forEach((item, position) => {
+        item.sort = position;
+    });
+
+    const snapshot = localDecorations.value;
+    localDecorations.value = next;
 
     let settled = false;
 
     router.patch(
         `/decorations/${decoration.id}`,
         {
-            shelf_id: targetShelf.id,
+            shelf_id: shelfId,
             after_book_id: anchor.afterBookId,
             sort: anchor.sort,
         },
@@ -199,17 +164,10 @@ function moveDecoration(decoration, targetShelfId, anchor) {
             preserveState: true,
             onSuccess: () => {
                 settled = true;
-                showNotice(
-                    'success',
-                    t('ui.decoration_moved', {
-                        name: t(`ui.decoration_${decoration.kind}`),
-                        shelf: targetShelf.display_name ?? targetShelf.name,
-                    })
-                );
             },
             onError: () => {
                 settled = true;
-                localShelves.value = snapshot;
+                localDecorations.value = snapshot;
                 showNotice('error', t('ui.decoration_move_error'));
             },
             onFinish: () => {
@@ -217,11 +175,21 @@ function moveDecoration(decoration, targetShelfId, anchor) {
                     return;
                 }
 
-                localShelves.value = snapshot;
+                localDecorations.value = snapshot;
                 showNotice('error', t('ui.decoration_move_error'));
             },
         }
     );
+}
+
+function handleDrop(dragged, bandId, payload) {
+    if (dragged.type === 'decoration') {
+        moveDecoration(dragged.item, bandId, payload);
+
+        return;
+    }
+
+    moveBook(dragged.item, payload);
 }
 
 const {
@@ -235,7 +203,7 @@ const {
     onTouchStart,
     onContextMenu,
     onClickCapture,
-} = useLibraryDrag(() => localShelves.value, handleDrop);
+} = useLibraryDrag(() => visibleBands.value, handleDrop, { virtual: true });
 
 onBeforeUnmount(() => {
     window.clearTimeout(noticeTimer);
@@ -252,27 +220,38 @@ onBeforeUnmount(() => {
             </Link>
         </div>
 
-        <p id="book-drag-hint" class="sr-only">{{ t('ui.drag_hint') }}</p>
+        <p id="bookcase-drag-hint" class="sr-only">{{ t('ui.drag_hint') }}</p>
+
+        <EmptyShelf v-if="localBooks.length === 0" :message="t('ui.empty_library')" />
 
         <div
-            class="space-y-8"
-            aria-describedby="book-drag-hint"
+            v-else
+            class="bookcase"
+            aria-describedby="bookcase-drag-hint"
             @pointerdown="onPointerDown"
             @touchstart="onTouchStart"
             @contextmenu="onContextMenu"
             @click.capture="onClickCapture"
             @dragstart.prevent
         >
-            <Shelf
-                v-for="shelf in localShelves"
-                :key="shelf.id"
-                :shelf="shelf"
-                :drag-active="isDragging"
-                :drop-target-id="dropTargetId"
-                :dragging-book-id="draggedItem?.type === 'book' ? draggedItem.item.id : null"
-                :dragging-decoration-id="draggedItem?.type === 'decoration' ? draggedItem.item.id : null"
-                :insertion="insertion"
-            />
+            <div class="bookcase__frame">
+                <BookcaseBand
+                    v-for="band in visibleBands"
+                    :key="band.id"
+                    :band="band"
+                    :season="season"
+                    :drag-active="isDragging"
+                    :drop-target-id="dropTargetId"
+                    :dragging-book-id="draggedItem?.type === 'book' ? draggedItem.item.id : null"
+                    :dragging-decoration-id="draggedItem?.type === 'decoration' ? draggedItem.item.id : null"
+                    :insertion="insertion"
+                />
+            </div>
+
+            <div class="bookcase__plinth" aria-hidden="true">
+                <span class="bookcase__door" />
+                <span class="bookcase__door" />
+            </div>
         </div>
 
         <BookDragGhost
@@ -284,7 +263,7 @@ onBeforeUnmount(() => {
         />
 
         <DecorationDragGhost
-            v-else-if="draggedItem"
+            v-else-if="draggedItem?.type === 'decoration'"
             :decoration="draggedItem.item"
             :x="pointer.x"
             :y="pointer.y"

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\CompleteNicknameController;
+use App\Http\Controllers\BookcaseController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookLookupController;
 use App\Http\Controllers\CoverController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ShelfController;
+use App\Http\Controllers\ShelvesController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +36,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
     Route::patch('/books/reorder', [BookController::class, 'reorder'])->name('books.reorder');
+    Route::patch('/bookcase/move', [BookcaseController::class, 'move'])->name('bookcase.move');
     Route::patch('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::patch('/books/{book}/move', [BookController::class, 'move'])->name('books.move');
     Route::patch('/books/{book}/view-mode', [BookController::class, 'viewMode'])->name('books.view-mode');
@@ -59,6 +62,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::patch('/settings/locale', [LocaleController::class, 'update'])
         ->name('settings.locale');
 
+    Route::get('/shelves', [ShelvesController::class, 'index'])->name('shelves.index');
     Route::post('/shelves', [ShelfController::class, 'store'])->name('shelves.store');
     Route::post('/shelves/reorder', [ShelfController::class, 'reorder'])->name('shelves.reorder');
     Route::patch('/shelves/{shelf}', [ShelfController::class, 'update'])->name('shelves.update');

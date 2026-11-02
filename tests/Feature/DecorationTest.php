@@ -204,11 +204,11 @@ it('quita todos los objetos del usuario', function () {
         ->and(Decoration::find($theirs->id))->not->toBeNull();
 });
 
-it('entrega las decoraciones en la biblioteca', function () {
+it('entrega las decoraciones en las estanterías', function () {
     $shelf = Shelf::factory()->for($this->user)->create(['position' => 0]);
     Decoration::factory()->for($this->user)->for($shelf)->create(['kind' => 'cup']);
 
-    $this->get(route('library.index'))
+    $this->get(route('shelves.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->has('shelves.0.decorations', 1)

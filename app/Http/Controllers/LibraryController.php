@@ -2,30 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TranslationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class LibraryController extends Controller
 {
-    public function index(Request $request, TranslationService $translator): Response
+    public function index(Request $request): Response
     {
-        $shelves = $request->user()
+        $books = $request->user()
             ->shelves()
-            ->with(['books', 'decorations'])
+            ->orderBy('position')
+            ->orderBy('id')
+            ->with('books')
             ->get()
-            ->each(function ($shelf) use ($translator) {
-                $shelf->setAttribute(
-                    'display_name',
-                    app()->getLocale() === 'es'
-                        ? $shelf->name
-                        : ($translator->translateText($shelf->name, app()->getLocale(), 'es') ?? $shelf->name)
-                );
-            });
+            ->flatMap->books
+            ->values();
 
         return Inertia::render('Library/Index', [
-            'shelves' => $shelves,
+            'books' => $books,
+            'decorations' => $request->user()->decorations()->get(),
         ]);
     }
 }

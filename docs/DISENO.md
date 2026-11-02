@@ -1,6 +1,6 @@
 # DISEÑO — Biblioteca
 
-**Última actualización:** 2026-10-31
+**Última actualización:** 2026-11-02
 **Estado:** vigente
 **Alcance:** identidad visual, componentes, estructura de interfaz y convenciones de diseño de la aplicación Biblioteca.
 
@@ -148,7 +148,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Navegación
 
 - **Escritorio:** barra lateral fija de 240 px, fondo `night-raised` con borde final `line`, texto `mist`. Logo en Cormorant `gold`. Enlaces con icono y etiqueta. El botón **Cerrar sesión** va en la parte superior, bajo el logo; no se muestra el nombre real en la barra lateral.
-- **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, tres acciones: Biblioteca, Decoraciones y Configuraciones. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
+- **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, tres acciones: Biblioteca, Estanterías y un botón de **tres líneas** (icono de 20 px, trazo 1.6, sin texto visible; el nombre se expone con `aria-label` y `title`). Ese botón abre un panel flotante encima de la barra con Decoraciones y Configuraciones; se cierra al elegir una opción, al tocar fuera o con Escape. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
 - Enlace activo: fondo `panel`, borde inicial `magic` y texto `moon` (escritorio); texto `gold` y subrayado `magic` (móvil).
 
 ### Botones
@@ -195,11 +195,43 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 - Contenedor con título `h2` y contador de libros. Cada libro decide por sí mismo si se ve como portada o como lomo; no hay control de modo por estantería.
 - **Espaldar:** panel de madera oscura detrás de los libros, con veta vertical sutil y sombras interiores arriba y a los lados que simulan profundidad. Junto con la balda forma un perfil en L.
-- **Balda mixta:** todos los libros de la estantería se dibujan en una sola fila respetando su orden, con portadas y lomos intercalados y alineados por la base. Las portadas ocupan ~100 px en móvil y ~110 px en escritorio; los lomos conservan su ancho calculado. En móvil la fila se desliza en horizontal (`overflow-x-auto`); en escritorio hace saltos de línea (`flex-wrap`). Máximo orientativo de 7 columnas de portada en escritorio.
+- **Balda mixta:** todos los libros de la estantería se dibujan en una sola fila respetando su orden, con portadas y lomos intercalados y alineados por la base. Las portadas ocupan ~100 px en móvil y ~110 px en escritorio; los lomos conservan su ancho calculado. En móvil la fila se desliza en horizontal (`overflow-x-auto`) sin barra de desplazamiento visible (utilidad `scrollbar-hidden`, igual que en los filtros de Decoraciones); en escritorio hace saltos de línea (`flex-wrap`). Máximo orientativo de 7 columnas de portada en escritorio.
 - **Cambio rápido (escritorio):** al pasar el ratón por un libro aparece en su esquina superior derecha un botón circular con icono (portada o lomo) que alterna ese libro al instante. En móvil no se muestra; el cambio se hace desde la ficha del libro.
 - **Objetos intercalados:** los objetos decorativos comparten la fila con los libros y se ordenan por su ancla: sin ancla van antes del primer libro; con ancla, justo después de ese libro; si el libro ancla no está en la balda, van al final.
 - **Balda:** volumen de 20–24 px con dos caras: superficie superior en perspectiva (`rotateX` suave, de `madera-clara` a `madera`) y frente más oscuro con bisel claro arriba, veta horizontal sutil, sombra interior en los extremos y abajo, y sombra proyectada. La cara superior lleva una sombra interior que simula el contacto de los libros. Debe parecer que sostiene los libros.
 - Estado vacío: `EmptyShelf` con borde discontinuo `madera` al 35 %, frase breve en `crema` y enlace para añadir.
+
+### Biblioteca completa (`Bookcase` + `BookcaseBand`)
+
+- `Bookcase` envuelve las bandas con dos laterales de `madera`, cornisa clara arriba y un zócalo con dos puertas; cada banda reutiliza `shelf-case` y `ShelfBoard`, así que las baldas mantienen el respaldo de madera y la tabla con perspectiva.
+- `BookcaseBand` agrupa como máximo cinco libros y una decoración, y coloca las decoraciones ancladas a esos libros. Cada libro se dibuja como `BookSpine` o `BookCard` según su `view_mode`; ambos conservan el enlace a la ficha, el asa de arrastre y el marcador de inserción. La página usa `useLibraryDrag` en modo `virtual`: las bandas son los destinos y la página traduce la caída a `PATCH /bookcase/move` (banda y posición exactas, con cascada en el servidor) mediante `insertBookInBand`, que aplica la misma cascada de forma optimista. Las decoraciones usan `BookcaseDecoration`, sin botón de borrar.
+- La banda es la unidad de destino del arrastre (`data-shelf-id`), igual que una estantería en `Shelves/Index`.
+
+### Temáticas estacionales (`SeasonalDecor`)
+
+- La app se decora sola según el mes, con **doce temas distintos** (tabla más abajo). No hay selector; el mes manda y el tema se resuelve en `resources/js/seasons.js`.
+- La raíz de `AppShell` expone `data-season` y monta `SeasonalDecor`, una capa fija `aria-hidden` con `pointer-events: none` por encima del contenido. La barra lateral y el contenido van con `relative z-10` y la barra móvil con `z-20`.
+- La capa incluye una **guirnalda fija** en el borde superior en escritorio (a partir de los 240 px del menú lateral) con 8 adornos, y una **enredadera** vertical (en el borde derecho de la pantalla en móvil y en el borde derecho del menú en escritorio) con 10 hojas. En móvil la guirnalda cuelga de la propia cabecera y se desplaza con ella al hacer scroll, para no quedar flotando sobre el título. En Halloween las piezas de la guirnalda son murciélagos.
+- Las **guirnaldas y la enredadera son fijas**; además, las hojas de otoño, los copos, los pétalos o las motas caen lentamente **por detrás del contenido** (capa `seasonal-particles`, `z-index: 0`, opacidad baja), de modo que se ven en el fondo sin tapar libros ni textos. En Halloween no hay partículas.
+- Los adornos son **fijos**, sin movimiento: nada cae sobre el contenido. Cada banda de la Biblioteca cuelga además su propia **guirnalda compacta** del borde superior, con 8 piezas pequeñas que cambian según la temporada.
+- Todos los meses usan la misma estructura (guirnalda superior, enredadera, guirnalda por banda y partículas de fondo) y cambian la forma y la paleta:
+
+| Mes | Tema | Partículas | Adornos y paleta |
+|---|---|---|---|
+| Enero | Invierno | Copos | Copos; `moon`, `mist`, `crema`, `gold` |
+| Febrero | San Valentín | Corazones | Corazones; `danger`, `orquidea`, `crema`, `gold` |
+| Marzo | Primavera | Pétalos | Pétalos; `salvia`, `orquidea`, `crema`, `gold` |
+| Abril | Lluvia | Gotas | Gotas; `mist`, `salvia`, `moon`, `crema` |
+| Mayo | Flores | Pétalos | Pétalos; `orquidea`, `gold`, `salvia`, `crema` |
+| Junio | Verano | Motas | Motas; `gold`, `dorado`, `crema`, `salvia` |
+| Julio | Sol | Estrellas | Estrellas; `gold`, `terracota`, `dorado`, `crema` |
+| Agosto | Girasoles | Motas | Motas; `dorado`, `oliva`, `gold`, `crema` |
+| Septiembre | Vendimia | Hojas | Hojas; `terracota`, `oliva`, `madera-clara`, `gold` |
+| Octubre | Halloween | — | Murciélagos, telarañas y arañas; `orquidea`, `terracota`, `crema`, `gold` |
+| Noviembre | Otoño | Hojas | Hojas; `terracota`, `oliva`, `gold`, `madera-clara` |
+| Diciembre | Navidad | Copos | Bolas; `crema`, `danger`, `success`, `gold` |
+
+- Cada tema define además su resplandor de fondo en `.arcane-sky[data-season="…"]::after` con los mismos tokens. Cambiar de mes no requiere tocar componentes: basta con que `seasons.js` devuelva la clave del mes.
 
 ### Arrastrar libros entre estanterías
 
@@ -272,9 +304,20 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Biblioteca (`Library/Index`)
 
 1. Cabecera con título “Mi biblioteca” y botón **Añadir libro**.
-2. Lista de estanterías en orden, cada una con su balda y libros.
-3. Estado vacío general si no hay libros ni estanterías.
-4. Arrastrar una portada o un lomo a otra estantería para mover el libro, o dentro de la misma estantería para cambiar su posición; en móvil, pulsación larga y arrastre.
+2. Un mueble único con todos los libros de la cuenta en bandas de cinco lomos y como máximo una decoración por banda. Cada libro guarda su banda (`band`) y su posición dentro de ella (`band_position`), así que las bandas son estables: si se saca un libro, la banda queda con menos libros y los de las bandas siguientes no suben. Cada banda es una balda de madera con su respaldo y su tabla, y el mueble crece con las bandas necesarias; los laterales, la cornisa y el zócalo de dos puertas reproducen un armario alto.
+3. Al insertar un libro en una banda llena, el último libro de esa banda baja a la siguiente y esta repite la operación hacia abajo (cascada), de modo que nunca hay más de cinco libros por banda. Las bandas vacías no se dibujan.
+4. Los libros mantienen el tamaño de Estanterías: lomo de 160 px con su ancho calculado y portada de 100 px en móvil y 110 px en escritorio. En móvil la fila se desliza en horizontal sin barra visible (utilidad `scrollbar-hidden`) y en escritorio se centra. Las decoraciones se muestran en la banda de su libro ancla; si esa banda ya tiene una, pasan a la siguiente banda con hueco (o a una banda nueva), de modo que nunca hay más de una por banda. Las que no tienen ancla van al principio de la primera banda.
+5. Cada libro respeta su modo de vista, lomo o portada, y se pueden mezclar en la misma banda igual que en Estanterías. Al pulsar un lomo o una portada se abre la ficha.
+6. Los libros se arrastran con el mismo gesto que en Estanterías (6 px con ratón, 320 ms con el dedo): al soltar antes o después de un libro, el libro se inserta en esa posición exacta de esa banda y, si la banda se llena, la cascada baja el sobrante. Se puede mover un libro hacia cualquier banda, incluida una anterior. Si se suelta sobre la banda, la mitad izquierda inserta antes del primer libro y la derecha después del último.
+7. Las decoraciones también se arrastran entre bandas: se colocan antes o después del libro u objeto bajo el puntero y, si cambian de estantería, se guarda la nueva ancla. El aviso de éxito llega desde el servidor.
+8. Estado vacío propio cuando no hay libros: “Aún no hay libros en tu biblioteca.”
+
+### Estanterías (`Shelves/Index`)
+
+1. Cabecera con título “Estanterías” y botón **Añadir libro**.
+2. Lista de estanterías reales en orden, cada una con su balda, sus libros y sus objetos.
+3. Arrastrar una portada o un lomo a otra estantería para mover el libro, o dentro de la misma estantería para cambiar su posición; en móvil, pulsación larga y arrastre.
+4. Crear, renombrar, reordenar y borrar estanterías sigue en Configuraciones.
 
 ### Añadir/editar libro
 
@@ -284,7 +327,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Decoraciones (`Decorations/Index`)
 
-- Módulo propio, con entrada **Decoraciones** en la barra lateral y en la barra inferior móvil, entre Biblioteca y Configuraciones.
+- Módulo propio, con entrada **Decoraciones** en la barra lateral y en la barra inferior móvil, entre Estanterías y Configuraciones.
 - Título “Decoraciones” y una línea de ayuda. Después, una barra de filtros en la parte superior con seis botones circulares de 48 px: **Todos**, **Mesa y té**, **Flores y plantas**, **Luz y velas**, **Curiosidades** y **Mascotas y recuerdos**. Cada círculo contiene únicamente un icono de línea de 24 px trazado con `currentColor` (retícula, taza, flor, vela, destello y corazón), sin texto visible; el nombre de la categoría se expone con `aria-label` y `title`. En móvil la barra se desliza en horizontal sin barra de desplazamiento visible (utilidad `scrollbar-hidden`, que oculta el scroll nativo pero mantiene el gesto) y en escritorio pasa a varias líneas.
 - El botón activo usa borde `magic`, fondo `panel` y texto `gold`, con `aria-pressed`. Al elegir una categoría la cuadrícula muestra solo sus objetos; **Todos** muestra los quince en una sola cuadrícula, sin encabezados de sección. Hasta 3 columnas en escritorio, 2 en tablet y 1 en móvil.
 - **Mesa y té:** taza, set de té y caja de música. **Flores y plantas:** rosas y planta. **Luz y velas:** vela y lámpara. **Curiosidades:** reloj de arena, bola de cristal, calavera, jaula, astrolabio, pluma y tintero. **Mascotas y recuerdos:** gato y marco de fotos.
@@ -439,3 +482,23 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-10-31 | El nombre pierde la pastilla de fondo y pasa a una franja propia en la parte alta del recuadro. El recuadro crece a 128 px (40 px para el nombre + 80 px para el dibujo) para que los objetos más altos se vean completos. | Agente |
 | 2026-10-31 | El nombre baja a una franja inferior dentro del recuadro para quedar siempre junto a la base del dibujo; en los objetos bajos ya no aparece separado por un hueco grande. El dibujo gana 8 px de altura (88 px). | Agente |
 | 2026-10-31 | El nombre pasa al borde izquierdo del recuadro en vertical, como los lomos, con pastilla `night` al 60 % detrás; el recuadro reserva 40 px a la izquierda para la etiqueta. | Agente |
+| 2026-10-31 | La fila de libros y objetos de cada estantería oculta su barra de desplazamiento nativa en móvil con la utilidad `scrollbar-hidden`, igual que los filtros de Decoraciones: el deslizamiento sigue funcionando y desaparece la franja gris. | Agente |
+| 2026-11-02 | **Biblioteca** pasa a ser un mueble alto con todos los libros en bandas de tres lomos, laterales de madera, cornisa y zócalo de dos puertas; la página anterior con estanterías reales se traslada a un módulo nuevo, **Estanterías** (`/shelves`), con su entrada en el menú entre Biblioteca y Decoraciones. | Agente |
+| 2026-11-02 | Las decoraciones se ven dentro de la banda de su libro ancla en Biblioteca y se pueden arrastrar entre bandas con el mismo gesto que en Estanterías; los libros de Biblioteca son estáticos y solo abren su ficha. | Agente |
+| 2026-11-02 | La Biblioteca respeta el modo de vista de cada libro: los que están en modo portada se dibujan como `BookCard` y el resto como lomo, mezclados en la misma banda. Antes se mostraban siempre como lomos. | Agente |
+| 2026-11-02 | Los libros de la Biblioteca también se arrastran, con ratón o pulsación larga en el dedo: entre bandas cambian de estantería y dentro de la misma estantería se reordenan antes o después del libro bajo el puntero. | Agente |
+| 2026-11-02 | Cada banda de la Biblioteca admite como máximo tres libros y una decoración. Los libros se reducen (lomo compacto de 128 px y 44 px de ancho máximo; portada de 48 px en móvil) y la fila deja de desbordarse, de modo que ningún libro aparece cortado; las decoraciones sobrantes pasan a la siguiente banda con hueco. | Agente |
+| 2026-11-02 | La Biblioteca vuelve a los tamaños de libro de Estanterías (lomo de 160 px y portada de 100/110 px) y cada banda pasa a admitir como máximo **dos** libros y una decoración, para que todo quepa sin recortes. | Agente |
+| 2026-11-02 | Al mover un libro a otra banda se inserta en la posición exacta bajo el puntero (antes o después de un libro), no al final de la estantería; el resto de libros y decoraciones baja a la banda siguiente para mantener el máximo de dos libros y una decoración. | Agente |
+| 2026-11-02 | La Biblioteca admite hasta **cinco** libros por banda (antes dos), manteniendo una decoración como máximo. En móvil la fila se desliza en horizontal sin barra visible y en escritorio se centra. | Agente |
+| 2026-11-02 | Las bandas de la Biblioteca pasan a ser estables: cada libro guarda su banda y su posición. Sacar un libro deja la banda con menos libros (no suben los de las bandas siguientes) y meter uno en una banda llena baja el sobrante a la siguiente en cascada; se puede mover un libro a cualquier banda, también hacia arriba. | Agente |
+| 2026-11-02 | Al soltar un libro al final de una banda llena, el que baja a la banda siguiente es el último libro que ya estaba en ella, no el que se acaba de mover; así el libro movido permanece en la banda de destino. | Agente |
+| 2026-11-02 | La barra inferior móvil se reduce a Biblioteca, Estanterías y un botón **Menú** que despliega Decoraciones y Configuraciones en un panel flotante; la barra lateral de escritorio mantiene los cuatro enlaces. | Agente |
+| 2026-11-02 | El botón Menú de la barra inferior pasa a mostrar un icono de tres líneas sin la palabra «Menú»; el nombre se conserva en `aria-label` y `title`. | Agente |
+| 2026-11-02 | La app estrena temáticas automáticas por mes (`SeasonalDecor`): invierno, primavera, verano, otoño, Halloween y Navidad, con partículas y resplandores sobre los tokens existentes y sin imágenes externas. Noviembre usa hojas de otoño; octubre, telarañas y arañas; diciembre, copos y acentos rojos, verdes y dorados. Con movimiento reducido la capa no se muestra. | Agente |
+| 2026-11-02 | Las partículas pasan a verse por delante del contenido (opacidad baja) y se añaden adornos colgados: una guirnalda superior sobre el área de contenido y una enredadera vertical en el borde del menú lateral. En Halloween la guirnalda cuelga murciélagos. | Agente |
+| 2026-11-02 | La guirnalda y la enredadera también se muestran en móvil: la guirnalda cuelga bajo la cabecera con hilos más cortos y la enredadera va en el borde derecho de la pantalla. | Agente |
+| 2026-11-02 | Se quitan las hojas que caían sobre el contenido y los adornos quedan fijos; cada banda de la Biblioteca cuelga una guirnalda compacta en su borde superior para que la decoración no parezca aleatoria. | Agente |
+| 2026-11-02 | En móvil la guirnalda superior pasa a colgar de la cabecera y se desplaza con ella al hacer scroll; antes estaba fija a la pantalla y quedaba flotando sobre el título. En escritorio se mantiene fija arriba. | Agente |
+| 2026-11-02 | Vuelven las hojas que caen, ahora como capa de fondo por detrás del contenido (`z-index: 0`, opacidad baja), sin tapar libros ni textos; las guirnaldas y la enredadera siguen fijas. Con movimiento reducido se ocultan las partículas. | Agente |
+| 2026-11-02 | La temática pasa a tener **doce variantes**, una por mes (invierno, San Valentín, primavera, lluvia, flores, verano, sol, girasoles, vendimia, Halloween, otoño y Navidad), con la misma estructura de adornos y distinta forma y paleta; la tabla queda documentada para los meses siguientes. | Agente |

@@ -15,7 +15,7 @@ it('traduce el nombre de la estantería sin cambiar el original', function () {
     ]);
 
     $this->actingAs($user)
-        ->get(route('library.index'))
+        ->get(route('shelves.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->where('shelves.0.display_name', 'Pending'));

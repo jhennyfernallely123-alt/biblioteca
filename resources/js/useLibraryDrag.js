@@ -8,7 +8,9 @@ const EDGE_SCROLL = 90;
 const MAX_SCROLL = 18;
 const CLICK_SUPPRESSION_MS = 450;
 
-export function useLibraryDrag(getShelves, onDrop) {
+export function useLibraryDrag(getShelves, onDrop, options = {}) {
+    const allowBooks = options.books !== false;
+    const virtualTargets = options.virtual === true;
     const draggedItem = ref(null);
     const dragMode = ref('covers');
     const pointer = ref({ x: 0, y: 0 });
@@ -72,6 +74,11 @@ export function useLibraryDrag(getShelves, onDrop) {
         }
 
         const { type, id } = identifyDragElement(element);
+
+        if (!allowBooks && type === 'book') {
+            return;
+        }
+
         const found = locateItem(type, id);
         if (!found) {
             return;
@@ -143,6 +150,11 @@ export function useLibraryDrag(getShelves, onDrop) {
         }
 
         const { type, id } = identifyDragElement(element);
+
+        if (!allowBooks && type === 'book') {
+            return;
+        }
+
         const found = locateItem(type, id);
         if (!found) {
             return;
@@ -245,7 +257,7 @@ export function useLibraryDrag(getShelves, onDrop) {
 
         const target = shelfIdAt(x, y);
 
-        if (!target || !sourceShelf) {
+        if (target === null || !sourceShelf) {
             dropTargetId.value = null;
             insertion.value = null;
 
@@ -268,6 +280,48 @@ export function useLibraryDrag(getShelves, onDrop) {
             }
 
             insertion.value = decorationInsertion(target, shelf, hit, x, y);
+
+            return;
+        }
+
+        if (virtualTargets) {
+            dropTargetId.value = target === sourceShelf.id ? null : target;
+
+            const element = document.elementFromPoint(x, y)?.closest?.('[data-book-id]');
+            const books = getShelves().find((item) => item.id === target)?.books ?? [];
+            let hitBook = element
+                ? books.find((book) => book.id === Number(element.dataset.bookId))
+                : null;
+
+            if (hitBook?.id === draggedItem.value?.item.id) {
+                insertion.value = null;
+
+                return;
+            }
+
+            let position = 'after';
+
+            if (hitBook) {
+                const rect = element.getBoundingClientRect();
+                position = x >= rect.left + rect.width / 2 ? 'after' : 'before';
+            } else {
+                const bandElement = document.elementFromPoint(x, y)?.closest?.('[data-shelf-id]');
+                const rect = bandElement?.getBoundingClientRect();
+                const first = books[0] ?? null;
+
+                if (first && rect && x < rect.left + rect.width / 2) {
+                    hitBook = first;
+                    position = 'before';
+                } else {
+                    hitBook = books[books.length - 1] ?? null;
+                }
+            }
+
+            insertion.value = {
+                shelfId: target,
+                bookId: hitBook?.id ?? null,
+                position,
+            };
 
             return;
         }
@@ -375,7 +429,7 @@ export function useLibraryDrag(getShelves, onDrop) {
 
         cleanup();
 
-        if (!current || !targetId) {
+        if (!current || targetId === null) {
             return;
         }
 
@@ -385,8 +439,15 @@ export function useLibraryDrag(getShelves, onDrop) {
             return;
         }
 
-        const shouldMove = Boolean(fromShelfId && targetId !== fromShelfId);
-        const shouldReorder = Boolean(fromShelfId && targetId === fromShelfId && currentInsertion);
+        if (virtualTargets) {
+            onDrop(current, targetId, currentInsertion);
+
+            return;
+        }
+
+        const shouldMove = fromShelfId !== null && targetId !== fromShelfId;
+        const shouldReorder =
+            fromShelfId !== null && targetId === fromShelfId && Boolean(currentInsertion);
 
         if (shouldMove) {
             onDrop(current, targetId);

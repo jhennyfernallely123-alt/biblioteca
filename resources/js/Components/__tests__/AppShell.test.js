@@ -47,7 +47,7 @@ describe('AppShell', () => {
         expect(wrapper.text()).toContain('Libro actualizado.');
     });
 
-    it('enlaza el módulo de decoraciones entre la biblioteca y los ajustes', async () => {
+    it('enlaza las estanterías y las decoraciones entre la biblioteca y los ajustes', async () => {
         const wrapper = mount(AppShell, {
             slots: { default: '<p>Contenido</p>' },
         });
@@ -57,8 +57,90 @@ describe('AppShell', () => {
         const nav = wrapper.get('nav');
         const links = nav.findAll('a');
 
-        expect(links.map((link) => link.attributes('href'))).toEqual(['/', '/decorations', '/settings']);
-        expect(nav.text()).toContain('Decoraciones');
+        expect(links.map((link) => link.attributes('href'))).toEqual([
+            '/',
+            '/shelves',
+            '/decorations',
+            '/settings',
+        ]);
+        expect(nav.text()).toContain('Estanterías');
+    });
+
+    it('deja Biblioteca y Estanterías en la barra móvil y el resto en un menú', async () => {
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+        await wrapper.get('[data-welcome-enter]').trigger('click');
+
+        const nav = wrapper.get('[data-mobile-nav]');
+        const links = nav.findAll('a');
+
+        expect(links.map((link) => link.attributes('href'))).toEqual(['/', '/shelves']);
+        expect(wrapper.find('[data-nav-menu]').exists()).toBe(false);
+
+        await nav.get('[data-nav-menu-toggle]').trigger('click');
+
+        expect(nav.get('[data-nav-menu-toggle]').attributes('aria-expanded')).toBe('true');
+        expect(
+            nav.findAll('[data-nav-menu] a').map((link) => link.attributes('href'))
+        ).toEqual(['/decorations', '/settings']);
+
+        await nav.get('[data-nav-menu-toggle]').trigger('click');
+
+        expect(wrapper.find('[data-nav-menu]').exists()).toBe(false);
+    });
+
+    it('aplica la temática del mes actual', async () => {
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+
+        const season = wrapper.attributes('data-season');
+
+        expect([
+            'winter',
+            'valentine',
+            'spring',
+            'rain',
+            'flowers',
+            'summer',
+            'sun',
+            'sunflower',
+            'harvest',
+            'halloween',
+            'autumn',
+            'christmas',
+        ]).toContain(season);
+        expect(wrapper.find(`[data-season-decor="${season}"]`).exists()).toBe(true);
+        expect(wrapper.find('[data-season-particles]').exists()).toBe(true);
+    });
+
+    it('activa la Navidad en diciembre', async () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date(2026, 11, 1, 12));
+
+        try {
+            const wrapper = mount(AppShell, {
+                slots: { default: '<p>Contenido</p>' },
+            });
+            await nextTick();
+
+            expect(wrapper.attributes('data-season')).toBe('christmas');
+            expect(wrapper.find('[data-season-decor="christmas"]').exists()).toBe(true);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('cuelga la guirnalda de la cabecera en móvil', async () => {
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+
+        expect(wrapper.find('header [data-season-garland]').exists()).toBe(true);
     });
 
     it('muestra la intro en la primera carga y la cierra con Entrar', async () => {

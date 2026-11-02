@@ -91,7 +91,7 @@ function toggleBook(book) {
 
                 <div
                     v-else
-                    class="flex flex-row items-end gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
+                    class="scrollbar-hidden flex flex-row items-end gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
                 >
                     <template v-for="item in items" :key="item.key">
                         <div

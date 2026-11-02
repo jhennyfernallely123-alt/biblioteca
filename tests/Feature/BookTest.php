@@ -43,6 +43,19 @@ it('mueve un libro a otra estantería propia', function () {
     expect($book->fresh()->shelf_id)->toBe($to->id);
 });
 
+it('mueve un libro a otra estantería en la posición indicada', function () {
+    $from = Shelf::factory()->for($this->user)->create(['position' => 0]);
+    $to = Shelf::factory()->for($this->user)->create(['position' => 1]);
+    $first = Book::factory()->for($this->user)->for($to)->create(['title' => 'A', 'position' => 0]);
+    $second = Book::factory()->for($this->user)->for($to)->create(['title' => 'B', 'position' => 1]);
+    $book = Book::factory()->for($this->user)->for($from)->create(['title' => 'C', 'position' => 0]);
+
+    $this->patch(route('books.move', $book), ['shelf_id' => $to->id, 'index' => 0])
+        ->assertRedirect();
+
+    expect($to->books()->pluck('id')->all())->toBe([$book->id, $first->id, $second->id]);
+});
+
 it('no permite mover un libro ajeno', function () {
     $book = Book::factory()->for(User::factory())->create();
     $shelf = Shelf::factory()->for($this->user)->create();

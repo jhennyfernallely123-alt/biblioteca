@@ -60,6 +60,9 @@ class BookController extends Controller
 
         $data['position'] = $this->nextPosition((int) $data['shelf_id']);
         $data['view_mode'] = $request->user()->default_view_mode ?? 'covers';
+        $nextBand = $this->nextBand($request);
+        $data['band'] = $nextBand['band'];
+        $data['band_position'] = $nextBand['position'];
 
         $request->user()->books()->create($data);
 
@@ -117,21 +120,28 @@ class BookController extends Controller
 
         $data = $request->validate([
             'shelf_id' => ['required', 'integer', 'exists:shelves,id'],
+            'index' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $this->ensureShelfOwnership($request, $data['shelf_id']);
 
         $sourceShelfId = (int) $book->shelf_id;
         $targetShelfId = (int) $data['shelf_id'];
+        $index = $data['index'] ?? null;
 
-        DB::transaction(function () use ($book, $sourceShelfId, $targetShelfId) {
+        DB::transaction(function () use ($book, $sourceShelfId, $targetShelfId, $index) {
             $book->update([
                 'shelf_id' => $targetShelfId,
                 'position' => $this->nextPosition($targetShelfId),
             ]);
 
             $this->resequenceShelf($sourceShelfId);
-            $this->resequenceShelf($targetShelfId);
+
+            if ($index === null) {
+                $this->resequenceShelf($targetShelfId);
+            } else {
+                $this->placeAt($book, $targetShelfId, (int) $index);
+            }
         });
 
         return back()->with('success', __('ui.book_moved', [
@@ -202,6 +212,19 @@ class BookController extends Controller
         return $max === null ? 0 : (int) $max + 1;
     }
 
+    private function nextBand(Request $request): array
+    {
+        $last = $request->user()->books()->orderByDesc('band')->first(['band']);
+        $band = $last?->band ?? 0;
+        $count = $request->user()->books()->where('band', $band)->count();
+
+        if ($count >= Book::BOOKS_PER_BAND) {
+            return ['band' => $band + 1, 'position' => 0];
+        }
+
+        return ['band' => $band, 'position' => $count];
+    }
+
     private function resequenceShelf(int $shelfId): void
     {
         Book::where('shelf_id', $shelfId)
@@ -210,6 +233,24 @@ class BookController extends Controller
             ->orderBy('id')
             ->get(['id'])
             ->each(fn (Book $book, int $position) => $book->update(['position' => $position]));
+    }
+
+    private function placeAt(Book $book, int $shelfId, int $index): void
+    {
+        $ids = Book::where('shelf_id', $shelfId)
+            ->whereKeyNot($book->id)
+            ->orderBy('position')
+            ->orderBy('title')
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
+
+        $index = max(0, min($index, count($ids)));
+        array_splice($ids, $index, 0, [$book->id]);
+
+        foreach ($ids as $position => $id) {
+            Book::whereKey($id)->where('shelf_id', $shelfId)->update(['position' => $position]);
+        }
     }
 
     private function ensureShelfOwnership(Request $request, int $shelfId): void

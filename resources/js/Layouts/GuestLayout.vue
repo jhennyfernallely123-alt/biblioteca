@@ -2,13 +2,19 @@
 import { usePage } from '@inertiajs/vue3';
 import ArcaneStars from '@/Components/ArcaneStars.vue';
 import LibraryEmblem from '@/Components/LibraryEmblem.vue';
+import SeasonalDecor from '@/Components/SeasonalDecor.vue';
+import SeasonalParticles from '@/Components/SeasonalParticles.vue';
+import { currentSeason } from '@/seasons';
 
 const page = usePage();
+const season = currentSeason();
 </script>
 
 <template>
-    <div class="arcane-sky min-h-screen md:grid md:h-screen md:grid-cols-2 md:overflow-hidden">
+    <div class="arcane-sky min-h-screen md:grid md:h-screen md:grid-cols-2 md:overflow-hidden" :data-season="season">
         <ArcaneStars />
+        <SeasonalParticles :season="season" />
+        <SeasonalDecor :season="season" />
 
         <div class="relative flex h-56 items-center justify-center overflow-hidden md:hidden">
             <div class="auth-book-frame auth-book-frame--compact">
