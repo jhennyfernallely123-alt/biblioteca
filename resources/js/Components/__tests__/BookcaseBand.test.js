@@ -1,5 +1,10 @@
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({ patch: vi.fn() }));
+
+vi.mock('@inertiajs/vue3', () => ({ router: { patch: mocks.patch } }));
+
 import BookcaseBand from '../BookcaseBand.vue';
 
 function makeBand(book) {
@@ -19,6 +24,10 @@ function makeBook(overrides = {}) {
 }
 
 describe('BookcaseBand', () => {
+    beforeEach(() => {
+        mocks.patch.mockClear();
+    });
+
     it('cuelga una guirnalda en la banda', () => {
         const wrapper = mount(BookcaseBand, { props: { band: makeBand(makeBook()) } });
 
@@ -50,6 +59,24 @@ describe('BookcaseBand', () => {
         });
 
         expect(wrapper.find('[data-book-id="7"]').classes()).toContain('opacity-30');
+    });
+
+    it('cambia el modo de vista con el botón', async () => {
+        const wrapper = mount(BookcaseBand, {
+            props: { band: makeBand(makeBook({ view_mode: 'covers' })) },
+        });
+
+        const button = wrapper.find('button[aria-label="Cambiar vista del libro"]');
+
+        expect(button.exists()).toBe(true);
+
+        await button.trigger('click');
+
+        expect(mocks.patch).toHaveBeenCalledWith(
+            '/books/7/view-mode',
+            { view_mode: 'spines' },
+            { preserveScroll: true, preserveState: true }
+        );
     });
 
     it('mezcla lomos y portadas en la misma banda', () => {

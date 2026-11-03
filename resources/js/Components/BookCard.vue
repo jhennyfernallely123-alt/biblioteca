@@ -6,7 +6,10 @@ const props = defineProps({
     book: { type: Object, required: true },
     dragging: { type: Boolean, default: false },
     dropPosition: { type: String, default: null },
+    reading: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(['open']);
 
 const { t } = useI18n();
 const failed = ref(false);
@@ -14,6 +17,15 @@ const failed = ref(false);
 const coverUrl = computed(() =>
     props.book.cover_path && !failed.value ? `/covers/${props.book.id}` : null
 );
+
+function onClick(event) {
+    if (!props.reading) {
+        return;
+    }
+
+    event.preventDefault();
+    emit('open', props.book);
+}
 </script>
 
 <template>
@@ -28,9 +40,10 @@ const coverUrl = computed(() =>
             'book-drop-after': dropPosition === 'after',
         }"
         :title="`${book.title} — ${book.author}`"
+        @click="onClick"
     >
         <div
-            class="book-glow aspect-[2/3] overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-madera/35"
+            class="book-glow relative aspect-[2/3] overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-madera/35"
         >
             <img
                 v-if="coverUrl"
@@ -43,6 +56,20 @@ const coverUrl = computed(() =>
             <div v-else class="flex h-full flex-col justify-center p-2 text-center">
                 <span class="font-serif text-base font-semibold text-tinta">{{ book.title }}</span>
                 <span class="mt-1 text-xs text-tinta/65">{{ book.author }}</span>
+            </div>
+
+            <span
+                v-if="reading"
+                class="pointer-events-none absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-night/85 text-gold ring-1 ring-gold/40"
+                aria-hidden="true"
+            >
+                <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M3.5 1.8v8.4L10 6z" />
+                </svg>
+            </span>
+
+            <div v-if="reading" class="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-night/70" aria-hidden="true">
+                <div class="h-full bg-gold" :style="{ width: `${book.progress ?? 0}%` }" />
             </div>
         </div>
     </a>

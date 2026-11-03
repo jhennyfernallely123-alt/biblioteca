@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import BookcaseBand from '@/Components/BookcaseBand.vue';
 import BookDragGhost from '@/Components/BookDragGhost.vue';
@@ -213,13 +213,6 @@ onBeforeUnmount(() => {
 <template>
     <Head :title="t('ui.library_title')" />
     <AuthenticatedLayout>
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h1 class="text-3xl md:text-4xl">{{ t('ui.library_title') }}</h1>
-            <Link href="/books/create" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong">
-                {{ t('ui.add_book') }}
-            </Link>
-        </div>
-
         <p id="bookcase-drag-hint" class="sr-only">{{ t('ui.drag_hint') }}</p>
 
         <EmptyShelf v-if="localBooks.length === 0" :message="t('ui.empty_library')" />

@@ -13,7 +13,12 @@ class ShelvesController extends Controller
     {
         $shelves = $request->user()
             ->shelves()
-            ->with(['books', 'decorations'])
+            ->with([
+                'books' => fn ($query) => $query
+                    ->withSum('readingSessions', 'minutes')
+                    ->withCount('readingSessions'),
+                'decorations',
+            ])
             ->get()
             ->each(function ($shelf) use ($translator) {
                 $shelf->setAttribute(
@@ -24,8 +29,22 @@ class ShelvesController extends Controller
                 );
             });
 
+        $shelves->each(function ($shelf) {
+            $shelf->books->each(function ($book) {
+                $book->reading_minutes = (int) ($book->reading_sessions_sum_minutes ?? 0);
+                $book->progress = $book->readingProgress();
+                $book->reading_status = $book->readingStatus();
+            });
+        });
+
+        $readingBooks = $shelves
+            ->flatMap->books
+            ->filter(fn ($book) => $book->reading_status === 'reading')
+            ->values();
+
         return Inertia::render('Shelves/Index', [
             'shelves' => $shelves,
+            'readingBooks' => $readingBooks,
         ]);
     }
 }

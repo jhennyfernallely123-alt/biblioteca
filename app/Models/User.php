@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->hasMany(Decoration::class);
     }
 
+    public function readingSessions(): HasMany
+    {
+        return $this->hasMany(ReadingSession::class);
+    }
+
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);

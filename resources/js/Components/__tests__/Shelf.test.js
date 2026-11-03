@@ -151,4 +151,18 @@ describe('Shelf', () => {
 
         expect(wrapper.find('[data-decoration-id="9"]').classes()).toContain('book-drop-before');
     });
+
+    it('abre el libro en modo lectura al pulsarlo', async () => {
+        const wrapper = mount(Shelf, {
+            props: {
+                shelf: makeShelf(),
+                reading: true,
+            },
+        });
+
+        await wrapper.find('[data-book-id="3"]').trigger('click');
+
+        expect(wrapper.emitted('open-book')).toHaveLength(1);
+        expect(wrapper.emitted('open-book')[0][0].id).toBe(3);
+    });
 });

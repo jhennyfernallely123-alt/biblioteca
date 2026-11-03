@@ -35,7 +35,7 @@ class BookController extends Controller
 
         return Inertia::render('Books/Edit', [
             'book' => $book,
-            'shelves' => $this->shelvesFor($request),
+            'images' => $book->images()->get(['id', 'slot']),
         ]);
     }
 
@@ -159,9 +159,7 @@ class BookController extends Controller
 
         $book->update(['view_mode' => $data['view_mode']]);
 
-        $message = $data['view_mode'] === 'spines' ? 'ui.view_mode_spine' : 'ui.view_mode_cover';
-
-        return back()->with('success', __($message, ['title' => $book->title]));
+        return back();
     }
 
     public function reorder(Request $request): RedirectResponse

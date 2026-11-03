@@ -23,6 +23,67 @@ it('crea un libro manual en una estantería propia', function () {
     expect($this->user->books()->where('title', 'Cien años de soledad')->exists())->toBeTrue();
 });
 
+it('guarda las cinco valoraciones de un libro', function () {
+    $shelf = Shelf::factory()->for($this->user)->create();
+
+    $this->post(route('books.store'), [
+        'title' => 'Picante y dulce',
+        'shelf_id' => $shelf->id,
+        'rating' => 4,
+        'spice_rating' => 5,
+        'heart_rating' => 2,
+        'drop_rating' => 3,
+        'crystal_rating' => 1,
+    ])->assertRedirect();
+
+    $book = Book::where('title', 'Picante y dulce')->firstOrFail();
+
+    expect($book->rating)->toBe(4)
+        ->and($book->spice_rating)->toBe(5)
+        ->and($book->heart_rating)->toBe(2)
+        ->and($book->drop_rating)->toBe(3)
+        ->and($book->crystal_rating)->toBe(1);
+});
+
+it('rechaza valoraciones fuera de rango', function () {
+    $shelf = Shelf::factory()->for($this->user)->create();
+
+    $this->post(route('books.store'), [
+        'title' => 'Fuera de rango',
+        'shelf_id' => $shelf->id,
+        'spice_rating' => 6,
+        'heart_rating' => -1,
+        'drop_rating' => 9,
+        'crystal_rating' => -2,
+    ])->assertSessionHasErrors([
+        'spice_rating',
+        'heart_rating',
+        'drop_rating',
+        'crystal_rating',
+    ]);
+});
+
+it('actualiza las cinco valoraciones', function () {
+    $book = Book::factory()->for($this->user)->create(['title' => 'Antes']);
+
+    $this->patch(route('books.update', $book), [
+        'title' => 'Después',
+        'rating' => 1,
+        'spice_rating' => 2,
+        'heart_rating' => 3,
+        'drop_rating' => 4,
+        'crystal_rating' => 5,
+    ])->assertRedirect();
+
+    $book->refresh();
+
+    expect($book->rating)->toBe(1)
+        ->and($book->spice_rating)->toBe(2)
+        ->and($book->heart_rating)->toBe(3)
+        ->and($book->drop_rating)->toBe(4)
+        ->and($book->crystal_rating)->toBe(5);
+});
+
 it('no permite guardar en una estantería ajena', function () {
     $shelf = Shelf::factory()->for(User::factory())->create();
 
@@ -227,13 +288,13 @@ it('cambia el modo de vista de un libro propio', function () {
 
     $this->patch(route('books.view-mode', $book), ['view_mode' => 'spines'])
         ->assertRedirect()
-        ->assertSessionHas('success', __('ui.view_mode_spine', ['title' => $book->title]));
+        ->assertSessionMissing('success');
 
     expect($book->fresh()->view_mode)->toBe('spines');
 
     $this->patch(route('books.view-mode', $book), ['view_mode' => 'covers'])
         ->assertRedirect()
-        ->assertSessionHas('success', __('ui.view_mode_cover', ['title' => $book->title]));
+        ->assertSessionMissing('success');
 
     expect($book->fresh()->view_mode)->toBe('covers');
 });

@@ -16,7 +16,9 @@ const props = defineProps({
     draggingBookId: { type: Number, default: null },
     draggingDecorationId: { type: Number, default: null },
     insertion: { type: Object, default: null },
+    reading: { type: Boolean, default: false },
 });
+const emit = defineEmits(['open-book']);
 const { t } = useI18n();
 
 const isDropTarget = computed(() => props.dropTargetId === props.shelf.id);
@@ -104,17 +106,21 @@ function toggleBook(book) {
                                 :book="item.book"
                                 :dragging="draggingBookId === item.book.id"
                                 :drop-position="dropPositionFor(item.book)"
+                                :reading="reading"
+                                @open="emit('open-book', $event)"
                             />
                             <BookCard
                                 v-else
                                 :book="item.book"
                                 :dragging="draggingBookId === item.book.id"
                                 :drop-position="dropPositionFor(item.book)"
+                                :reading="reading"
+                                @open="emit('open-book', $event)"
                             />
 
                             <button
                                 type="button"
-                                class="absolute -right-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised text-moon opacity-0 shadow-card transition-opacity focus-visible:opacity-100 group-hover:opacity-100 sm:flex"
+                                class="absolute -right-1 -top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised text-moon shadow-card transition-opacity focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                                 :aria-label="t('ui.switch_view')"
                                 :title="t('ui.switch_view')"
                                 @click.prevent="toggleBook(item.book)"

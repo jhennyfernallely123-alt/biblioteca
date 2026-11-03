@@ -3,12 +3,14 @@
 use App\Http\Controllers\Auth\CompleteNicknameController;
 use App\Http\Controllers\BookcaseController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookImageController;
 use App\Http\Controllers\BookLookupController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\DecorationController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReadingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ShelfController;
 use App\Http\Controllers\ShelvesController;
@@ -40,8 +42,15 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::patch('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::patch('/books/{book}/move', [BookController::class, 'move'])->name('books.move');
     Route::patch('/books/{book}/view-mode', [BookController::class, 'viewMode'])->name('books.view-mode');
+    Route::get('/books/{book}/reading', [ReadingController::class, 'show'])->name('reading.show');
+    Route::patch('/books/{book}/reading', [ReadingController::class, 'update'])->name('reading.update');
+    Route::post('/books/{book}/reading-sessions', [ReadingController::class, 'storeSession'])->name('reading.sessions.store');
+    Route::delete('/reading-sessions/{session}', [ReadingController::class, 'destroySession'])->name('reading.sessions.destroy');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
     Route::get('/covers/{book}', CoverController::class)->name('covers.show');
+    Route::get('/book-images/{image}', [BookImageController::class, 'show'])->name('book-images.show');
+    Route::post('/books/{book}/images', [BookImageController::class, 'store'])->name('book-images.store');
+    Route::delete('/book-images/{image}', [BookImageController::class, 'destroy'])->name('book-images.destroy');
 
     Route::get('/decorations', [DecorationController::class, 'index'])->name('decorations.index');
     Route::post('/decorations', [DecorationController::class, 'store'])->name('decorations.store');

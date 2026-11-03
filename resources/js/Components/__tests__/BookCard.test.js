@@ -48,4 +48,21 @@ describe('BookCard', () => {
         expect(before.classes()).toContain('book-drop-before');
         expect(after.classes()).toContain('book-drop-after');
     });
+
+    it('muestra el indicador de lectura y emite el libro al pulsarlo', async () => {
+        const wrapper = mount(BookCard, {
+            props: {
+                book: { id: 1, title: 'Rayuela', author: 'Julio Cortázar', cover_path: null, progress: 40 },
+                reading: true,
+            },
+        });
+
+        expect(wrapper.text()).toContain('Rayuela');
+        expect(wrapper.find('[aria-hidden="true"]').exists()).toBe(true);
+
+        await wrapper.trigger('click');
+
+        expect(wrapper.emitted('open')).toHaveLength(1);
+        expect(wrapper.emitted('open')[0][0].id).toBe(1);
+    });
 });

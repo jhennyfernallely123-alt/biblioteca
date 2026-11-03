@@ -1,15 +1,19 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import BookDragGhost from '@/Components/BookDragGhost.vue';
 import DecorationDragGhost from '@/Components/DecorationDragGhost.vue';
+import ReadingLightbox from '@/Components/ReadingLightbox.vue';
 import Shelf from '@/Components/Shelf.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useI18n } from '@/i18n';
 import { moveBookWithin, sameBookOrder } from '@/libraryOrder';
 import { useLibraryDrag } from '@/useLibraryDrag';
 
-const props = defineProps({ shelves: { type: Array, required: true } });
+const props = defineProps({
+    shelves: { type: Array, required: true },
+    readingBooks: { type: Array, default: () => [] },
+});
 
 const { t } = useI18n();
 
@@ -22,6 +26,8 @@ function cloneShelves(shelves) {
 }
 
 const localShelves = ref(cloneShelves(props.shelves));
+const localReading = ref(props.readingBooks.map((book) => ({ ...book })));
+const selectedBook = ref(null);
 const notice = ref(null);
 let noticeTimer = null;
 
@@ -32,6 +38,45 @@ watch(
     },
     { deep: true }
 );
+
+watch(
+    () => props.readingBooks,
+    (books) => {
+        localReading.value = (books ?? []).map((book) => ({ ...book }));
+    },
+    { deep: true }
+);
+
+const readingShelf = computed(() => ({
+    id: 'reading',
+    name: t('ui.reading_shelf'),
+    display_name: t('ui.reading_shelf'),
+    books: localReading.value,
+    decorations: [],
+}));
+
+function openReading(book) {
+    selectedBook.value = book;
+}
+
+function applyReadingUpdate(book) {
+    localReading.value =
+        book.status === 'reading'
+            ? localReading.value.map((item) => (item.id === book.id ? { ...item, ...book } : item))
+            : localReading.value.filter((item) => item.id !== book.id);
+
+    localShelves.value.forEach((shelf) => {
+        const target = shelf.books.find((item) => item.id === book.id);
+
+        if (target) {
+            Object.assign(target, book);
+        }
+    });
+
+    if (selectedBook.value?.id === book.id) {
+        selectedBook.value = { ...selectedBook.value, ...book };
+    }
+}
 
 function showNotice(type, text) {
     window.clearTimeout(noticeTimer);
@@ -245,14 +290,21 @@ onBeforeUnmount(() => {
 <template>
     <Head :title="t('ui.shelves_title')" />
     <AuthenticatedLayout>
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h1 class="text-3xl md:text-4xl">{{ t('ui.shelves_title') }}</h1>
+        <div class="mb-6 flex flex-wrap items-center justify-end gap-3">
             <Link href="/books/create" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong">
                 {{ t('ui.add_book') }}
             </Link>
         </div>
 
         <p id="book-drag-hint" class="sr-only">{{ t('ui.drag_hint') }}</p>
+
+        <Shelf
+            v-if="localReading.length"
+            :shelf="readingShelf"
+            reading
+            class="mb-8"
+            @open-book="openReading"
+        />
 
         <div
             class="space-y-8"
@@ -288,6 +340,13 @@ onBeforeUnmount(() => {
             :decoration="draggedItem.item"
             :x="pointer.x"
             :y="pointer.y"
+        />
+
+        <ReadingLightbox
+            v-if="selectedBook"
+            :book="selectedBook"
+            @close="selectedBook = null"
+            @updated="applyReadingUpdate"
         />
 
         <Transition

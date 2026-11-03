@@ -27,6 +27,10 @@ const form = useForm({
     published_year: null,
     shelf_id: props.shelves[0]?.id ?? null,
     rating: null,
+    spice_rating: null,
+    heart_rating: null,
+    drop_rating: null,
+    crystal_rating: null,
     notes: '',
     cover: null,
     cover_url: null,
@@ -304,9 +308,41 @@ function submit() {
             <select v-model="form.shelf_id" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon">
                 <option v-for="shelf in props.shelves" :key="shelf.id" :value="shelf.id">{{ shelf.display_name ?? shelf.name }}</option>
             </select>
-            <div>
-                <span class="mb-1 block text-sm text-mist">{{ t('ui.rating_heading') }}</span>
-                <RatingStars v-model="form.rating" editable />
+            <div
+                class="space-y-2"
+                role="group"
+                :aria-label="t('ui.rating_heading')"
+            >
+                <RatingStars
+                    v-model="form.rating"
+                    kind="star"
+                    :label="t('ui.rating_stars')"
+                    editable
+                />
+                <RatingStars
+                    v-model="form.spice_rating"
+                    kind="chili"
+                    :label="t('ui.rating_spice')"
+                    editable
+                />
+                <RatingStars
+                    v-model="form.heart_rating"
+                    kind="heart"
+                    :label="t('ui.rating_hearts')"
+                    editable
+                />
+                <RatingStars
+                    v-model="form.drop_rating"
+                    kind="drop"
+                    :label="t('ui.rating_drops')"
+                    editable
+                />
+                <RatingStars
+                    v-model="form.crystal_rating"
+                    kind="crystal"
+                    :label="t('ui.rating_crystals')"
+                    editable
+                />
             </div>
             <textarea
                 v-model="form.notes"

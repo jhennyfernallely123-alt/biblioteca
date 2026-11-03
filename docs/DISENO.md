@@ -1,6 +1,6 @@
 # DISEÑO — Biblioteca
 
-**Última actualización:** 2026-11-02
+**Última actualización:** 2026-11-03
 **Estado:** vigente
 **Alcance:** identidad visual, componentes, estructura de interfaz y convenciones de diseño de la aplicación Biblioteca.
 
@@ -174,6 +174,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - La tarjeta muestra solo la portada: sin título ni autor debajo. Título y autor aparecen en el tooltip nativo y en el texto alternativo de la imagen.
 - Sin portada: fondo `crema`, borde `madera` al 35 %, título y autor centrados en Cormorant como portada de sustitución.
 - Portada con `alt="Portada de {título}"`.
+- En la estantería **Leyendo**, la portada lleva una insignia circular arriba a la izquierda (`night` al 85 %, anillo y triángulo de reproducción `gold`) y una barra de progreso `gold` sobre una franja `night` al 70 % en la base. El clic abre el diálogo de lectura en lugar de la ficha.
 
 ### Lomo (`BookSpine`)
 
@@ -182,6 +183,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - El título se muestra en vertical, centrado en el lomo. Si es largo, el lomo se engrosa y el texto se reparte en varias columnas (con el cuerpo de 10 a 8 px si hace falta) para que no se corte; aun así el tooltip y el `aria-label` llevan el título completo.
 - El color del texto se elige automáticamente entre `crema` y `tinta` según el brillo del fondo.
 - Al pasar el cursor: halo `dorado` alrededor del lomo, sin desplazamiento, y tooltip con título y autor.
+- En la estantería **Leyendo**, el lomo muestra la insignia de reproducción `gold` centrada arriba y una barra de progreso `gold` en la base; el clic abre el diálogo de lectura en lugar de la ficha.
 
 ### Objeto decorativo (`DecorationArt` + `ShelfDecoration`)
 
@@ -196,10 +198,20 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - Contenedor con título `h2` y contador de libros. Cada libro decide por sí mismo si se ve como portada o como lomo; no hay control de modo por estantería.
 - **Espaldar:** panel de madera oscura detrás de los libros, con veta vertical sutil y sombras interiores arriba y a los lados que simulan profundidad. Junto con la balda forma un perfil en L.
 - **Balda mixta:** todos los libros de la estantería se dibujan en una sola fila respetando su orden, con portadas y lomos intercalados y alineados por la base. Las portadas ocupan ~100 px en móvil y ~110 px en escritorio; los lomos conservan su ancho calculado. En móvil la fila se desliza en horizontal (`overflow-x-auto`) sin barra de desplazamiento visible (utilidad `scrollbar-hidden`, igual que en los filtros de Decoraciones); en escritorio hace saltos de línea (`flex-wrap`). Máximo orientativo de 7 columnas de portada en escritorio.
-- **Cambio rápido (escritorio):** al pasar el ratón por un libro aparece en su esquina superior derecha un botón circular con icono (portada o lomo) que alterna ese libro al instante. En móvil no se muestra; el cambio se hace desde la ficha del libro.
+- **Cambio rápido (escritorio y móvil):** cada libro muestra en su esquina superior derecha un botón circular con icono (portada o lomo) que alterna ese libro al instante. En escritorio aparece al pasar el ratón; en móvil queda visible siempre para poder usarlo con el dedo. Funciona igual en Estanterías y en las bandas de Biblioteca.
 - **Objetos intercalados:** los objetos decorativos comparten la fila con los libros y se ordenan por su ancla: sin ancla van antes del primer libro; con ancla, justo después de ese libro; si el libro ancla no está en la balda, van al final.
 - **Balda:** volumen de 20–24 px con dos caras: superficie superior en perspectiva (`rotateX` suave, de `madera-clara` a `madera`) y frente más oscuro con bisel claro arriba, veta horizontal sutil, sombra interior en los extremos y abajo, y sombra proyectada. La cara superior lleva una sombra interior que simula el contacto de los libros. Debe parecer que sostiene los libros.
 - Estado vacío: `EmptyShelf` con borde discontinuo `madera` al 35 %, frase breve en `crema` y enlace para añadir.
+
+### Lectura en curso (`ReadingLightbox`)
+
+- Se abre al pulsar un libro de la estantería virtual **Leyendo** en Estanterías o el botón **Registrar lectura** de la ficha.
+- Modal `panel` de hasta 512 px: portada de 64 px, título en Cormorant `moon`, autor en `mist` y estado de lectura en `gold` (Sin empezar, Leyendo, Terminado).
+- Barra de progreso `gold` sobre `night-raised` con el porcentaje en `gold`; debajo, «Página X de Y» y el tiempo total leído (`X h Y min`). Sin páginas totales se muestra «Sin páginas totales» y el porcentaje queda en 0.
+- Cronómetro `font-mono` de 30 px con un único botón circular `arcane` que alterna **Empezar** (triángulo) y **Pausar y guardar** (dos barras). Al pausar se guarda la sesión del día con los minutos cronometrados y la página actual si han pasado al menos 10 s; si no, se muestra el aviso «La sesión es demasiado corta; no se guardó.» en `gold`.
+- Campos numéricos de página actual y páginas totales con el botón **Guardar progreso** (borde `line`, hover `magic`/`gold`).
+- Historial en lista: fecha en `moon`, minutos y página en `mist`, y una × `mist` que pasa a `danger` al pasar el cursor; antes de borrar pide confirmación. Vacío: «Todavía no hay sesiones.»
+- Cierre con el botón de la esquina, Escape o pulsando el fondo; el desplazamiento del fondo queda bloqueado. En móvil se ancla abajo con las esquinas superiores redondeadas; en escritorio se centra.
 
 ### Biblioteca completa (`Bookcase` + `BookcaseBand`)
 
@@ -254,8 +266,10 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Valoración (`RatingStars`)
 
-- Cinco estrellas de 20 px en `gold`; vacías con `gold` al 40 %.
-- Editable con teclado (flechas) y accesible (`role="radiogroup"`).
+- Cinco escalas independientes por libro, cada una de 0 a 5: **estrellas** (`rating`, `gold`), **picante** (`spice_rating`, `danger`), **corazón** (`heart_rating`, `orquidea`), **gotas** (`drop_rating`, `mist`) y **bola de cristal** (`crystal_rating`, `magic`).
+- Iconos SVG de 16 px con `currentColor`: estrella, chile, corazón, gota y bola de cristal. Los valores alcanzados usan el color de la escala y los vacíos el mismo color al 40 %.
+- Editable con clic y accesible: cada grupo expone su nombre (`Estrellas`, `Picante`, `Corazón`) y cada botón su valor solo para lectores de pantalla; no hay textos visibles en el bloque.
+- Se editan en la ficha del libro (`Books/Edit`) y en el alta (`Books/Create`), como tres filas de iconos sin etiquetas visibles.
 
 ### Modales
 
@@ -303,7 +317,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Biblioteca (`Library/Index`)
 
-1. Cabecera con título “Mi biblioteca” y botón **Añadir libro**.
+1. Sin cabecera propia: la Biblioteca muestra directamente el mueble, sin título ni botón **Añadir libro**.
 2. Un mueble único con todos los libros de la cuenta en bandas de cinco lomos y como máximo una decoración por banda. Cada libro guarda su banda (`band`) y su posición dentro de ella (`band_position`), así que las bandas son estables: si se saca un libro, la banda queda con menos libros y los de las bandas siguientes no suben. Cada banda es una balda de madera con su respaldo y su tabla, y el mueble crece con las bandas necesarias; los laterales, la cornisa y el zócalo de dos puertas reproducen un armario alto.
 3. Al insertar un libro en una banda llena, el último libro de esa banda baja a la siguiente y esta repite la operación hacia abajo (cascada), de modo que nunca hay más de cinco libros por banda. Las bandas vacías no se dibujan.
 4. Los libros mantienen el tamaño de Estanterías: lomo de 160 px con su ancho calculado y portada de 100 px en móvil y 110 px en escritorio. En móvil la fila se desliza en horizontal sin barra visible (utilidad `scrollbar-hidden`) y en escritorio se centra. Las decoraciones se muestran en la banda de su libro ancla; si esa banda ya tiene una, pasan a la siguiente banda con hueco (o a una banda nueva), de modo que nunca hay más de una por banda. Las que no tienen ancla van al principio de la primera banda.
@@ -314,16 +328,24 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Estanterías (`Shelves/Index`)
 
-1. Cabecera con título “Estanterías” y botón **Añadir libro**.
-2. Lista de estanterías reales en orden, cada una con su balda, sus libros y sus objetos.
-3. Arrastrar una portada o un lomo a otra estantería para mover el libro, o dentro de la misma estantería para cambiar su posición; en móvil, pulsación larga y arrastre.
-4. Crear, renombrar, reordenar y borrar estanterías sigue en Configuraciones.
+1. Sin título de página: solo el botón **Añadir libro**, alineado a la derecha.
+2. Sobre las estanterías reales aparece la estantería virtual **Leyendo** con los libros en curso, sin objetos, sin arrastre y sin botón de cambio de vista; al pulsar un libro se abre el diálogo de lectura. Si no hay libros en curso, la estantería no se muestra.
+3. Lista de estanterías reales en orden, cada una con su balda, sus libros y sus objetos.
+4. Arrastrar una portada o un lomo a otra estantería para mover el libro, o dentro de la misma estantería para cambiar su posición; en móvil, pulsación larga y arrastre.
+5. Crear, renombrar, reordenar y borrar estanterías sigue en Configuraciones.
 
 ### Añadir/editar libro
 
 - Modal con pestañas **Buscar** y **Manual**.
 - En **Buscar**: escáner, ISBN, búsqueda por título/autor y resultados.
 - Pie fijo con selector de estantería y botón **Guardar**.
+
+### Ficha del libro (`Books/Edit`)
+
+- Portada de 96 px en móvil y 180 px en escritorio, con un botón circular de cámara sobre su esquina superior derecha para cambiarla.
+- A la derecha de la portada, compactos, los cinco datos: título, autor, ISBN, editorial y año.
+- Debajo, la valoración en cinco filas de iconos (estrellas, chiles, corazones, gotas y bolas de cristal) y, a su derecha, **tres imágenes del libro** de 112 px de alto, que ocupan el ancho libre en móvil (unos 56–58 px) y 96 px en escritorio, ligeramente inclinadas (`-6°`, `3°` y `-2°`) para un aire de álbum y alineadas con la columna de valoración. Cada ranura admite una imagen JPG, PNG o WebP de hasta 5 MB, se puede reemplazar y quitar con la ×.
+- Las imágenes se guardan en `storage/app/public/book-images` y se sirven por la ruta autenticada `/book-images/{image}`.
 
 ### Decoraciones (`Decorations/Index`)
 
@@ -502,3 +524,20 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-11-02 | En móvil la guirnalda superior pasa a colgar de la cabecera y se desplaza con ella al hacer scroll; antes estaba fija a la pantalla y quedaba flotando sobre el título. En escritorio se mantiene fija arriba. | Agente |
 | 2026-11-02 | Vuelven las hojas que caen, ahora como capa de fondo por detrás del contenido (`z-index: 0`, opacidad baja), sin tapar libros ni textos; las guirnaldas y la enredadera siguen fijas. Con movimiento reducido se ocultan las partículas. | Agente |
 | 2026-11-02 | La temática pasa a tener **doce variantes**, una por mes (invierno, San Valentín, primavera, lluvia, flores, verano, sol, girasoles, vendimia, Halloween, otoño y Navidad), con la misma estructura de adornos y distinta forma y paleta; la tabla queda documentada para los meses siguientes. | Agente |
+| 2026-11-02 | La valoración del libro pasa a tener tres escalas independientes: estrellas (`gold`), picante con chiles (`danger`) y corazón (`orquidea`), editables en la ficha y en el alta. | Agente |
+| 2026-11-02 | El bloque de valoración se queda solo con los iconos: se quitan los textos visibles «Valoración», «Estrellas», «Picante» y «Corazón»; se conservan como `aria-label` para lectores de pantalla. | Agente |
+| 2026-11-02 | La valoración suma dos escalas: **gotas** (`drop_rating`, `mist`) y **bola de cristal** (`crystal_rating`, `magic`), con iconos propios, también sin textos visibles. | Agente |
+| 2026-11-02 | Las tres imágenes de la ficha crecen a 112 px de alto (64 px de ancho en móvil y 96 px en escritorio) para alinearse con la columna de valoración. | Agente |
+| 2026-11-02 | En móvil las imágenes vuelven a 56 px de ancho (manteniendo 112 px de alto) para que sigan en la misma fila que la valoración y no salten debajo; en escritorio quedan en 96 px. | Agente |
+| 2026-11-02 | En escritorio la ficha se limita a 768 px y se centra; la valoración y las tres imágenes quedan juntas en una fila, sin estirar los campos ni separar las imágenes al extremo. En móvil no cambia. | Agente |
+| 2026-11-02 | En escritorio los cinco campos de la ficha crecen (`text-base`, relleno de 12 px) para que la columna de datos llegue al mismo borde que la portada de 180 px; en móvil conservan el tamaño compacto. | Agente |
+| 2026-11-02 | La Biblioteca se queda sin título ni botón **Añadir libro**; el alta de libros se hace solo desde **Estanterías**. | Agente |
+| 2026-11-02 | **Estanterías** también pierde su título de página; solo conserva el botón **Añadir libro** alineado a la derecha. | Agente |
+| 2026-11-02 | La ficha del libro pasa a dos columnas también en móvil: la portada se reduce a 96 px y los campos quedan a su derecha, para no perder la información al hacer scroll. En escritorio la portada mantiene 180 px. | Agente |
+| 2026-11-02 | En la ficha, solo los cinco campos de datos (título, autor, ISBN, editorial y año) van a la derecha de la portada, compactados para ocupar la misma altura que el libro; la valoración, las notas y los botones pasan debajo a ancho completo. | Agente |
+| 2026-11-02 | Se quita el ISBN repetido que aparecía bajo la portada en la ficha del libro; el dato sigue en su campo a la derecha. | Agente |
+| 2026-11-02 | El botón rápido para alternar lomo/portada también aparece en las bandas de la Biblioteca y se muestra siempre en móvil (en escritorio sigue apareciendo al pasar el ratón); antes solo existía en Estanterías y se ocultaba en móvil. | Agente |
+| 2026-11-02 | La ficha del libro deja de mostrar las secciones **Mover a otra estantería** y **Mostrar como**: el cambio de estantería se hace arrastrando en Biblioteca o Estanterías, y la vista con el botón rápido de cada libro. | Agente |
+| 2026-11-02 | **Cambiar portada** deja de ser un botón grande bajo las notas y pasa a un botón circular pequeño con icono de cámara sobre la esquina superior derecha de la portada. | Agente |
+| 2026-11-02 | La ficha del libro estrena tres imágenes inclinadas junto a la valoración, en ranuras fijas con subida, reemplazo y borrado (JPG/PNG/WebP hasta 5 MB), servidas por ruta autenticada. | Agente |
+| 2026-11-03 | Lectura en curso: estantería virtual **Leyendo** en Estanterías con insignia de reproducción y barra de progreso `gold` en portadas y lomos, y diálogo de lectura con porcentaje (página actual y totales), cronómetro con pausa que guarda la sesión del día, e historial de sesiones con borrado confirmado. También se abre con **Registrar lectura** desde la ficha. | Agente |
