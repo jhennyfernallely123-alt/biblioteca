@@ -278,5 +278,6 @@
     "ui.cards_close": "Chiudi",
     "ui.cards_draw_error": "Non è stato possibile girare il tamburo. Riprova.",
     "ui.cards_letter_error": "Non è stato possibile aprire la lettera. Riprova.",
-    "ui.cards_disclaimer": "Carte ispirate a personaggi di finzione. Uso personale."
+    "ui.cards_disclaimer": "Carte ispirate a personaggi di finzione. Uso personale.",
+    "ui.cards_open_album": "Vedi l'album di carte"
 }

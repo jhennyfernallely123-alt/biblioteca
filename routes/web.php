@@ -55,6 +55,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::delete('/book-images/{image}', [BookImageController::class, 'destroy'])->name('book-images.destroy');
 
     Route::get('/cards', [CardController::class, 'index'])->name('cards.index');
+    Route::get('/cards/album', [CardController::class, 'album'])->name('cards.album');
     Route::post('/cards/draw', [CardDrawController::class, 'store'])
         ->middleware('throttle:30,1')
         ->name('cards.draw');

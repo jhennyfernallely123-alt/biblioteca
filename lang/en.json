@@ -278,5 +278,6 @@
     "ui.cards_close": "Close",
     "ui.cards_draw_error": "The drum couldn't be turned. Try again.",
     "ui.cards_letter_error": "The letter couldn't be opened. Try again.",
-    "ui.cards_disclaimer": "Cards inspired by fictional characters. Personal use."
+    "ui.cards_disclaimer": "Cards inspired by fictional characters. Personal use.",
+    "ui.cards_open_album": "View the card album"
 }

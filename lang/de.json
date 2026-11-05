@@ -278,5 +278,6 @@
     "ui.cards_close": "Schließen",
     "ui.cards_draw_error": "Die Trommel ließ sich nicht drehen. Versuch es noch einmal.",
     "ui.cards_letter_error": "Der Brief ließ sich nicht öffnen. Versuch es noch einmal.",
-    "ui.cards_disclaimer": "Karten inspiriert von fiktiven Figuren. Privater Gebrauch."
+    "ui.cards_disclaimer": "Karten inspiriert von fiktiven Figuren. Privater Gebrauch.",
+    "ui.cards_open_album": "Das Kartenalbum ansehen"
 }

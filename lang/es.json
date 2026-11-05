@@ -223,5 +223,6 @@
     "ui.cards_close": "Cerrar",
     "ui.cards_draw_error": "No se pudo girar el bombo. Inténtalo de nuevo.",
     "ui.cards_letter_error": "No se pudo abrir la carta. Inténtalo de nuevo.",
-    "ui.cards_disclaimer": "Cartas inspiradas en personajes de ficción. Uso personal."
+    "ui.cards_disclaimer": "Cartas inspiradas en personajes de ficción. Uso personal.",
+    "ui.cards_open_album": "Ver el álbum de cartas"
 }

@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import CardAlbum from '@/Components/CardAlbum.vue';
 import CardLetterModal from '@/Components/CardLetterModal.vue';
 import CardMachine from '@/Components/CardMachine.vue';
 import { useI18n } from '@/i18n';
@@ -98,7 +97,7 @@ async function openLetter(key) {
             </Link>
         </div>
 
-        <div v-else class="grid gap-6 lg:grid-cols-2">
+        <div v-else class="mx-auto w-full max-w-md">
             <CardMachine
                 :offers="offers"
                 :drawing="drawing"
@@ -107,7 +106,13 @@ async function openLetter(key) {
                 @crank="crank"
                 @open="openLetter(result.card.key)"
             />
-            <CardAlbum :cards="cards" :progress="progress" @open="openLetter" />
+
+            <Link
+                href="/cards/album"
+                class="mt-6 flex min-h-11 items-center justify-center rounded-control border border-dorado/60 px-4 py-2 text-center text-sm text-gold hover:bg-panel"
+            >
+                {{ t('ui.cards_open_album') }}
+            </Link>
         </div>
 
         <CardLetterModal

@@ -278,5 +278,6 @@
     "ui.cards_close": "Pechar",
     "ui.cards_draw_error": "Non se puido xirar o bombo. Inténtao de novo.",
     "ui.cards_letter_error": "Non se puido abrir a carta. Inténtao de novo.",
-    "ui.cards_disclaimer": "Cartas inspiradas en personaxes de ficción. Uso persoal."
+    "ui.cards_disclaimer": "Cartas inspiradas en personaxes de ficción. Uso persoal.",
+    "ui.cards_open_album": "Ver o álbum de cartas"
 }

@@ -104,6 +104,25 @@ it('deja la máquina activa tras tirar en modo de pruebas', function () {
         );
 });
 
+it('carga el álbum de cartas como página propia', function () {
+    UserCard::create([
+        'user_id' => $this->user->id,
+        'card_key' => 'violet',
+        'copies' => 1,
+        'first_unlocked_at' => now(),
+    ]);
+
+    $this->get(route('cards.album'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Cards/Album')
+            ->has('cards', 9)
+            ->where('progress.unlocked', 1)
+            ->where('progress.total', 9)
+            ->where('ink', 0)
+        );
+});
+
 it('no mezcla datos de otras usuarias', function () {
     $other = User::factory()->create();
     Book::factory()->for($other)->create([

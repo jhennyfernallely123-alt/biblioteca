@@ -411,22 +411,30 @@ async function initScene() {
 
     const pearlGeometry = new THREE.SphereGeometry(1, 32, 24);
     const pearlMeshes = [];
-    const pearlPositions = [
-        [-0.64, -0.2, 0.2],
-        [-0.32, -0.24, 0.21],
-        [-0.02, -0.2, 0.2],
-        [-0.52, 0.14, 0.19],
-        [-0.2, 0.1, 0.2],
-        [-0.4, 0.44, 0.18],
-        [-0.1, 0.4, 0.17],
-        [-0.28, 0.68, 0.15],
+    const pearlCount = Math.max(1, Math.min(props.offers.length, 8));
+    const pearlRows = [
+        { y: -0.22, xs: [-0.62, -0.31, -0.01], r: [0.2, 0.21, 0.19] },
+        { y: 0.1, xs: [-0.48, -0.16, -0.02], r: [0.19, 0.2, 0.17] },
+        { y: 0.4, xs: [-0.38, -0.08], r: [0.18, 0.16] },
+        { y: 0.66, xs: [-0.26], r: [0.15] },
     ];
+    const pearlSpots = [];
 
-    pearlPositions.forEach(([x, y, r], index) => {
+    for (const row of pearlRows) {
+        for (let i = 0; i < row.xs.length && pearlSpots.length < pearlCount; i++) {
+            pearlSpots.push({ x: row.xs[i], y: row.y, r: row.r[i] });
+        }
+    }
+
+    const bottomPearls = pearlSpots
+        .map((spot, index) => (spot.y < -0.1 ? index : -1))
+        .filter((index) => index >= 0);
+
+    pearlSpots.forEach((spot, index) => {
         const pearl = new THREE.Mesh(pearlGeometry, pearlMaterial);
-        pearl.scale.setScalar(r);
-        pearl.position.set(x, y, 0.26);
-        pearl.userData = { index, baseX: x, baseY: y, baseZ: 0.26, baseR: r };
+        pearl.scale.setScalar(spot.r);
+        pearl.position.set(spot.x, spot.y, 0.26);
+        pearl.userData = { index, baseX: spot.x, baseY: spot.y, baseZ: 0.26, baseR: spot.r, floorY: -0.4 + spot.r };
         machine.add(pearl);
         pearlMeshes.push(pearl);
     });
@@ -456,33 +464,67 @@ async function initScene() {
     groundShadow.position.set(0, -1.78, 0);
     sceneRoot.add(groundShadow);
 
-    let leverPull = 0;
+    let leverStart = null;
+    const leverDuration = 2.4;
     let dropStart = null;
     let dropIndex = null;
     let pendingDrop = null;
+    let dropVisualIndex = null;
+    let settleStart = null;
+    let settleMoves = [];
+    let settleStarted = false;
+    const settleDuration = 0.55;
     const clock = new THREE.Clock();
 
     function prepareDrop(index) {
         pendingDrop = index;
+        dropVisualIndex = bottomPearls.length > 0
+            ? bottomPearls[Math.floor(Math.random() * bottomPearls.length)]
+            : Math.floor(Math.random() * pearlMeshes.length);
+        leverStart = 0.0001;
     }
 
-    function startDrop(index) {
-        const pearl = pearlMeshes[index % pearlMeshes.length];
+    function startDrop(visualIndex) {
+        const pearl = pearlMeshes[visualIndex];
 
         pearl.visible = false;
 
-        dropBall.visible = true;
-        dropBall.position.set(0, -1.02, 0.66);
-        dropBall.scale.setScalar(0.13);
-        dropBall.material.opacity = 1;
+        dropBall.visible = false;
+        dropBall.position.set(0, -1.16, 0.32);
+        dropBall.scale.setScalar(0.11);
+        dropBall.material.opacity = 0;
 
         dropStart = 0.0001;
-        dropIndex = index % pearlMeshes.length;
+        dropIndex = visualIndex;
+    }
+
+    function beginSettle() {
+        settleMoves = [];
+
+        pearlMeshes.forEach((pearl) => {
+            if (! pearl.visible || settleMoves.some((move) => move.pearl === pearl)) {
+                return;
+            }
+
+            if (pearl.userData.baseY > pearl.userData.floorY + 0.05) {
+                const toY = Math.max(pearl.userData.floorY, pearl.userData.baseY - 0.31);
+
+                settleMoves.push({ pearl, fromY: pearl.position.y, toY });
+                pearl.userData.baseY = toY;
+            }
+        });
+
+        if (settleMoves.length > 0) {
+            settleStart = 0.0001;
+        }
     }
 
     function resetPearls() {
         dropStart = null;
         dropIndex = null;
+        settleStart = null;
+        settleMoves = [];
+        settleStarted = false;
         dropBall.visible = false;
         pearlMeshes.forEach((pearl) => {
             pearl.visible = true;
@@ -493,7 +535,7 @@ async function initScene() {
 
     function sync(result) {
         if (result && pendingDrop !== null && dropStart === null) {
-            startDrop(pendingDrop);
+            startDrop(dropVisualIndex);
             pendingDrop = null;
         }
 
@@ -506,26 +548,56 @@ async function initScene() {
         return 1 - Math.pow(1 - p, 3);
     }
 
+    function easeOutBack(p) {
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+
+        return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+    }
+
+    function easeInOutCubic(p) {
+        return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    }
+
+    function dipCurve(p) {
+        if (reducedMotion) {
+            return p < 0.2 ? p / 0.2 : p < 0.8 ? 1 : 1 - (p - 0.8) / 0.2;
+        }
+
+        if (p < 0.45) {
+            return easeInOutCubic(p / 0.45);
+        }
+
+        if (p < 0.62) {
+            return 1 + Math.sin(((p - 0.45) / 0.17) * Math.PI) * 0.05;
+        }
+
+        return 1 - easeInOutCubic((p - 0.62) / 0.38);
+    }
+
     function render() {
         const dt = Math.min(clock.getDelta(), 0.05);
         const t = clock.elapsedTime;
 
-        if (props.drawing) {
-            leverPull = Math.min(1, leverPull + dt / (reducedMotion ? 0.2 : 1.15));
-        } else {
-            leverPull = Math.max(0, leverPull - dt / 0.25);
+        let dip = 0;
+
+        if (leverStart !== null) {
+            leverStart += dt;
+            const p = Math.min(1, leverStart / leverDuration);
+
+            dip = dipCurve(p);
+
+            if (p >= 1) {
+                leverStart = null;
+            }
         }
 
-        const p = leverPull;
-
-        if (p > 0) {
-            const dip = p < 0.3 ? easeOutCubic(p / 0.3) : p < 0.75 ? 1 - Math.sin(((p - 0.3) / 0.45) * Math.PI) * 0.12 : 1 - easeOutCubic((p - 0.75) / 0.25);
-
-            leverKnob.position.y = 0.98 - dip * (reducedMotion ? 0 : 0.44);
-            leverRod.scale.y = 1 - dip * (reducedMotion ? 0 : 0.48);
-            leverRod.position.y = 0.48 - (dip * (reducedMotion ? 0 : 0.23));
-            leverKnob.position.z = Math.sin(dip * Math.PI) * (reducedMotion ? 0 : 0.1);
-            leverPivot.rotation.x = reducedMotion ? 0 : Math.sin(dip * Math.PI) * 0.14;
+        if (dip > 0) {
+            leverKnob.position.y = 0.98 - dip * 0.44;
+            leverRod.scale.y = 1 - dip * 0.48;
+            leverRod.position.y = 0.48 - dip * 0.23;
+            leverKnob.position.z = Math.sin(dip * Math.PI) * 0.1;
+            leverPivot.rotation.x = Math.sin(dip * Math.PI) * 0.14;
         } else {
             leverKnob.position.y = 0.98;
             leverKnob.position.z = 0;
@@ -541,7 +613,7 @@ async function initScene() {
             machine.position.set(0, 0, 0);
         }
 
-        if (dropStart === null && !reducedMotion) {
+        if (dropStart === null && settleStart === null && !reducedMotion) {
             pearlMeshes.forEach((pearl, index) => {
                 if (pearl.visible) {
                     pearl.position.y = pearl.userData.baseY + Math.sin(t * 1.3 + index * 1.3) * 0.012;
@@ -556,22 +628,58 @@ async function initScene() {
 
             if (s < 0.3) {
                 flapPivot.rotation.x = -1.35 * easeOutCubic(s / 0.3);
-            } else if (s < 0.9) {
-                const f = Math.min(1, (s - 0.3) / 0.55);
-                dropBall.position.y = -1.02 - f * 0.75;
-                dropBall.position.z = 0.6 + f * 0.06;
-                dropBall.material.opacity = f < 0.75 ? 1 : 1 - (f - 0.75) / 0.25;
-            } else if (s < 1.5) {
                 dropBall.visible = false;
-            } else if (s < 2.1) {
-                flapPivot.rotation.x = -1.35 * (1 - easeOutCubic((s - 1.5) / 0.6));
+            } else if (s < 1.05) {
+                dropBall.visible = true;
+
+                const f = Math.min(1, (s - 0.3) / 0.75);
+
+                if (f < 0.25) {
+                    const e = f / 0.25;
+                    dropBall.position.set(0, -1.16, 0.3 + e * 0.12);
+                    dropBall.scale.setScalar(0.11 + e * 0.02);
+                    dropBall.material.opacity = e;
+                } else {
+                    const g = (f - 0.25) / 0.75;
+
+                    dropBall.position.y = -1.16 - g * g * 0.95;
+                    dropBall.position.z = 0.42 + g * 0.34;
+                    dropBall.position.x = g * 0.05;
+                    dropBall.rotation.z = -g * 4;
+                    dropBall.scale.setScalar(0.13);
+                    dropBall.material.opacity = g < 0.72 ? 1 : 1 - (g - 0.72) / 0.28;
+                }
+            } else if (s < 1.6) {
+                dropBall.visible = false;
+
+                if (! settleStarted) {
+                    settleStarted = true;
+                    beginSettle();
+                }
+            } else if (s < 2.2) {
+                flapPivot.rotation.x = -1.35 * (1 - easeOutCubic((s - 1.6) / 0.6));
             } else {
                 flapPivot.rotation.x = 0;
                 dropStart = null;
                 dropIndex = null;
+                settleStarted = false;
             }
         } else if (!props.drawing) {
             flapPivot.rotation.x = 0;
+        }
+
+        if (settleStart !== null) {
+            settleStart += dt;
+            const p = Math.min(1, settleStart / settleDuration);
+
+            settleMoves.forEach(({ pearl, fromY, toY }) => {
+                pearl.position.y = fromY + (toY - fromY) * easeOutBack(p);
+            });
+
+            if (p >= 1) {
+                settleStart = null;
+                settleMoves = [];
+            }
         }
 
         renderer.render(sceneRoot, camera);

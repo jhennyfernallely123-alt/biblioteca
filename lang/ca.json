@@ -278,5 +278,6 @@
     "ui.cards_close": "Tancar",
     "ui.cards_draw_error": "No s'ha pogut girar el bombo. Torna-ho a provar.",
     "ui.cards_letter_error": "No s'ha pogut obrir la carta. Torna-ho a provar.",
-    "ui.cards_disclaimer": "Cartes inspirades en personatges de ficció. Ús personal."
+    "ui.cards_disclaimer": "Cartes inspirades en personatges de ficció. Ús personal.",
+    "ui.cards_open_album": "Veure l'àlbum de cartes"
 }

@@ -60,6 +60,31 @@ class CardController extends Controller
         ]);
     }
 
+    public function album(Request $request, CardCatalogService $catalog): Response
+    {
+        $user = $request->user();
+        $pool = $catalog->poolFor($user);
+        $owned = $user->userCards()->whereIn('card_key', $pool)->get()->keyBy('card_key');
+
+        $cards = collect($pool)->map(function (string $key) use ($catalog, $owned) {
+            $card = $owned->get($key);
+
+            return $catalog->metadata($key) + [
+                'unlocked' => $card !== null,
+                'copies' => (int) ($card->copies ?? 0),
+            ];
+        })->values();
+
+        return Inertia::render('Cards/Album', [
+            'cards' => $cards,
+            'progress' => [
+                'unlocked' => $owned->count(),
+                'total' => count($pool),
+            ],
+            'ink' => (int) ($user->wallet?->ink ?? 0),
+        ]);
+    }
+
     public function show(Request $request, string $card, CardCatalogService $catalog): JsonResponse
     {
         abort_unless($catalog->exists($card), 404);

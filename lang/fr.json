@@ -278,5 +278,6 @@
     "ui.cards_close": "Fermer",
     "ui.cards_draw_error": "Impossible de tourner le tambour. Réessaie.",
     "ui.cards_letter_error": "Impossible d'ouvrir la lettre. Réessaie.",
-    "ui.cards_disclaimer": "Cartes inspirées de personnages de fiction. Usage personnel."
+    "ui.cards_disclaimer": "Cartes inspirées de personnages de fiction. Usage personnel.",
+    "ui.cards_open_album": "Voir l'album de cartes"
 }
