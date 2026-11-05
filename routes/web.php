@@ -5,6 +5,8 @@ use App\Http\Controllers\BookcaseController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookImageController;
 use App\Http\Controllers\BookLookupController;
+use App\Http\Controllers\CardController;
+use App\Http\Controllers\CardDrawController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\DecorationController;
 use App\Http\Controllers\LibraryController;
@@ -51,6 +53,14 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::get('/book-images/{image}', [BookImageController::class, 'show'])->name('book-images.show');
     Route::post('/books/{book}/images', [BookImageController::class, 'store'])->name('book-images.store');
     Route::delete('/book-images/{image}', [BookImageController::class, 'destroy'])->name('book-images.destroy');
+
+    Route::get('/cards', [CardController::class, 'index'])->name('cards.index');
+    Route::post('/cards/draw', [CardDrawController::class, 'store'])
+        ->middleware('throttle:30,1')
+        ->name('cards.draw');
+    Route::get('/cards/{card}', [CardController::class, 'show'])
+        ->where('card', '[a-z_]+')
+        ->name('cards.show');
 
     Route::get('/decorations', [DecorationController::class, 'index'])->name('decorations.index');
     Route::post('/decorations', [DecorationController::class, 'store'])->name('decorations.store');

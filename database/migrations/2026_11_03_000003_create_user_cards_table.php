@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('user_cards', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('card_key', 64);
+            $table->unsignedInteger('copies')->default(1);
+            $table->timestamp('first_unlocked_at');
+            $table->timestamps();
+
+            $table->unique(['user_id', 'card_key']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('user_cards');
+    }
+};

@@ -44,6 +44,7 @@ onBeforeUnmount(() => {
 const links = computed(() => [
     { label: t('ui.nav_library'), href: '/' },
     { label: t('ui.nav_shelves'), href: '/shelves' },
+    { label: t('ui.nav_cards'), href: '/cards' },
     { label: t('ui.nav_decorations'), href: '/decorations' },
     { label: t('ui.nav_settings'), href: '/settings' },
 ]);

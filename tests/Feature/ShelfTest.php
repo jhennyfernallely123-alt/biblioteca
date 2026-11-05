@@ -37,42 +37,42 @@ it('renombra una estantería propia', function () {
     expect($shelf->fresh()->name)->toBe('Nueva');
 });
 
-    it('no permite renombrar una estantería fija', function () {
-        $fixed = Shelf::factory()->for($this->user)->create(['name' => 'Pendientes', 'is_fixed' => true]);
+it('no permite renombrar una estantería fija', function () {
+    $fixed = Shelf::factory()->for($this->user)->create(['name' => 'Pendientes', 'is_fixed' => true]);
 
-        $this->patch(route('shelves.update', $fixed), ['name' => 'Cambiada'])
-            ->assertForbidden();
+    $this->patch(route('shelves.update', $fixed), ['name' => 'Cambiada'])
+        ->assertForbidden();
 
-        expect($fixed->fresh()->name)->toBe('Pendientes');
-    });
+    expect($fixed->fresh()->name)->toBe('Pendientes');
+});
 
-    it('no permite eliminar una estantería fija', function () {
-        $fixed = Shelf::factory()->for($this->user)->create(['name' => 'En biblioteca', 'is_fixed' => true]);
+it('no permite eliminar una estantería fija', function () {
+    $fixed = Shelf::factory()->for($this->user)->create(['name' => 'En biblioteca', 'is_fixed' => true]);
 
-        $this->delete(route('shelves.destroy', $fixed))
-            ->assertForbidden();
+    $this->delete(route('shelves.destroy', $fixed))
+        ->assertForbidden();
 
-        expect($fixed->fresh()->exists)->toBeTrue();
-    });
+    expect($fixed->fresh()->exists)->toBeTrue();
+});
 
-    it('permite renombrar una estantería normal propia', function () {
-        $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Vieja', 'is_fixed' => false]);
+it('permite renombrar una estantería normal propia', function () {
+    $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Vieja', 'is_fixed' => false]);
 
-        $this->patch(route('shelves.update', $shelf), ['name' => 'Nueva'])
-            ->assertRedirect();
+    $this->patch(route('shelves.update', $shelf), ['name' => 'Nueva'])
+        ->assertRedirect();
 
-        expect($shelf->fresh()->name)->toBe('Nueva');
-    });
+    expect($shelf->fresh()->name)->toBe('Nueva');
+});
 
-    it('permite eliminar una estantería normal propia', function () {
-        $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Otra', 'is_fixed' => false]);
+it('permite eliminar una estantería normal propia', function () {
+    $shelf = Shelf::factory()->for($this->user)->create(['name' => 'Otra', 'is_fixed' => false]);
 
-        $this->delete(route('shelves.destroy', $shelf))->assertRedirect();
+    $this->delete(route('shelves.destroy', $shelf))->assertRedirect();
 
-        expect($shelf->fresh())->toBeNull();
-    });
+    expect($shelf->fresh())->toBeNull();
+});
 
-    it('reordena las estanterías del usuario', function () {
+it('reordena las estanterías del usuario', function () {
     $a = Shelf::factory()->for($this->user)->create(['name' => 'A', 'position' => 0]);
     $b = Shelf::factory()->for($this->user)->create(['name' => 'B', 'position' => 1]);
 

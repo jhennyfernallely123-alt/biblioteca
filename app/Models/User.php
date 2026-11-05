@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -46,6 +47,21 @@ class User extends Authenticatable
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);
+    }
+
+    public function cardDraws(): HasMany
+    {
+        return $this->hasMany(CardDraw::class);
+    }
+
+    public function userCards(): HasMany
+    {
+        return $this->hasMany(UserCard::class);
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(UserWallet::class);
     }
 
     /**

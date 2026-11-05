@@ -1,0 +1,1080 @@
+.arcane-sky {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-night);
+  background-image:
+    radial-gradient(ellipse 70% 55% at 10% 0%, color-mix(in srgb, var(--color-arcane) 30%, transparent), transparent 70%),
+    radial-gradient(ellipse 65% 50% at 90% 100%, color-mix(in srgb, var(--color-magic) 16%, transparent), transparent 70%),
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--color-moon) 45%, transparent) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 9%, color-mix(in srgb, var(--color-moon) 35%, transparent) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 34% 64%, color-mix(in srgb, var(--color-moon) 28%, transparent) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 86% 42%, color-mix(in srgb, var(--color-moon) 32%, transparent) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 58% 86%, color-mix(in srgb, var(--color-moon) 26%, transparent) 0 1px, transparent 1.6px);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.arcane-stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.arcane-stars__layer {
+  position: absolute;
+  inset: -6%;
+  background-repeat: repeat;
+  will-change: transform, opacity;
+}
+
+.arcane-stars__layer--far {
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle at 13% 27%, color-mix(in srgb, var(--color-moon) 68%, transparent) 0 0.7px, transparent 1.1px),
+    radial-gradient(circle at 71% 19%, color-mix(in srgb, var(--color-moon) 62%, transparent) 0 0.7px, transparent 1.1px),
+    radial-gradient(circle at 42% 63%, color-mix(in srgb, var(--color-moon) 70%, transparent) 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 88% 74%, color-mix(in srgb, var(--color-moon) 60%, transparent) 0 0.7px, transparent 1.1px),
+    radial-gradient(circle at 24% 82%, color-mix(in srgb, var(--color-moon) 66%, transparent) 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 57% 41%, color-mix(in srgb, var(--color-moon) 72%, transparent) 0 0.7px, transparent 1.1px),
+    radial-gradient(circle at 79% 53%, color-mix(in srgb, var(--color-moon) 64%, transparent) 0 0.8px, transparent 1.2px);
+  background-size:
+    277px 277px,
+    389px 389px,
+    463px 463px,
+    587px 587px,
+    691px 691px,
+    823px 823px,
+    947px 947px;
+  animation:
+    arcane-drift-a 150s ease-in-out infinite alternate,
+    arcane-twinkle-a 14s ease-in-out infinite alternate;
+  animation-delay: 0s, -3s;
+}
+
+.arcane-stars__layer--mid {
+  opacity: 0.65;
+  background-image:
+    radial-gradient(circle at 9% 61%, color-mix(in srgb, var(--color-moon) 76%, transparent) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle at 63% 9%, color-mix(in srgb, var(--color-moon) 82%, transparent) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 37% 77%, color-mix(in srgb, var(--color-moon) 72%, transparent) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle at 82% 35%, color-mix(in srgb, var(--color-moon) 80%, transparent) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 21% 15%, color-mix(in srgb, var(--color-moon) 74%, transparent) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle at 94% 88%, color-mix(in srgb, var(--color-moon) 78%, transparent) 0 1px, transparent 1.5px);
+  background-size:
+    331px 331px,
+    457px 457px,
+    619px 619px,
+    733px 733px,
+    881px 881px,
+    1013px 1013px;
+  animation:
+    arcane-drift-b 120s ease-in-out infinite alternate,
+    arcane-twinkle-b 11s ease-in-out infinite alternate;
+  animation-delay: -4s, -7s;
+}
+
+.arcane-stars__layer--near {
+  opacity: 0.75;
+  background-image:
+    radial-gradient(circle at 31% 11%, color-mix(in srgb, var(--color-moon) 84%, transparent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at 76% 47%, color-mix(in srgb, var(--color-moon) 88%, transparent) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 12% 89%, color-mix(in srgb, var(--color-gold) 76%, transparent) 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at 58% 29%, color-mix(in srgb, var(--color-moon) 86%, transparent) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 91% 67%, color-mix(in srgb, var(--color-moon) 90%, transparent) 0 1.1px, transparent 1.7px);
+  background-size:
+    421px 421px,
+    557px 557px,
+    719px 719px,
+    907px 907px,
+    1069px 1069px;
+  animation:
+    arcane-drift-c 95s ease-in-out infinite alternate,
+    arcane-twinkle-c 8s ease-in-out infinite alternate;
+  animation-delay: -2s, -1s;
+}
+
+.arcane-stars__layer--bright {
+  opacity: 0.85;
+  background-image:
+    radial-gradient(circle at 47% 21%, color-mix(in srgb, var(--color-moon) 94%, transparent) 0 1.4px, transparent 2.1px),
+    radial-gradient(circle at 17% 57%, color-mix(in srgb, var(--color-gold) 82%, transparent) 0 1.5px, transparent 2.2px),
+    radial-gradient(circle at 83% 13%, color-mix(in srgb, var(--color-moon) 92%, transparent) 0 1.4px, transparent 2.1px),
+    radial-gradient(circle at 62% 81%, color-mix(in srgb, var(--color-gold) 78%, transparent) 0 1.5px, transparent 2.2px);
+  background-size:
+    509px 509px,
+    677px 677px,
+    883px 883px,
+    1097px 1097px;
+  animation:
+    arcane-drift-d 70s ease-in-out infinite alternate,
+    arcane-twinkle-d 6s ease-in-out infinite alternate;
+  animation-delay: -5s, -4s;
+}
+
+@keyframes arcane-drift-a {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-2.2%, -1.4%, 0);
+  }
+}
+
+@keyframes arcane-drift-b {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(1.8%, -2.2%, 0);
+  }
+}
+
+@keyframes arcane-drift-c {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-1.5%, 2%, 0);
+  }
+}
+
+@keyframes arcane-drift-d {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(2.4%, 1.2%, 0);
+  }
+}
+
+@keyframes arcane-twinkle-a {
+  from {
+    opacity: 0.38;
+  }
+  to {
+    opacity: 0.72;
+  }
+}
+
+@keyframes arcane-twinkle-b {
+  from {
+    opacity: 0.48;
+  }
+  to {
+    opacity: 0.82;
+  }
+}
+
+@keyframes arcane-twinkle-c {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 0.95;
+  }
+}
+
+@keyframes arcane-twinkle-d {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcane-stars__layer {
+    animation: none;
+  }
+}
+
+.shelf-case {
+  position: relative;
+  border-radius: 6px 6px 0 0;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(43, 38, 32, 0.05) 0 1px, transparent 1px 28px),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-madera) 55%, var(--color-tinta)) 0%,
+      color-mix(in srgb, var(--color-madera) 68%, var(--color-tinta)) 100%
+    );
+  box-shadow:
+    inset 0 20px 26px -20px rgba(43, 38, 32, 0.6),
+    inset 14px 0 22px -18px rgba(43, 38, 32, 0.55),
+    inset -14px 0 22px -18px rgba(43, 38, 32, 0.55);
+}
+
+.shelf-case::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background-image: linear-gradient(180deg, rgba(250, 244, 230, 0.16), transparent);
+}
+
+.shelf-case__books {
+  position: relative;
+  padding: 16px 12px 0;
+}
+
+.shelf-board {
+  position: relative;
+  height: 22px;
+  margin-top: 2px;
+  perspective: 640px;
+  filter: drop-shadow(0 6px 6px rgba(43, 38, 32, 0.22));
+}
+
+.shelf-board__top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 10px;
+  border-radius: 3px 3px 0 0;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(43, 38, 32, 0.05) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, var(--color-madera-clara), var(--color-madera));
+  box-shadow:
+    inset 0 1px 0 rgba(250, 244, 230, 0.45),
+    inset 8px 0 12px -10px rgba(43, 38, 32, 0.45),
+    inset -8px 0 12px -10px rgba(43, 38, 32, 0.45),
+    inset 0 8px 10px -8px rgba(43, 38, 32, 0.55);
+  transform: rotateX(24deg);
+  transform-origin: bottom center;
+}
+
+.shelf-board__front {
+  position: absolute;
+  inset: 8px 0 0 0;
+  border-radius: 0 0 4px 4px;
+  background-image:
+    repeating-linear-gradient(180deg, rgba(43, 38, 32, 0.07) 0 1px, transparent 1px 7px),
+    linear-gradient(
+      180deg,
+      var(--color-madera) 0%,
+      color-mix(in srgb, var(--color-madera) 76%, var(--color-tinta)) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(250, 244, 230, 0.22),
+    inset 10px 0 14px -12px rgba(43, 38, 32, 0.5),
+    inset -10px 0 14px -12px rgba(43, 38, 32, 0.5),
+    inset 0 -3px 5px rgba(43, 38, 32, 0.35),
+    0 7px 9px -4px rgba(43, 38, 32, 0.32);
+}
+
+.book-glow {
+  transition: box-shadow 160ms ease-out;
+}
+
+.book-glow:hover,
+.group:hover .book-glow {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--color-dorado) 80%, transparent),
+    0 0 18px 4px color-mix(in srgb, var(--color-dorado) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.book-drag-source {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  transition: opacity 140ms ease-out;
+}
+
+body.book-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+body.book-dragging .book-drag-source {
+  cursor: grabbing;
+}
+
+.decoration-drag-source {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  transition: opacity 140ms ease-out;
+}
+
+body.book-dragging .decoration-drag-source {
+  cursor: grabbing;
+}
+
+
+.shelf-drag-active {
+  outline: 1px dashed color-mix(in srgb, var(--color-magic) 28%, transparent);
+  outline-offset: 8px;
+  border-radius: var(--radius-card);
+}
+
+.shelf-drop-target {
+  outline: 2px solid var(--color-magic);
+  outline-offset: 8px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 36px color-mix(in srgb, var(--color-magic) 24%, transparent);
+}
+
+.book-drop-before::before,
+.book-drop-after::after {
+  content: "";
+  position: absolute;
+  inset-block: -6px;
+  width: 2px;
+  border-radius: 9999px;
+  background: var(--color-magic);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-magic) 45%, transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.book-drop-before::before {
+  inset-inline-start: -6px;
+}
+
+.book-drop-after::after {
+  inset-inline-end: -6px;
+}
+
+.book-drag-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.45));
+}
+
+.book-drag-ghost__cover {
+  display: flex;
+  width: 76px;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-crema);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-dorado) 55%, transparent),
+    0 0 24px color-mix(in srgb, var(--color-magic) 30%, transparent);
+}
+
+.book-drag-ghost__cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-drag-ghost__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 6px;
+  color: var(--color-tinta);
+  font-family: var(--font-serif);
+  font-size: 11px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.book-drag-ghost__spine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 148px;
+  padding: 4px 0;
+  border-radius: 2px;
+  background: var(--color-madera);
+  color: var(--color-crema);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-dorado) 45%, transparent),
+    0 0 24px color-mix(in srgb, var(--color-magic) 30%, transparent);
+}
+
+.book-drag-ghost__spine span {
+  max-height: 100%;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+}
+
+
+.magic-welcome {
+  isolation: isolate;
+}
+
+.magic-welcome__aura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--color-arcane) 32%, transparent), transparent 42%),
+    radial-gradient(circle at 28% 72%, color-mix(in srgb, var(--color-magic) 18%, transparent), transparent 38%),
+    radial-gradient(circle at 74% 24%, color-mix(in srgb, var(--color-gold) 14%, transparent), transparent 34%);
+  animation: welcome-breathe 9s ease-in-out infinite alternate;
+}
+
+.magic-welcome__sparkles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.magic-welcome__spark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--color-gold);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--color-gold) 45%, transparent);
+  opacity: 0;
+  animation: welcome-twinkle 4.8s ease-in-out infinite;
+}
+
+.magic-welcome__spark:nth-child(1) { left: 8%; top: 22%; animation-delay: -0.4s; }
+.magic-welcome__spark:nth-child(2) { left: 18%; top: 68%; animation-delay: -2.1s; }
+.magic-welcome__spark:nth-child(3) { left: 29%; top: 34%; animation-delay: -3.2s; }
+.magic-welcome__spark:nth-child(4) { left: 41%; top: 14%; animation-delay: -1.2s; }
+.magic-welcome__spark:nth-child(5) { left: 57%; top: 78%; animation-delay: -2.8s; }
+.magic-welcome__spark:nth-child(6) { left: 68%; top: 28%; animation-delay: -0.9s; }
+.magic-welcome__spark:nth-child(7) { left: 79%; top: 62%; animation-delay: -3.8s; }
+.magic-welcome__spark:nth-child(8) { left: 90%; top: 18%; animation-delay: -1.8s; }
+.magic-welcome__spark:nth-child(9) { left: 12%; top: 44%; animation-delay: -2.5s; }
+.magic-welcome__spark:nth-child(10) { left: 86%; top: 84%; animation-delay: -0.2s; }
+
+.magic-welcome__card {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-gold) 14%, transparent),
+    0 24px 70px color-mix(in srgb, var(--color-night) 70%, transparent),
+    0 0 70px color-mix(in srgb, var(--color-arcane) 28%, transparent);
+  animation: welcome-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.magic-welcome__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-moon) 10%, transparent), transparent 36%, color-mix(in srgb, var(--color-magic) 8%, transparent));
+  pointer-events: none;
+}
+
+.magic-welcome__card::after {
+  content: "";
+  position: absolute;
+  inset-inline: 18%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-gold) 70%, transparent), transparent);
+  pointer-events: none;
+}
+
+.magic-welcome__seal {
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--color-gold) 22%, transparent),
+    inset 0 0 14px color-mix(in srgb, var(--color-arcane) 22%, transparent);
+}
+
+.magic-welcome__enter {
+  box-shadow: 0 0 22px color-mix(in srgb, var(--color-arcane) 45%, transparent);
+  transition: background-color 160ms ease-out, box-shadow 160ms ease-out;
+}
+
+.magic-welcome__enter:hover {
+  box-shadow: 0 0 30px color-mix(in srgb, var(--color-magic) 35%, transparent);
+}
+
+@keyframes welcome-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes welcome-breathe {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes welcome-twinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magic-welcome__aura,
+  .magic-welcome__card,
+  .magic-welcome__spark {
+    animation: none;
+  }
+
+  .magic-welcome__spark {
+    opacity: 0.65;
+  }
+}
+
+.bookcase {
+  position: relative;
+  padding: 16px 22px 0;
+  border-radius: 8px 8px 4px 4px;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-madera) 80%, var(--color-tinta)),
+    color-mix(in srgb, var(--color-madera) 90%, var(--color-tinta))
+  );
+  box-shadow:
+    inset 0 2px 0 rgba(250, 244, 230, 0.12),
+    inset 14px 0 22px -18px rgba(43, 38, 32, 0.55),
+    inset -14px 0 22px -18px rgba(43, 38, 32, 0.55),
+    0 22px 36px -26px rgba(0, 0, 0, 0.6);
+}
+
+.bookcase::before,
+.bookcase::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 14px;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-madera-clara) 70%, var(--color-tinta)),
+    color-mix(in srgb, var(--color-madera) 60%, var(--color-tinta))
+  );
+  box-shadow: inset 0 0 12px rgba(43, 38, 32, 0.45);
+}
+
+.bookcase::before {
+  inset-inline-start: 0;
+  border-radius: 8px 0 0 4px;
+}
+
+.bookcase::after {
+  inset-inline-end: 0;
+  border-radius: 0 8px 4px 0;
+}
+
+.bookcase__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 8px;
+}
+
+.bookcase__plinth {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px -22px 0;
+  padding: 16px 22px 22px;
+  border-radius: 0 0 4px 4px;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-madera) 70%, var(--color-tinta)),
+    color-mix(in srgb, var(--color-madera) 55%, var(--color-tinta))
+  );
+  box-shadow: inset 0 10px 16px -14px rgba(43, 38, 32, 0.7);
+}
+
+.bookcase__door {
+  min-height: 46px;
+  border: 1px solid color-mix(in srgb, var(--color-madera-clara) 45%, transparent);
+  border-radius: 3px;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(43, 38, 32, 0.06) 0 1px, transparent 1px 18px),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-madera-clara) 70%, var(--color-tinta)),
+      color-mix(in srgb, var(--color-madera) 60%, var(--color-tinta))
+    );
+  box-shadow: inset 0 0 0 1px rgba(43, 38, 32, 0.25);
+}
+
+@media (max-width: 640px) {
+  .bookcase {
+    padding: 12px 12px 0;
+  }
+
+  .bookcase::before,
+  .bookcase::after {
+    width: 10px;
+  }
+
+  .bookcase__plinth {
+    margin-inline: -12px;
+    padding: 12px 12px 16px;
+  }
+}
+
+.seasonal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.arcane-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+
+.arcane-sky[data-season="autumn"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 42% at 12% 0%, color-mix(in srgb, var(--color-terracota) 20%, transparent), transparent 70%),
+    radial-gradient(ellipse 55% 38% at 92% 100%, color-mix(in srgb, var(--color-oliva) 18%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="christmas"]::after {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 50% 0%, color-mix(in srgb, var(--color-danger) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in srgb, var(--color-success) 14%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 0% 100%, color-mix(in srgb, var(--color-gold) 10%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="halloween"]::after {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 8% 0%, color-mix(in srgb, var(--color-orquidea) 22%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 95% 100%, color-mix(in srgb, var(--color-terracota) 16%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="winter"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 42% at 50% 0%, color-mix(in srgb, var(--color-moon) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 10% 100%, color-mix(in srgb, var(--color-mist) 14%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="spring"]::after {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 15% 0%, color-mix(in srgb, var(--color-salvia) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 90% 100%, color-mix(in srgb, var(--color-orquidea) 14%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="summer"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, var(--color-gold) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 10% 100%, color-mix(in srgb, var(--color-dorado) 14%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="valentine"]::after {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 50% 0%, color-mix(in srgb, var(--color-danger) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 90% 100%, color-mix(in srgb, var(--color-orquidea) 14%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="rain"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 42% at 20% 0%, color-mix(in srgb, var(--color-mist) 18%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 90% 100%, color-mix(in srgb, var(--color-salvia) 12%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="flowers"]::after {
+  background-image:
+    radial-gradient(ellipse 55% 40% at 50% 0%, color-mix(in srgb, var(--color-orquidea) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 90% 100%, color-mix(in srgb, var(--color-gold) 12%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="sun"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, var(--color-terracota) 14%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 10% 100%, color-mix(in srgb, var(--color-gold) 18%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="sunflower"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 42% at 50% 0%, color-mix(in srgb, var(--color-dorado) 18%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 10% 100%, color-mix(in srgb, var(--color-oliva) 12%, transparent), transparent 70%);
+}
+
+.arcane-sky[data-season="harvest"]::after {
+  background-image:
+    radial-gradient(ellipse 60% 42% at 15% 0%, color-mix(in srgb, var(--color-terracota) 18%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 38% at 90% 100%, color-mix(in srgb, var(--color-oliva) 16%, transparent), transparent 70%);
+}
+
+[data-season="autumn"] {
+  --season-color-1: var(--color-terracota);
+  --season-color-2: var(--color-oliva);
+  --season-color-3: var(--color-gold);
+  --season-color-4: var(--color-madera-clara);
+}
+
+[data-season="christmas"] {
+  --season-color-1: var(--color-crema);
+  --season-color-2: var(--color-danger);
+  --season-color-3: var(--color-success);
+  --season-color-4: var(--color-gold);
+}
+
+[data-season="halloween"] {
+  --season-color-1: var(--color-orquidea);
+  --season-color-2: var(--color-terracota);
+  --season-color-3: var(--color-crema);
+  --season-color-4: var(--color-gold);
+}
+
+[data-season="winter"] {
+  --season-color-1: var(--color-moon);
+  --season-color-2: var(--color-mist);
+  --season-color-3: var(--color-crema);
+  --season-color-4: var(--color-gold);
+}
+
+[data-season="valentine"] {
+  --season-color-1: var(--color-danger);
+  --season-color-2: var(--color-orquidea);
+  --season-color-3: var(--color-crema);
+  --season-color-4: var(--color-gold);
+}
+
+[data-season="spring"] {
+  --season-color-1: var(--color-salvia);
+  --season-color-2: var(--color-orquidea);
+  --season-color-3: var(--color-crema);
+  --season-color-4: var(--color-gold);
+}
+
+[data-season="rain"] {
+  --season-color-1: var(--color-mist);
+  --season-color-2: var(--color-salvia);
+  --season-color-3: var(--color-moon);
+  --season-color-4: var(--color-crema);
+}
+
+[data-season="flowers"] {
+  --season-color-1: var(--color-orquidea);
+  --season-color-2: var(--color-gold);
+  --season-color-3: var(--color-salvia);
+  --season-color-4: var(--color-crema);
+}
+
+[data-season="summer"] {
+  --season-color-1: var(--color-gold);
+  --season-color-2: var(--color-dorado);
+  --season-color-3: var(--color-crema);
+  --season-color-4: var(--color-salvia);
+}
+
+[data-season="sun"] {
+  --season-color-1: var(--color-gold);
+  --season-color-2: var(--color-terracota);
+  --season-color-3: var(--color-dorado);
+  --season-color-4: var(--color-crema);
+}
+
+[data-season="sunflower"] {
+  --season-color-1: var(--color-dorado);
+  --season-color-2: var(--color-oliva);
+  --season-color-3: var(--color-gold);
+  --season-color-4: var(--color-crema);
+}
+
+[data-season="harvest"] {
+  --season-color-1: var(--color-terracota);
+  --season-color-2: var(--color-oliva);
+  --season-color-3: var(--color-madera-clara);
+  --season-color-4: var(--color-gold);
+}
+
+.seasonal-garland {
+  width: 100%;
+}
+
+.seasonal-garland--compact {
+  height: 20px;
+}
+
+.seasonal-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.seasonal-particle {
+  position: absolute;
+  top: -8vh;
+  opacity: 0.4;
+  animation-name: seasonal-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.seasonal-particle__shape {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--item-color, var(--color-crema));
+}
+
+@keyframes seasonal-fall {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(var(--season-drift, 0px), 112vh, 0) rotate(320deg);
+  }
+}
+
+.seasonal-particle--leaf {
+  border-radius: 0 70% 0 70%;
+}
+
+.seasonal-particle--snow {
+  border-radius: 50%;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--item-color, var(--color-crema)) 55%, transparent);
+}
+
+.seasonal-particle--petal {
+  border-radius: 60% 40% 60% 40%;
+}
+
+.seasonal-particle--mote {
+  border-radius: 50%;
+  opacity: 0.7;
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--item-color, var(--color-gold)) 45%, transparent);
+}
+
+.seasonal-particle--bauble {
+  border-radius: 50%;
+  box-shadow: inset -2px -2px 4px color-mix(in srgb, var(--color-tinta) 35%, transparent);
+}
+
+.seasonal-particle--bauble::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 2px;
+  height: 3px;
+  transform: translateX(-50%);
+  background-color: var(--color-gold);
+}
+
+.seasonal-particle--heart {
+  border-radius: 0 0 3px 0;
+  transform: rotate(45deg);
+  background-color: var(--item-color, var(--color-orquidea));
+}
+
+.seasonal-particle--heart::before,
+.seasonal-particle--heart::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--item-color, var(--color-orquidea));
+}
+
+.seasonal-particle--heart::before {
+  top: -50%;
+  left: 0;
+}
+
+.seasonal-particle--heart::after {
+  top: 0;
+  left: -50%;
+}
+
+.seasonal-particle--drop {
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+}
+
+.seasonal-particle--star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.seasonal-trim {
+  display: none;
+}
+
+.seasonal-trim__string {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-gold) 45%, transparent) 10%,
+    color-mix(in srgb, var(--color-gold) 45%, transparent) 90%,
+    transparent
+  );
+}
+
+.seasonal-trim__hang {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.seasonal-trim__thread {
+  width: 1px;
+  height: var(--hang-length, 16px);
+  background-color: color-mix(in srgb, var(--color-gold) 40%, transparent);
+}
+
+.seasonal-trim__item {
+  position: relative;
+  display: block;
+  width: var(--item-size, 12px);
+  height: var(--item-size, 12px);
+  background-color: var(--item-color, var(--color-gold));
+}
+
+.seasonal-trim__bat {
+  width: 20px;
+  height: 10px;
+  color: var(--color-moon);
+}
+
+.seasonal-vine {
+  position: absolute;
+  top: 120px;
+  bottom: 96px;
+  right: 8px;
+  width: 20px;
+}
+
+.seasonal-vine__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background-image: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--color-gold) 28%, transparent) 8%,
+    color-mix(in srgb, var(--color-gold) 28%, transparent) 92%,
+    transparent
+  );
+}
+
+.seasonal-vine__leaf {
+  position: absolute;
+  right: 0;
+  display: block;
+  width: var(--item-size, 8px);
+  height: var(--item-size, 8px);
+  background-color: var(--item-color, var(--color-gold));
+  translate: 50% 0;
+  rotate: var(--vine-rotate, 0deg);
+}
+
+@media (min-width: 768px) {
+  .seasonal-trim {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 240px;
+    right: 0;
+    height: 64px;
+  }
+
+  .seasonal-vine {
+    top: 96px;
+    bottom: 96px;
+    right: auto;
+    left: 216px;
+    width: 24px;
+  }
+}
+
+.seasonal-web {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  color: var(--color-crema);
+  opacity: 0.16;
+}
+
+.seasonal-web--start {
+  inset-block-start: -8px;
+  inset-inline-start: -8px;
+}
+
+.seasonal-web--end {
+  inset-block-end: -8px;
+  inset-inline-end: -8px;
+  transform: rotate(180deg);
+}
+
+.seasonal-spider {
+  position: absolute;
+  width: 14px;
+  color: var(--color-moon);
+  opacity: 0.7;
+}
+
+.seasonal-spider--one {
+  inset-block-start: 14%;
+  inset-inline-end: 12%;
+}
+
+.seasonal-spider--two {
+  inset-block-start: 30%;
+  inset-inline-start: 9%;
+}
+
+.seasonal-spider__thread {
+  display: block;
+  width: 1px;
+  height: 14px;
+  margin-inline: auto;
+  background-color: color-mix(in srgb, var(--color-crema) 40%, transparent);
+}
+
+.seasonal-spider svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seasonal-particles {
+    display: none;
+  }
+}

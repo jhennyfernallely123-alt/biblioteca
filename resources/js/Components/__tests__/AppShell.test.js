@@ -60,6 +60,7 @@ describe('AppShell', () => {
         expect(links.map((link) => link.attributes('href'))).toEqual([
             '/',
             '/shelves',
+            '/cards',
             '/decorations',
             '/settings',
         ]);
@@ -84,7 +85,7 @@ describe('AppShell', () => {
         expect(nav.get('[data-nav-menu-toggle]').attributes('aria-expanded')).toBe('true');
         expect(
             nav.findAll('[data-nav-menu] a').map((link) => link.attributes('href'))
-        ).toEqual(['/decorations', '/settings']);
+        ).toEqual(['/cards', '/decorations', '/settings']);
 
         await nav.get('[data-nav-menu-toggle]').trigger('click');
 

@@ -1078,3 +1078,224 @@ body.book-dragging .decoration-drag-source {
     display: none;
   }
 }
+
+
+.card-machine {
+  position: relative;
+  background: transparent;
+}
+
+.card-machine__body {
+  position: relative;
+  aspect-ratio: 340 / 440;
+}
+
+.card-machine__body--cranking {
+  will-change: transform;
+}
+
+.card-machine__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.card-machine__scene {
+  position: absolute;
+  inset: 0;
+}
+
+.card-machine__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card-machine__window {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.card-machine__dome {
+  position: absolute;
+  inset: 0;
+}
+
+.card-machine__ball--ghost {
+  position: absolute;
+  translate: -50% -50%;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  padding: 0;
+  pointer-events: none;
+}
+
+.card-machine__ball--ghost:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.card-machine__panel {
+  position: absolute;
+  left: 68%;
+  top: 12%;
+  width: 20%;
+  height: 55%;
+}
+
+.card-machine__crank.card-machine__lever {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.card-machine__crank.card-machine__lever:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.card-machine__slot {
+  position: absolute;
+  visibility: hidden;
+}
+
+.card-envelope {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--color-dorado) 55%, transparent);
+  border-radius: 14px;
+  background-image: linear-gradient(170deg, var(--color-crema), var(--color-pergamino));
+  color: var(--color-tinta);
+  box-shadow: 0 10px 20px -10px rgb(0 0 0 / 55%);
+}
+
+.card-envelope__flap {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 46%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background-image: linear-gradient(180deg, var(--color-pergamino), color-mix(in srgb, var(--color-pergamino) 80%, var(--color-dorado)));
+  border-radius: 14px 14px 0 0;
+  transition: translate 0.4s ease;
+}
+
+.card-envelope__seal {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  translate: -50% -50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  color: var(--color-pergamino);
+  background-image: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-danger-strong) 70%, #fff 18%), var(--color-danger-strong));
+  box-shadow:
+    inset 0 2px 4px rgb(255 255 255 / 25%),
+    0 3px 6px rgb(0 0 0 / 35%);
+}
+
+.card-envelope__label {
+  font-family: var(--font-serif, ui-serif, Georgia, serif);
+  color: color-mix(in srgb, var(--color-tinta) 85%, var(--color-dorado));
+}
+
+.card-letter {
+  border: 1px solid color-mix(in srgb, var(--color-dorado) 60%, transparent);
+  border-radius: 8px;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 27px, color-mix(in srgb, var(--color-dorado) 12%, transparent) 27px 28px),
+    linear-gradient(175deg, var(--color-crema), var(--color-pergamino));
+  color: var(--color-tinta);
+  box-shadow: 0 14px 28px -14px rgb(0 0 0 / 60%);
+}
+
+.card-letter__body {
+  font-family: var(--font-serif, ui-serif, Georgia, serif);
+  line-height: 1.9;
+}
+
+.card-letter__body p:first-of-type::first-letter {
+  float: left;
+  margin-inline-end: 8px;
+  font-size: 2.6em;
+  line-height: 1;
+  color: var(--color-dorado);
+}
+
+.card-album {
+  border: 2px solid var(--color-dorado);
+  border-radius: 20px;
+  padding: 14px;
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-madera-clara) 70%, var(--color-madera)) 0%,
+    var(--color-madera) 60%,
+    color-mix(in srgb, var(--color-madera) 80%, #000) 100%
+  );
+  box-shadow: 0 12px 24px -12px rgb(0 0 0 / 60%);
+}
+
+.card-slot {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--color-dorado) 40%, transparent);
+  border-radius: 10px;
+  background-image:
+    repeating-linear-gradient(135deg, transparent 0 8px, rgb(0 0 0 / 10%) 8px 16px),
+    linear-gradient(170deg, var(--color-panel), var(--color-night));
+  overflow: hidden;
+}
+
+.card-back {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image:
+    repeating-conic-gradient(from 45deg at 50% 50%, color-mix(in srgb, var(--color-dorado) 16%, transparent) 0 12deg, transparent 12deg 24deg),
+    linear-gradient(170deg, var(--color-panel-raised), var(--color-night-raised));
+  color: color-mix(in srgb, var(--color-gold) 55%, transparent);
+}
+
+.card-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-dorado) 70%, transparent);
+  border-radius: 9999px;
+  font-family: var(--font-serif, ui-serif, Georgia, serif);
+  color: var(--color-gold);
+  background-image: radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--color-dorado) 30%, transparent), transparent 70%);
+}
+
+.card-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-moon);
+}
+
+.card-ink::before {
+  content: '';
+  display: block;
+  width: 14px;
+  height: 18px;
+  border-radius: 3px 3px 6px 6px;
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--color-tinta) 80%, var(--color-moon) 20%), var(--color-tinta));
+  box-shadow: inset 0 -4px 6px rgb(0 0 0 / 50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-envelope__flap {
+    transition: none;
+  }
+}
