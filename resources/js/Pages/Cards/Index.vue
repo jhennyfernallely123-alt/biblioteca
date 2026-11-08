@@ -69,16 +69,8 @@ async function openLetter(key) {
     <Head :title="t('ui.cards_title')" />
 
     <AuthenticatedLayout>
-        <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
-            <div>
-                <h1 class="font-serif text-3xl text-gold">{{ t('ui.cards_title') }}</h1>
-                <p class="mt-1 max-w-2xl text-mist">{{ t('ui.cards_subtitle') }}</p>
-            </div>
-            <div class="card-ink" :title="t('ui.cards_ink_help')">
-                <span class="text-sm text-mist">{{ t('ui.cards_ink') }}</span>
-                <strong class="text-2xl text-gold">{{ ink }}</strong>
-                <span class="sr-only">{{ t('ui.cards_ink_help') }}</span>
-            </div>
+        <header class="mb-6">
+            <h1 class="font-serif text-3xl text-accent">{{ t('ui.cards_title') }}</h1>
         </header>
 
         <p
@@ -89,10 +81,10 @@ async function openLetter(key) {
             {{ error }}
         </p>
 
-        <div v-if="progress.total === 0" class="rounded-card border border-line bg-panel p-6 text-center">
-            <p class="text-moon">{{ t('ui.cards_empty') }}</p>
-            <p class="mt-2 text-mist">{{ t('ui.cards_empty_help') }}</p>
-            <Link href="/books/create" class="mt-4 inline-block rounded-control bg-arcane px-4 py-2 text-moon">
+        <div v-if="progress.total === 0" class="rounded-card border border-edge bg-surface p-6 text-center">
+            <p class="text-ink">{{ t('ui.cards_empty') }}</p>
+            <p class="mt-2 text-ink-muted">{{ t('ui.cards_empty_help') }}</p>
+            <Link href="/books/create" class="mt-4 inline-block rounded-control bg-tertiary px-4 py-2 text-on-accent">
                 {{ t('ui.add_book') }}
             </Link>
         </div>
@@ -109,7 +101,7 @@ async function openLetter(key) {
 
             <Link
                 href="/cards/album"
-                class="mt-6 flex min-h-11 items-center justify-center rounded-control border border-dorado/60 px-4 py-2 text-center text-sm text-gold hover:bg-panel"
+                class="mt-6 flex min-h-11 items-center justify-center rounded-control border border-dorado/60 px-4 py-2 text-center text-sm text-accent hover:bg-surface"
             >
                 {{ t('ui.cards_open_album') }}
             </Link>

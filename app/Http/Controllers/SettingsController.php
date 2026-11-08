@@ -37,4 +37,15 @@ class SettingsController extends Controller
 
         return back();
     }
+
+    public function updateTheme(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'theme' => ['required', 'in:light,dark'],
+        ]);
+
+        $request->user()->update($validated);
+
+        return back();
+    }
 }

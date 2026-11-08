@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
             v-if="visible"
             role="status"
             aria-live="polite"
-            class="pointer-events-none fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-card border border-success/40 bg-night-raised px-4 py-3 text-sm text-moon shadow-modal md:bottom-6"
+            class="pointer-events-none fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-card border border-success/40 bg-surface-raised px-4 py-3 text-sm text-ink shadow-modal md:bottom-6"
         >
             {{ text }}
         </div>

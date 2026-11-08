@@ -13,19 +13,19 @@ const emit = defineEmits(['update:modelValue']);
 const values = computed(() => [1, 2, 3, 4, 5]);
 
 const ACTIVE = {
-    star: 'text-gold',
+    star: 'text-accent',
     chili: 'text-danger',
-    heart: 'text-orquidea',
-    drop: 'text-mist',
-    crystal: 'text-magic',
+    heart: 'text-tertiary',
+    drop: 'text-ink-muted',
+    crystal: 'text-secondary',
 };
 
 const INACTIVE = {
-    star: 'text-gold/40',
+    star: 'text-accent/40',
     chili: 'text-danger/40',
-    heart: 'text-orquidea/40',
-    drop: 'text-mist/40',
-    crystal: 'text-magic/40',
+    heart: 'text-tertiary/40',
+    drop: 'text-ink-muted/40',
+    crystal: 'text-secondary/40',
 };
 
 const activeClass = computed(() => ACTIVE[props.kind] ?? ACTIVE.star);

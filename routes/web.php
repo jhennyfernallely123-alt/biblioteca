@@ -9,6 +9,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\CardDrawController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\DecorationController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
@@ -63,6 +64,12 @@ Route::middleware(['auth', 'nickname'])->group(function () {
         ->where('card', '[a-z_]+')
         ->name('cards.show');
 
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/album', [EventController::class, 'album'])->name('events.album');
+    Route::post('/events/buy', [EventController::class, 'buy'])
+        ->middleware('throttle:30,1')
+        ->name('events.buy');
+
     Route::get('/decorations', [DecorationController::class, 'index'])->name('decorations.index');
     Route::post('/decorations', [DecorationController::class, 'store'])->name('decorations.store');
     Route::patch('/decorations/{decoration}', [DecorationController::class, 'update'])->name('decorations.update');
@@ -72,6 +79,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::patch('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+    Route::patch('/settings/theme', [SettingsController::class, 'updateTheme'])->name('settings.theme');
 
     Route::post('/settings/locale/prepare', [LocaleController::class, 'prepare'])
         ->middleware('throttle:30,1')

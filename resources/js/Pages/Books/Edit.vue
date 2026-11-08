@@ -60,7 +60,7 @@ function destroy() {
         <div class="mx-auto w-full max-w-3xl">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <h1 class="text-2xl sm:text-3xl">{{ t('ui.edit_book_title') }}</h1>
-                <Link href="/" class="rounded-control bg-arcane px-3 py-2 text-sm sm:px-4 sm:py-2 text-moon sm:text-base hover:bg-arcane-strong">
+                <Link href="/" class="rounded-control bg-accent px-3 py-2 text-sm sm:px-4 sm:py-2 text-on-accent sm:text-base hover:bg-accent-strong">
                     {{ t('ui.back') }}
                 </Link>
             </div>
@@ -68,20 +68,20 @@ function destroy() {
             <form class="w-full" @submit.prevent="submit">
             <div class="flex flex-row items-start gap-3 sm:gap-6">
                 <div class="flex w-24 shrink-0 flex-col items-center sm:w-[180px]">
-                    <div class="relative aspect-[2/3] w-full shrink-0 overflow-hidden rounded-card bg-panel shadow-card ring-1 ring-line">
+                    <div class="relative aspect-[2/3] w-full shrink-0 overflow-hidden rounded-card bg-surface shadow-card ring-1 ring-edge">
                         <img
                             v-if="coverUrl"
                             :src="coverUrl"
                             :alt="t('ui.cover_alt', { title: book.title })"
                             class="h-full w-full object-cover"
                         >
-                        <div v-else class="flex h-full items-center justify-center p-2 text-center font-serif text-sm text-moon sm:p-4">
+                        <div v-else class="flex h-full items-center justify-center p-2 text-center font-serif text-sm text-ink sm:p-4">
                             {{ book.title }}
                         </div>
 
                         <button
                             type="button"
-                            class="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised/90 text-moon shadow-card transition-colors hover:bg-panel hover:text-gold"
+                            class="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full border border-edge bg-surface-raised/90 text-ink shadow-card transition-colors hover:bg-surface hover:text-accent"
                             :aria-label="t('ui.change_cover')"
                             :title="t('ui.change_cover')"
                             @click="openCoverPicker"
@@ -95,13 +95,13 @@ function destroy() {
                 </div>
 
                 <div class="min-w-0 flex-1 space-y-1">
-                    <input v-model="form.title" class="w-full max-w-full rounded-control border border-line bg-panel px-2 py-0.5 text-sm text-moon placeholder:text-mist sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.title_placeholder')">
+                    <input v-model="form.title" class="w-full max-w-full rounded-control border border-edge bg-surface px-2 py-0.5 text-sm text-ink placeholder:text-ink-muted sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.title_placeholder')">
                     <p v-if="form.errors.title" class="text-xs text-danger">{{ form.errors.title }}</p>
 
-                    <input v-model="form.author" class="w-full max-w-full rounded-control border border-line bg-panel px-2 py-0.5 text-sm text-moon placeholder:text-mist sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.author_placeholder')">
-                    <input v-model="form.isbn" class="w-full max-w-full rounded-control border border-line bg-panel px-2 py-0.5 text-sm text-moon placeholder:text-mist sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.isbn')">
-                    <input v-model="form.publisher" class="w-full max-w-full rounded-control border border-line bg-panel px-2 py-0.5 text-sm text-moon placeholder:text-mist sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.publisher_placeholder')">
-                    <input v-model.number="form.published_year" type="number" class="w-full max-w-full rounded-control border border-line bg-panel px-2 py-0.5 text-sm text-moon placeholder:text-mist sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.year_placeholder')">
+                    <input v-model="form.author" class="w-full max-w-full rounded-control border border-edge bg-surface px-2 py-0.5 text-sm text-ink placeholder:text-ink-muted sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.author_placeholder')">
+                    <input v-model="form.isbn" class="w-full max-w-full rounded-control border border-edge bg-surface px-2 py-0.5 text-sm text-ink placeholder:text-ink-muted sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.isbn')">
+                    <input v-model="form.publisher" class="w-full max-w-full rounded-control border border-edge bg-surface px-2 py-0.5 text-sm text-ink placeholder:text-ink-muted sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.publisher_placeholder')">
+                    <input v-model.number="form.published_year" type="number" class="w-full max-w-full rounded-control border border-edge bg-surface px-2 py-0.5 text-sm text-ink placeholder:text-ink-muted sm:px-3 sm:py-3 sm:text-base" :placeholder="t('ui.year_placeholder')">
                 </div>
             </div>
 
@@ -150,7 +150,7 @@ function destroy() {
                 <textarea
                     v-model="form.notes"
                     rows="4"
-                    class="w-full max-w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist"
+                    class="w-full max-w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted"
                     :placeholder="t('ui.notes_placeholder')"
                 />
 
@@ -165,7 +165,7 @@ function destroy() {
                 <div class="flex flex-wrap gap-2">
                     <button
                         type="button"
-                        class="flex items-center gap-2 rounded-control border border-gold/40 px-4 py-2 text-gold hover:bg-gold/10"
+                        class="flex items-center gap-2 rounded-control border border-accent/40 px-4 py-2 text-accent hover:bg-accent/10"
                         @click="readingOpen = true"
                     >
                         <svg class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -173,7 +173,7 @@ function destroy() {
                         </svg>
                         {{ t('ui.reading_open') }}
                     </button>
-                    <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="form.processing">
+                    <button type="submit" class="rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong" :disabled="form.processing">
                         {{ t('ui.save') }}
                     </button>
                     <button type="button" class="rounded-control border border-danger px-4 py-2 text-danger hover:bg-danger/10" @click="destroy">

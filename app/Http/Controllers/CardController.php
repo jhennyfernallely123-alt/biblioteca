@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\CardCatalogService;
 use App\Services\CardDeckService;
+use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -60,7 +61,7 @@ class CardController extends Controller
         ]);
     }
 
-    public function album(Request $request, CardCatalogService $catalog): Response
+    public function album(Request $request, CardCatalogService $catalog, EventService $events): Response
     {
         $user = $request->user();
         $pool = $catalog->poolFor($user);
@@ -74,6 +75,8 @@ class CardController extends Controller
                 'copies' => (int) ($card->copies ?? 0),
             ];
         })->values();
+
+        $events->completeTask($user, 'album');
 
         return Inertia::render('Cards/Album', [
             'cards' => $cards,

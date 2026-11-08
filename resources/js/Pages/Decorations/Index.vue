@@ -13,7 +13,7 @@ const { t } = useI18n();
     <Head :title="t('ui.decorations_heading')" />
     <AuthenticatedLayout>
         <h1 class="mb-2 text-3xl md:text-4xl">{{ t('ui.decorations_heading') }}</h1>
-        <p class="mb-6 text-sm text-mist">{{ t('ui.decorations_help') }}</p>
+        <p class="mb-6 text-sm text-ink-muted">{{ t('ui.decorations_help') }}</p>
 
         <DecorationCatalog :decorations="decorations" />
     </AuthenticatedLayout>

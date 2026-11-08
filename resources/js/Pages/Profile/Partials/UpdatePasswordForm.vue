@@ -38,11 +38,11 @@ const updatePassword = () => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gold">
+            <h2 class="text-lg font-medium text-accent">
                 {{ t('ui.profile_password_heading') }}
             </h2>
 
-            <p class="mt-1 text-sm text-mist">
+            <p class="mt-1 text-sm text-ink-muted">
                 {{ t('ui.profile_password_help') }}
             </p>
         </header>
@@ -112,7 +112,7 @@ const updatePassword = () => {
                 >
                     <p
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-mist"
+                        class="text-sm text-ink-muted"
                     >
                         {{ t('ui.profile_saved') }}
                     </p>

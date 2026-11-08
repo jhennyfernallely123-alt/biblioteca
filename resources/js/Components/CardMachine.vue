@@ -770,16 +770,16 @@ onBeforeUnmount(() => {
         </div>
 
         <div aria-live="polite" class="mt-6">
-            <p v-if="!result" class="text-center text-mist">{{ t('ui.cards_choose_ball') }}</p>
+            <p v-if="!result" class="text-center text-ink-muted">{{ t('ui.cards_choose_ball') }}</p>
 
             <span v-if="drawing" class="sr-only">{{ t('ui.cards_cranking') }}</span>
 
             <template v-if="result">
-                <p v-if="!result.duplicate" class="mb-3 text-center font-serif text-lg text-gold">
+                <p v-if="!result.duplicate" class="mb-3 text-center font-serif text-lg text-accent">
                     {{ t('ui.cards_new_card') }}
                 </p>
                 <CardEnvelope :card="result.card" :duplicate="result.duplicate" @open="emit('open')" />
-                <p v-if="countdown" class="mt-4 text-center text-sm text-mist">
+                <p v-if="countdown" class="mt-4 text-center text-sm text-ink-muted">
                     {{ t('ui.cards_reset_in', { time: countdownText }) }}
                 </p>
             </template>

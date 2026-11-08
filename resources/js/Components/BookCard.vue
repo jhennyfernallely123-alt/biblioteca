@@ -60,7 +60,7 @@ function onClick(event) {
 
             <span
                 v-if="reading"
-                class="pointer-events-none absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-night/85 text-gold ring-1 ring-gold/40"
+                class="pointer-events-none absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-scrim/85 text-dorado ring-1 ring-dorado/40"
                 aria-hidden="true"
             >
                 <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor">
@@ -68,8 +68,8 @@ function onClick(event) {
                 </svg>
             </span>
 
-            <div v-if="reading" class="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-night/70" aria-hidden="true">
-                <div class="h-full bg-gold" :style="{ width: `${book.progress ?? 0}%` }" />
+            <div v-if="reading" class="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-scrim/70" aria-hidden="true">
+                <div class="h-full bg-accent" :style="{ width: `${book.progress ?? 0}%` }" />
             </div>
         </div>
     </a>

@@ -24,8 +24,8 @@ const logout = () => {
         <Head title="Elige tu apodo" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Elige tu apodo</h1>
-            <p class="mt-1 text-sm text-mist">
+            <h1 class="font-serif text-2xl text-accent">Elige tu apodo</h1>
+            <p class="mt-1 text-sm text-ink-muted">
                 Así te saludaremos cuando entres a tu biblioteca.
             </p>
         </div>
@@ -45,7 +45,7 @@ const logout = () => {
                     autocomplete="nickname"
                 />
 
-                <p class="mt-1 text-xs text-mist">
+                <p class="mt-1 text-xs text-ink-muted">
                     Puedes cambiarlo más tarde en Ajustes → Perfil.
                 </p>
 
@@ -62,7 +62,7 @@ const logout = () => {
 
             <button
                 type="button"
-                class="block w-full text-center text-sm text-magic underline hover:text-gold focus:outline-none focus:ring-2 focus:ring-magic"
+                class="block w-full text-center text-sm text-secondary underline hover:text-accent focus:outline-none focus:ring-2 focus:ring-secondary"
                 @click="logout"
             >
                 Salir

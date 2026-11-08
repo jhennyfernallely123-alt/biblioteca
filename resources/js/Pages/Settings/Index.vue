@@ -4,6 +4,7 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import LanguageSelect from '@/Components/LanguageSelect.vue';
+import ThemeSwitch from '@/Components/ThemeSwitch.vue';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
@@ -37,6 +38,14 @@ const progress = ref(0);
 const languageError = ref('');
 const languageSuccess = ref(false);
 
+const theme = ref(props.user.theme ?? 'light');
+const themeError = ref('');
+
+const themes = [
+    { value: 'light', label: 'ui.theme_light', help: 'ui.theme_light_help' },
+    { value: 'dark', label: 'ui.theme_dark', help: 'ui.theme_dark_help' },
+];
+
 const currentLanguage = computed(() => {
     try {
         return new Intl.DisplayNames([props.locale], { type: 'language' }).of(props.locale) ?? props.locale;
@@ -53,6 +62,26 @@ function savePassword() {
     password.put('/settings/password', {
         preserveScroll: true,
         onSuccess: () => password.reset(),
+    });
+}
+
+function applyTheme(value) {
+    if (value === theme.value) {
+        return;
+    }
+
+    const previous = theme.value;
+    theme.value = value;
+    themeError.value = '';
+    document.documentElement.dataset.theme = value;
+
+    router.patch('/settings/theme', { theme: value }, {
+        preserveScroll: true,
+        onError: () => {
+            theme.value = previous;
+            document.documentElement.dataset.theme = previous;
+            themeError.value = t('ui.theme_error');
+        },
     });
 }
 
@@ -133,37 +162,50 @@ async function applyLanguage() {
 
         <form class="mb-8 space-y-3" @submit.prevent="saveProfile">
             <h2 class="text-2xl">{{ t('ui.profile_heading') }}</h2>
-            <input v-model="profile.name" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.name')">
+            <input v-model="profile.name" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.name')">
             <p v-if="profile.errors.name" class="text-sm text-danger">{{ profile.errors.name }}</p>
-            <input v-model="profile.nickname" maxlength="50" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.nickname')">
+            <input v-model="profile.nickname" maxlength="50" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.nickname')">
             <p v-if="profile.errors.nickname" class="text-sm text-danger">{{ profile.errors.nickname }}</p>
-            <input v-model="profile.email" type="email" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.email')">
+            <input v-model="profile.email" type="email" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.email')">
             <p v-if="profile.errors.email" class="text-sm text-danger">{{ profile.errors.email }}</p>
-            <select v-model="profile.default_view_mode" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist">
+            <select v-model="profile.default_view_mode" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted">
                 <option value="covers">{{ t('ui.covers') }}</option>
                 <option value="spines">{{ t('ui.spines') }}</option>
             </select>
-            <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="profile.processing">
+            <button type="submit" class="rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong" :disabled="profile.processing">
                 {{ t('ui.save_profile') }}
             </button>
         </form>
 
+        <section class="mb-8 space-y-3">
+            <h2 class="text-2xl">{{ t('ui.appearance_heading') }}</h2>
+            <p class="text-sm text-ink-muted">{{ t('ui.appearance_help') }}</p>
+
+            <ThemeSwitch
+                :value="theme"
+                @update="applyTheme"
+                class="mb-4"
+            />
+
+            <p v-if="themeError" class="text-sm text-danger">{{ themeError }}</p>
+        </section>
+
         <form class="mb-8 space-y-3" @submit.prevent="savePassword">
             <h2 class="text-2xl">{{ t('ui.password_heading') }}</h2>
-            <input v-model="password.current_password" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.current_password')">
+            <input v-model="password.current_password" type="password" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.current_password')">
             <p v-if="password.errors.current_password" class="text-sm text-danger">{{ password.errors.current_password }}</p>
-            <input v-model="password.password" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.new_password')">
+            <input v-model="password.password" type="password" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.new_password')">
             <p v-if="password.errors.password" class="text-sm text-danger">{{ password.errors.password }}</p>
-            <input v-model="password.password_confirmation" type="password" class="w-full rounded-control border border-line bg-panel px-3 py-2 text-moon placeholder:text-mist" :placeholder="t('ui.confirm_password')">
-            <button type="submit" class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong" :disabled="password.processing">
+            <input v-model="password.password_confirmation" type="password" class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted" :placeholder="t('ui.confirm_password')">
+            <button type="submit" class="rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong" :disabled="password.processing">
                 {{ t('ui.change_password') }}
             </button>
         </form>
 
         <section class="mb-8 space-y-3">
             <h2 class="text-2xl">{{ t('ui.language_heading') }}</h2>
-            <p class="text-sm text-mist">{{ t('ui.language_help') }}</p>
-            <p class="text-sm text-mist">{{ t('ui.language_current') }}: {{ currentLanguage }}</p>
+            <p class="text-sm text-ink-muted">{{ t('ui.language_help') }}</p>
+            <p class="text-sm text-ink-muted">{{ t('ui.language_current') }}: {{ currentLanguage }}</p>
             <LanguageSelect
                 v-model="language"
                 :languages="languages"
@@ -173,13 +215,13 @@ async function applyLanguage() {
             />
             <button
                 type="button"
-                class="rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong disabled:opacity-50"
+                class="rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong disabled:opacity-50"
                 :disabled="preparing"
                 @click="applyLanguage"
             >
                 {{ t('ui.language_apply') }}
             </button>
-            <p v-if="preparing" class="text-sm text-mist">
+            <p v-if="preparing" class="text-sm text-ink-muted">
                 {{ t('ui.language_preparing', { percent: progress }) }}
             </p>
             <p v-if="languageError" class="text-sm text-danger">{{ languageError }}</p>
@@ -193,33 +235,33 @@ async function applyLanguage() {
                 <li
                     v-for="(shelf, index) in props.shelves"
                     :key="shelf.id"
-                    class="flex flex-wrap items-center gap-2 rounded-card border border-line bg-panel p-3"
+                    class="flex flex-wrap items-center gap-2 rounded-card border border-edge bg-surface p-3"
                     :class="{ 'opacity-60': shelf.is_fixed }"
                 >
                     <input
                         v-model="names[shelf.id]"
                         :disabled="shelf.is_fixed"
-                        class="min-w-0 flex-1 rounded-control border border-line bg-panel-raised px-2 py-1 text-moon"
+                        class="min-w-0 flex-1 rounded-control border border-edge bg-surface-raised px-2 py-1 text-ink"
                         @keyup.enter="renameShelf(shelf)"
                     />
                     <button
                         type="button"
                         :disabled="shelf.is_fixed"
-                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="rounded-control border border-edge px-2 py-1 text-sm text-ink hover:bg-surface-raised disabled:opacity-40 disabled:cursor-not-allowed"
                         @click="renameShelf(shelf)"
                     >
                         {{ t('ui.rename') }}
                     </button>
                     <button
                         type="button"
-                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="rounded-control border border-edge px-2 py-1 text-sm text-ink hover:bg-surface-raised disabled:opacity-40 disabled:cursor-not-allowed"
                         :disabled="index === 0" @click="moveShelf(index, -1)"
                     >
                         {{ t('ui.up') }}
                     </button>
                     <button
                         type="button"
-                        class="rounded-control border border-line px-2 py-1 text-sm text-moon hover:bg-panel-raised disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="rounded-control border border-edge px-2 py-1 text-sm text-ink hover:bg-surface-raised disabled:opacity-40 disabled:cursor-not-allowed"
                         :disabled="index === props.shelves.length - 1" @click="moveShelf(index, 1)"
                     >
                         {{ t('ui.down') }}

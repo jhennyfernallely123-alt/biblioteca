@@ -97,7 +97,7 @@ function dropPositionForBook(book) {
 
                             <button
                                 type="button"
-                                class="absolute -right-1 -top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised text-moon shadow-card transition-opacity focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                                class="absolute -right-1 -top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-edge bg-surface-raised text-ink shadow-card transition-opacity focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                                 :aria-label="t('ui.switch_view')"
                                 :title="t('ui.switch_view')"
                                 @pointerdown.stop

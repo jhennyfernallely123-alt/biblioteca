@@ -8,6 +8,7 @@ import MagicWelcome from './MagicWelcome.vue';
 import SeasonalDecor from './SeasonalDecor.vue';
 import SeasonalGarland from './SeasonalGarland.vue';
 import SeasonalParticles from './SeasonalParticles.vue';
+import ThemeSync from './ThemeSync.vue';
 import { resetWelcome, shouldShowWelcome } from './welcomeIntro';
 import { useI18n } from '@/i18n';
 import { currentSeason } from '@/seasons';
@@ -45,6 +46,7 @@ const links = computed(() => [
     { label: t('ui.nav_library'), href: '/' },
     { label: t('ui.nav_shelves'), href: '/shelves' },
     { label: t('ui.nav_cards'), href: '/cards' },
+    { label: t('ui.nav_events'), href: '/events' },
     { label: t('ui.nav_decorations'), href: '/decorations' },
     { label: t('ui.nav_settings'), href: '/settings' },
 ]);
@@ -98,19 +100,20 @@ function logout() {
 </script>
 
 <template>
-    <div class="arcane-sky min-h-screen md:flex" :data-season="season">
-        <ArcaneStars />
+      <div class="arcane-sky min-h-screen md:flex" :data-season="season">
+          <ThemeSync />
+          <ArcaneStars />
         <SeasonalParticles :season="season" />
         <SeasonalDecor :season="season" />
         <LocaleSync />
         <FlashToast v-if="notice" :key="notice.id" :text="notice.text" />
         <MagicWelcome v-if="showWelcome" :nickname="user?.nickname || user?.name || ''" @close="showWelcome = false" />
-        <aside class="relative z-10 hidden border-e border-line bg-night-raised/95 p-4 text-moon md:flex md:w-60 md:flex-col">
+        <aside class="relative z-10 hidden border-e border-edge bg-surface-raised/95 p-4 text-ink md:flex md:w-60 md:flex-col">
             <div class="mb-8">
-                <Link href="/" class="font-serif text-2xl text-gold">
+                <Link href="/" class="font-serif text-2xl text-accent">
                     Biblioteca
                 </Link>
-                <button type="button" class="mt-4 min-h-11 w-full rounded-control border border-line px-3 py-2 text-start text-moon hover:bg-panel" @click="logout">
+                <button type="button" class="mt-4 min-h-11 w-full rounded-control border border-edge px-3 py-2 text-start text-ink hover:bg-surface" @click="logout">
                     {{ t('ui.logout') }}
                 </button>
             </div>
@@ -119,8 +122,8 @@ function logout() {
                     v-for="link in links"
                     :key="link.href"
                     :href="link.href"
-                    class="block rounded-control border-s-2 px-3 py-2 text-mist hover:bg-panel hover:text-moon"
-                    :class="isActive(link.href) ? 'border-magic bg-panel text-moon' : 'border-transparent'"
+                    class="block rounded-control border-s-2 px-3 py-2 text-ink-muted hover:bg-surface hover:text-ink"
+                    :class="isActive(link.href) ? 'border-secondary bg-surface text-ink' : 'border-transparent'"
                     :aria-current="isActive(link.href) ? 'page' : undefined"
                 >
                     {{ link.label }}
@@ -129,9 +132,9 @@ function logout() {
         </aside>
 
         <div class="relative z-10 flex-1 pb-20 md:pb-0">
-            <header class="relative flex items-center justify-between border-b border-line bg-night-raised/95 px-4 py-3 text-moon md:hidden">
-                <span class="font-serif text-xl text-gold">Biblioteca</span>
-                <button type="button" class="min-h-11 rounded-control border border-line px-3 py-2 text-sm text-moon hover:bg-panel" @click="logout">
+            <header class="relative flex items-center justify-between border-b border-edge bg-surface-raised/95 px-4 py-3 text-ink md:hidden">
+                <span class="font-serif text-xl text-accent">Biblioteca</span>
+                <button type="button" class="min-h-11 rounded-control border border-edge px-3 py-2 text-sm text-ink hover:bg-surface" @click="logout">
                     {{ t('ui.exit') }}
                 </button>
 
@@ -146,13 +149,13 @@ function logout() {
             </main>
         </div>
 
-        <nav data-mobile-nav class="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-line bg-night-raised/95 py-2 text-moon md:hidden">
+        <nav data-mobile-nav class="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-edge bg-surface-raised/95 py-2 text-ink md:hidden">
             <Link
                 v-for="link in primaryLinks"
                 :key="link.href"
                 :href="link.href"
                 class="flex min-h-11 items-center border-b-2 px-3 py-2 text-sm"
-                :class="isActive(link.href) ? 'border-magic text-gold' : 'border-transparent'"
+                :class="isActive(link.href) ? 'border-secondary text-accent' : 'border-transparent'"
                 :aria-current="isActive(link.href) ? 'page' : undefined"
             >
                 {{ link.label }}
@@ -163,7 +166,7 @@ function logout() {
                     type="button"
                     data-nav-menu-toggle
                     class="flex min-h-11 items-center border-b-2 px-3 py-2 text-sm"
-                    :class="menuActive || menuOpen ? 'border-magic text-gold' : 'border-transparent'"
+                    :class="menuActive || menuOpen ? 'border-secondary text-accent' : 'border-transparent'"
                     :aria-label="t('ui.menu')"
                     :title="t('ui.menu')"
                     :aria-expanded="menuOpen"
@@ -181,15 +184,15 @@ function logout() {
                     id="mobile-nav-menu"
                     data-nav-menu
                     role="menu"
-                    class="absolute bottom-full end-0 z-50 mb-3 w-44 rounded-card border border-line bg-night-raised p-1 shadow-modal"
+                    class="absolute bottom-full end-0 z-50 mb-3 w-44 rounded-card border border-edge bg-surface-raised p-1 shadow-modal"
                 >
                     <Link
                         v-for="link in menuLinks"
                         :key="link.href"
                         :href="link.href"
                         role="menuitem"
-                        class="block rounded-control px-3 py-2 text-sm text-mist hover:bg-panel hover:text-moon"
-                        :class="isActive(link.href) ? 'bg-panel text-gold' : ''"
+                        class="block rounded-control px-3 py-2 text-sm text-ink-muted hover:bg-surface hover:text-ink"
+                        :class="isActive(link.href) ? 'bg-surface text-accent' : ''"
                         :aria-current="isActive(link.href) ? 'page' : undefined"
                         @click="menuOpen = false"
                     >

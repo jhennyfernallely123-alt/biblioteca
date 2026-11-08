@@ -20,7 +20,7 @@ describe('DecorationArt', () => {
     it('pinta el color elegido con los tokens existentes', () => {
         const wrapper = mount(DecorationArt, { props: { kind: 'cup', color: 'gold' } });
 
-        expect(wrapper.find('svg').attributes('style')).toContain('--color-gold');
+        expect(wrapper.find('svg').attributes('style')).toContain('--color-laton');
     });
 
     it('usa un color de reserva si el color no existe', () => {

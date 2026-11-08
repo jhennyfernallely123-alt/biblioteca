@@ -46,3 +46,19 @@ it('exige la contraseña actual para cambiarla', function () {
         'password_confirmation' => 'nueva12345',
     ])->assertSessionHasErrors('current_password');
 });
+
+it('guarda el tema elegido', function () {
+    $this->patch(route('settings.theme'), ['theme' => 'dark'])
+        ->assertRedirect();
+
+    expect($this->user->fresh()->theme)->toBe('dark');
+});
+
+it('rechaza un tema no válido', function () {
+    $this->from(route('settings.index'))
+        ->patch(route('settings.theme'), ['theme' => 'neon'])
+        ->assertRedirect(route('settings.index'))
+        ->assertSessionHasErrors('theme');
+
+    expect($this->user->fresh()->theme)->toBe('light');
+});

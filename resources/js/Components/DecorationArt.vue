@@ -7,11 +7,11 @@ const props = defineProps({
 });
 
 const TOKENS = {
-    rose: '--color-orquidea',
+    rose: '--color-malva',
     cream: '--color-crema',
     green: '--color-salvia',
     forest: '--color-bosque',
-    gold: '--color-gold',
+    gold: '--color-laton',
     clay: '--color-terracota',
 };
 
@@ -65,7 +65,7 @@ const wood = 'var(--color-madera)';
             <rect x="24" y="34" width="16" height="34" rx="3" fill="currentColor" />
             <rect x="24" y="34" width="6" height="34" rx="3" :fill="paper" opacity="0.35" />
             <path d="M32 34v-5" :stroke="ink" stroke-width="2" />
-            <path d="M32 12c6 6 7 10 4 14-2 3-7 3-9 0-2-4 0-8 5-14z" fill="var(--color-gold)" />
+            <path d="M32 12c6 6 7 10 4 14-2 3-7 3-9 0-2-4 0-8 5-14z" fill="var(--color-accent)" />
             <path d="M32 18c3 3 3 6 1 8-1 1-3 1-4-1-1-2 0-5 3-7z" :fill="paper" opacity="0.7" />
         </g>
 
@@ -76,8 +76,8 @@ const wood = 'var(--color-madera)';
             <path d="M22 16h20l-10 22z" fill="currentColor" opacity="0.9" />
             <path d="M22 66h20L32 44z" fill="currentColor" opacity="0.55" />
             <path d="M22 16h20M22 66h20" :stroke="ink" stroke-width="1.5" opacity="0.5" />
-            <path d="M32 44v16" stroke="var(--color-gold)" stroke-width="2" />
-            <ellipse cx="32" cy="64" rx="6" ry="2" fill="var(--color-gold)" />
+            <path d="M32 44v16" stroke="var(--color-accent)" stroke-width="2" />
+            <ellipse cx="32" cy="64" rx="6" ry="2" fill="var(--color-accent)" />
         </g>
 
         <g v-else-if="kind === 'crystal_ball'">
@@ -86,7 +86,7 @@ const wood = 'var(--color-madera)';
             <circle cx="32" cy="40" r="24" fill="currentColor" opacity="0.9" />
             <circle cx="32" cy="40" r="24" :stroke="ink" stroke-width="1.5" opacity="0.35" />
             <path d="M22 32c4-6 12-9 18-6" :stroke="paper" stroke-width="3" stroke-linecap="round" opacity="0.7" />
-            <path d="M44 46l3 3-3 3-3-3z" fill="var(--color-gold)" />
+            <path d="M44 46l3 3-3 3-3-3z" fill="var(--color-accent)" />
         </g>
 
         <g v-else-if="kind === 'lamp'">
@@ -95,7 +95,7 @@ const wood = 'var(--color-madera)';
             <path d="M18 30h28l-1 4H19z" :fill="paper" opacity="0.45" />
             <rect x="30" y="48" width="4" height="18" :fill="ink" opacity="0.55" />
             <ellipse cx="32" cy="68" rx="12" ry="4" fill="currentColor" />
-            <path d="M22 52h20" stroke="var(--color-gold)" stroke-width="2" opacity="0.7" />
+            <path d="M22 52h20" stroke="var(--color-accent)" stroke-width="2" opacity="0.7" />
         </g>
 
         <g v-else-if="kind === 'cat'">
@@ -125,16 +125,16 @@ const wood = 'var(--color-madera)';
             <path d="M18 64V32a14 14 0 0 1 28 0v32" stroke="currentColor" stroke-width="3" />
             <path d="M24 64V32M32 64V22M40 64V32" stroke="currentColor" stroke-width="2" opacity="0.8" />
             <path d="M32 12v6" stroke="currentColor" stroke-width="3" />
-            <circle cx="32" cy="10" r="3" fill="var(--color-gold)" />
+            <circle cx="32" cy="10" r="3" fill="var(--color-accent)" />
         </g>
 
         <g v-else-if="kind === 'astrolabe'">
             <ellipse cx="32" cy="74" rx="16" ry="4" :fill="ink" opacity="0.25" />
             <circle cx="32" cy="42" r="28" stroke="currentColor" stroke-width="4" />
             <circle cx="32" cy="42" r="20" stroke="currentColor" stroke-width="2" opacity="0.8" />
-            <circle cx="32" cy="42" r="11" stroke="var(--color-gold)" stroke-width="2" />
+            <circle cx="32" cy="42" r="11" stroke="var(--color-accent)" stroke-width="2" />
             <path d="M4 42h56M32 14v56M12 22l40 40M52 22L12 62" stroke="currentColor" stroke-width="1.5" opacity="0.55" />
-            <circle cx="32" cy="42" r="3" fill="var(--color-gold)" />
+            <circle cx="32" cy="42" r="3" fill="var(--color-accent)" />
             <path d="M32 70v6" stroke="currentColor" stroke-width="3" />
         </g>
 
@@ -152,8 +152,8 @@ const wood = 'var(--color-madera)';
             <rect x="12" y="46" width="40" height="24" rx="3" fill="currentColor" />
             <rect x="12" y="46" width="40" height="6" rx="3" :fill="paper" opacity="0.5" />
             <path d="M14 42h36l-4-14H18z" fill="currentColor" opacity="0.85" />
-            <circle cx="46" cy="58" r="3" fill="var(--color-gold)" />
-            <path d="M50 58h6" stroke="var(--color-gold)" stroke-width="2" />
+            <circle cx="46" cy="58" r="3" fill="var(--color-accent)" />
+            <path d="M50 58h6" stroke="var(--color-accent)" stroke-width="2" />
             <path d="M22 58h10M22 63h14" :stroke="ink" stroke-width="1.5" opacity="0.45" />
         </g>
 
@@ -163,7 +163,7 @@ const wood = 'var(--color-madera)';
             <path d="M32 70V54" stroke="currentColor" stroke-width="6" />
             <path d="M34 56c14-6 20-18 18-30-12 2-22 12-24 24z" fill="currentColor" opacity="0.85" />
             <path d="M34 56c6-8 12-16 16-26" :stroke="ink" stroke-width="1.5" opacity="0.5" />
-            <path d="M26 52l-4-8 8 2z" fill="var(--color-gold)" />
+            <path d="M26 52l-4-8 8 2z" fill="var(--color-accent)" />
         </g>
 
         <g v-else-if="kind === 'photo_frame'">
@@ -171,7 +171,7 @@ const wood = 'var(--color-madera)';
             <rect x="14" y="14" width="36" height="46" rx="3" fill="currentColor" />
             <rect x="19" y="19" width="26" height="36" rx="2" :fill="paper" />
             <path d="M21 50l8-11 6 7 5-6 4 10z" :fill="wood" opacity="0.8" />
-            <circle cx="38" cy="27" r="3" fill="var(--color-gold)" />
+            <circle cx="38" cy="27" r="3" fill="var(--color-accent)" />
             <path d="M32 60v10" stroke="currentColor" stroke-width="3" />
             <path d="M24 70h16" stroke="currentColor" stroke-width="3" />
         </g>

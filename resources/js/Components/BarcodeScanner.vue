@@ -34,7 +34,7 @@ onBeforeUnmount(() => controls?.stop());
 
 <template>
     <div class="space-y-2">
-        <video ref="video" class="aspect-[4/3] w-full rounded-md bg-night" muted playsinline />
+        <video ref="video" class="aspect-[4/3] w-full rounded-md bg-page" muted playsinline />
         <p v-if="message" class="text-sm text-danger">{{ message }}</p>
     </div>
 </template>

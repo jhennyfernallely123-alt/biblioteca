@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use App\Services\CoverService;
+use App\Services\EventService;
 use App\Services\Isbn;
 use App\Services\TranslationService;
 use Illuminate\Http\RedirectResponse;
@@ -39,7 +40,7 @@ class BookController extends Controller
         ]);
     }
 
-    public function store(StoreBookRequest $request): RedirectResponse
+    public function store(StoreBookRequest $request, EventService $events): RedirectResponse
     {
         $this->ensureShelfOwnership($request, $request->integer('shelf_id'));
 
@@ -65,6 +66,8 @@ class BookController extends Controller
         $data['band_position'] = $nextBand['position'];
 
         $request->user()->books()->create($data);
+
+        $events->completeTask($request->user(), 'add_book');
 
         return redirect()->route('library.index');
     }

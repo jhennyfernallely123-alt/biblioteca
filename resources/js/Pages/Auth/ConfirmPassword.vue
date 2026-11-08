@@ -22,8 +22,8 @@ const submit = () => {
         <Head title="Confirmar contraseña" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Confirmar contraseña</h1>
-            <p class="mt-1 text-sm text-mist">
+            <h1 class="font-serif text-2xl text-accent">Confirmar contraseña</h1>
+            <p class="mt-1 text-sm text-ink-muted">
                 Esta es un área segura. Confirma tu contraseña para continuar.
             </p>
         </div>

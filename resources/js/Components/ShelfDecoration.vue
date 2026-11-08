@@ -43,7 +43,7 @@ function remove() {
 
         <button
             type="button"
-            class="absolute -right-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border border-line bg-night-raised text-moon opacity-0 shadow-card transition-opacity focus-visible:opacity-100 group-hover:opacity-100 sm:flex"
+            class="absolute -right-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border border-edge bg-surface-raised text-ink opacity-0 shadow-card transition-opacity focus-visible:opacity-100 group-hover:opacity-100 sm:flex"
             :aria-label="t('ui.decoration_remove')"
             :title="t('ui.decoration_remove')"
             @pointerdown.stop

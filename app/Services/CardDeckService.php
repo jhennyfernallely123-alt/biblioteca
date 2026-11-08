@@ -15,7 +15,10 @@ use Random\Randomizer;
 
 class CardDeckService
 {
-    public function __construct(private CardCatalogService $catalog) {}
+    public function __construct(
+        private CardCatalogService $catalog,
+        private EventService $events,
+    ) {}
 
     public function today(): CarbonImmutable
     {
@@ -68,7 +71,7 @@ class CardDeckService
         }
 
         try {
-            return DB::transaction(function () use ($user, $day, $offers, $ballIndex) {
+            $result = DB::transaction(function () use ($user, $day, $offers, $ballIndex) {
                 $existing = CardDraw::query()
                     ->where('user_id', $user->id)
                     ->whereDate('draw_date', $day->toDateString())
@@ -138,5 +141,9 @@ class CardDeckService
 
             throw $exception;
         }
+
+        $this->events->completeTask($user, 'draw');
+
+        return $result;
     }
 }

@@ -4,6 +4,7 @@ import ArcaneStars from '@/Components/ArcaneStars.vue';
 import LibraryEmblem from '@/Components/LibraryEmblem.vue';
 import SeasonalDecor from '@/Components/SeasonalDecor.vue';
 import SeasonalParticles from '@/Components/SeasonalParticles.vue';
+import ThemeSync from '@/Components/ThemeSync.vue';
 import { currentSeason } from '@/seasons';
 
 const page = usePage();
@@ -12,6 +13,7 @@ const season = currentSeason();
 
 <template>
     <div class="arcane-sky min-h-screen md:grid md:h-screen md:grid-cols-2 md:overflow-hidden" :data-season="season">
+        <ThemeSync />
         <ArcaneStars />
         <SeasonalParticles :season="season" />
         <SeasonalDecor :season="season" />
@@ -30,7 +32,7 @@ const season = currentSeason();
             </div>
         </aside>
 
-        <main class="relative flex min-h-[calc(100vh-14rem)] flex-col justify-center bg-night-raised px-4 py-10 md:h-full md:min-h-0 md:overflow-y-auto md:px-10">
+        <main class="relative flex min-h-[calc(100vh-14rem)] flex-col justify-center bg-surface-raised px-4 py-10 md:h-full md:min-h-0 md:overflow-y-auto md:px-10">
             <div class="mx-auto w-full max-w-[420px]">
                 <div
                     v-if="page.props.flash?.error"
@@ -57,23 +59,23 @@ const season = currentSeason();
     max-width: 100%;
     padding: 24px;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--color-gold) 32%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 32%, transparent);
     border-radius: 24px;
     background:
         radial-gradient(
             ellipse 76% 66% at 50% 38%,
-            color-mix(in srgb, var(--color-orquidea) 84%, var(--color-moon)) 0%,
+            color-mix(in srgb, var(--color-tertiary) 84%, var(--color-ink)) 0%,
             transparent 72%
         ),
         linear-gradient(
             180deg,
-            color-mix(in srgb, var(--color-orquidea) 90%, var(--color-moon)) 0%,
-            var(--color-orquidea) 48%,
-            color-mix(in srgb, var(--color-orquidea) 82%, var(--color-night)) 100%
+            color-mix(in srgb, var(--color-tertiary) 90%, var(--color-ink)) 0%,
+            var(--color-tertiary) 48%,
+            color-mix(in srgb, var(--color-tertiary) 82%, var(--color-page)) 100%
         );
     box-shadow:
         0 24px 60px rgba(0, 0, 0, 0.45),
-        inset 0 0 0 1px color-mix(in srgb, var(--color-moon) 12%, transparent);
+        inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 12%, transparent);
 }
 
 .auth-book-frame--compact {

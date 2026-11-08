@@ -76,11 +76,11 @@ const visibleItems = computed(() => {
 });
 
 const COLOR_CLASS = {
-    rose: 'bg-orquidea',
+    rose: 'bg-malva',
     cream: 'bg-crema',
     green: 'bg-salvia',
     forest: 'bg-bosque',
-    gold: 'bg-gold',
+    gold: 'bg-laton',
     clay: 'bg-terracota',
 };
 
@@ -157,8 +157,8 @@ function removeLast(kind) {
                 class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-colors"
                 :class="
                     activeCategory === option.key
-                        ? 'border-magic bg-panel text-gold'
-                        : 'border-line bg-panel-raised text-mist hover:text-moon'
+                        ? 'border-secondary bg-surface text-accent'
+                        : 'border-edge bg-surface-raised text-ink-muted hover:text-ink'
                 "
                 :data-category-filter="option.key"
                 :aria-label="filterLabel(option.key)"
@@ -174,21 +174,21 @@ function removeLast(kind) {
             <div
                 v-for="item in visibleItems"
                 :key="item.kind"
-                class="relative rounded-card border border-line bg-panel p-3"
+                class="relative rounded-card border border-edge bg-surface p-3"
                 :data-decoration-card="item.kind"
             >
-                <div class="relative mb-3 flex h-32 items-end justify-center rounded-control bg-panel-raised p-2 pl-10">
+                <div class="relative mb-3 flex h-32 items-end justify-center rounded-control bg-surface-raised p-2 pl-10">
                     <DecorationArt :kind="item.kind" :color="chosen[item.kind]" class="h-full w-full" />
 
                     <p class="pointer-events-none absolute inset-y-1 left-1 flex w-7 items-center justify-center">
-                        <span class="max-h-full overflow-hidden rounded-control bg-night/60 px-1 py-2 text-center font-serif text-sm leading-tight text-gold [writing-mode:vertical-rl]">
+                        <span class="max-h-full overflow-hidden rounded-control bg-scrim/60 px-1 py-2 text-center font-serif text-sm leading-tight text-dorado [writing-mode:vertical-rl]">
                             {{ nameFor(item.kind) }}
                         </span>
                     </p>
 
                     <button
                         type="button"
-                        class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-line transition-shadow hover:ring-2 hover:ring-magic hover:ring-offset-2 hover:ring-offset-panel-raised"
+                        class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-edge transition-shadow hover:ring-2 hover:ring-secondary hover:ring-offset-2 hover:ring-offset-surface-raised"
                         :class="COLOR_CLASS[chosen[item.kind]]"
                         :data-color-toggle="item.kind"
                         :aria-label="t('ui.decoration_color')"
@@ -201,7 +201,7 @@ function removeLast(kind) {
 
                 <div
                     v-if="openPalette === item.kind"
-                    class="absolute right-4 top-12 z-10 grid grid-cols-3 gap-2 rounded-card border border-line bg-panel-raised p-2 shadow-card"
+                    class="absolute right-4 top-12 z-10 grid grid-cols-3 gap-2 rounded-card border border-edge bg-surface-raised p-2 shadow-card"
                     role="group"
                     :data-color-palette="item.kind"
                     :aria-label="t('ui.decoration_color')"
@@ -211,8 +211,8 @@ function removeLast(kind) {
                         v-for="color in COLORS"
                         :key="color"
                         type="button"
-                        class="h-5 w-5 rounded-full border border-line transition-shadow"
-                        :class="[COLOR_CLASS[color], chosen[item.kind] === color ? 'ring-2 ring-magic ring-offset-2 ring-offset-panel-raised' : '']"
+                        class="h-5 w-5 rounded-full border border-edge transition-shadow"
+                        :class="[COLOR_CLASS[color], chosen[item.kind] === color ? 'ring-2 ring-secondary ring-offset-2 ring-offset-surface-raised' : '']"
                         :data-color="item.kind"
                         :data-color-key="color"
                         :aria-label="t(`ui.color_${color}`)"
@@ -235,7 +235,7 @@ function removeLast(kind) {
                 <button
                     v-else
                     type="button"
-                    class="w-full rounded-control bg-arcane px-4 py-2 text-moon hover:bg-arcane-strong"
+                    class="w-full rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong"
                     :data-decoration-add="item.kind"
                     @click="add(item)"
                 >

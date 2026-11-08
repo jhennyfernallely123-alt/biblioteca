@@ -16,13 +16,13 @@ const { t } = useI18n();
     <section class="card-album" :aria-label="t('ui.cards_album')">
         <header class="mb-4">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 class="font-serif text-xl text-gold">{{ t('ui.cards_album') }}</h2>
-                <span class="text-sm text-mist">
+                <h2 class="font-serif text-xl text-accent">{{ t('ui.cards_album') }}</h2>
+                <span class="text-sm text-ink-muted">
                     {{ t('ui.cards_album_progress', { unlocked: progress.unlocked, total: progress.total }) }}
                 </span>
             </div>
             <div
-                class="mt-2 h-2 rounded-full bg-night"
+                class="mt-2 h-2 rounded-full bg-edge"
                 role="progressbar"
                 :aria-valuenow="progress.unlocked"
                 :aria-valuemin="0"
@@ -30,7 +30,7 @@ const { t } = useI18n();
                 :aria-label="t('ui.cards_album')"
             >
                 <div
-                    class="h-full rounded-full bg-gold transition-all"
+                    class="h-full rounded-full bg-accent transition-all"
                     :style="{ width: `${progress.total ? (progress.unlocked / progress.total) * 100 : 0}%` }"
                 ></div>
             </div>
@@ -41,14 +41,14 @@ const { t } = useI18n();
                 <button
                     v-if="card.unlocked"
                     type="button"
-                    class="card-slot flex min-h-40 flex-col items-center justify-center gap-2 p-3 text-center text-moon transition hover:ring-2 hover:ring-gold/60"
+                    class="card-slot flex min-h-40 flex-col items-center justify-center gap-2 p-3 text-center text-crema transition hover:ring-2 hover:ring-accent/60"
                     @click="$emit('open', card.key)"
                 >
-                    <CardEmblem :name="card.emblem" :size="26" class="text-gold" />
+                    <CardEmblem :name="card.emblem" :size="26" class="text-dorado" />
                     <span class="card-monogram h-10 w-10 text-sm">{{ card.monogram }}</span>
                     <span class="text-sm leading-tight">{{ card.character }}</span>
-                    <span class="text-xs text-mist">{{ card.familyLabel }}</span>
-                    <span v-if="card.copies > 1" class="font-serif text-sm text-gold">
+                    <span class="text-xs text-crema/70">{{ card.familyLabel }}</span>
+                    <span v-if="card.copies > 1" class="font-serif text-sm text-dorado">
                         {{ t('ui.cards_copies', { count: card.copies }) }}
                     </span>
                 </button>
@@ -61,13 +61,13 @@ const { t } = useI18n();
                 >
                     <CardEmblem :name="card.familyEmblem" :size="26" />
                     <span class="card-monogram h-10 w-10 text-lg" aria-hidden="true">?</span>
-                    <span class="text-sm text-mist">{{ t('ui.cards_locked') }}</span>
+                    <span class="text-sm text-crema/70">{{ t('ui.cards_locked') }}</span>
                     <span class="sr-only">{{ t('ui.cards_locked_hint') }}</span>
                 </div>
             </template>
         </div>
 
-        <footer class="mt-4 text-center text-xs text-mist">
+        <footer class="mt-4 text-center text-xs text-ink-muted">
             {{ t('ui.cards_disclaimer') }}
         </footer>
     </section>

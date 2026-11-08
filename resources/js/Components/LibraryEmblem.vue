@@ -64,32 +64,32 @@ const filigree = [
         <svg class="auth-emblem__art" viewBox="0 0 560 480" role="presentation" focusable="false">
             <defs>
                 <radialGradient :id="id('glow')" cx="50%" cy="60%" r="55%">
-                    <stop offset="0" style="stop-color: var(--color-gold)" stop-opacity="0.26" />
-                    <stop offset="0.55" style="stop-color: var(--color-gold)" stop-opacity="0.08" />
-                    <stop offset="1" style="stop-color: var(--color-gold)" stop-opacity="0" />
+                    <stop offset="0" style="stop-color: var(--color-accent)" stop-opacity="0.26" />
+                    <stop offset="0.55" style="stop-color: var(--color-accent)" stop-opacity="0.08" />
+                    <stop offset="1" style="stop-color: var(--color-accent)" stop-opacity="0" />
                 </radialGradient>
 
                 <linearGradient :id="id('cover')" x1="0.15" y1="0" x2="0.75" y2="1">
-                    <stop offset="0" style="stop-color: var(--color-line)" />
-                    <stop offset="0.3" style="stop-color: var(--color-panel)" />
-                    <stop offset="0.72" style="stop-color: var(--color-night)" />
-                    <stop offset="1" style="stop-color: var(--color-night)" />
+                    <stop offset="0" style="stop-color: var(--color-edge)" />
+                    <stop offset="0.3" style="stop-color: var(--color-surface)" />
+                    <stop offset="0.72" style="stop-color: var(--color-page)" />
+                    <stop offset="1" style="stop-color: var(--color-page)" />
                 </linearGradient>
 
                 <radialGradient :id="id('cover-sheen')" cx="26%" cy="26%" r="62%">
-                    <stop offset="0" stop-color="var(--color-moon)" stop-opacity="0.1" />
-                    <stop offset="0.5" stop-color="var(--color-moon)" stop-opacity="0.03" />
-                    <stop offset="1" stop-color="var(--color-moon)" stop-opacity="0" />
+                    <stop offset="0" stop-color="var(--color-ink)" stop-opacity="0.1" />
+                    <stop offset="0.5" stop-color="var(--color-ink)" stop-opacity="0.03" />
+                    <stop offset="1" stop-color="var(--color-ink)" stop-opacity="0" />
                 </radialGradient>
 
                 <linearGradient :id="id('board')" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" style="stop-color: var(--color-panel)" />
-                    <stop offset="0.35" style="stop-color: var(--color-night)" />
-                    <stop offset="1" style="stop-color: var(--color-night)" />
+                    <stop offset="0" style="stop-color: var(--color-surface)" />
+                    <stop offset="0.35" style="stop-color: var(--color-page)" />
+                    <stop offset="1" style="stop-color: var(--color-page)" />
                 </linearGradient>
 
                 <linearGradient :id="id('gilt')" x1="0" y1="0" x2="0.4" y2="1">
-                    <stop offset="0" style="stop-color: var(--color-gold)" stop-opacity="0.85" />
+                    <stop offset="0" style="stop-color: var(--color-accent)" stop-opacity="0.85" />
                     <stop offset="0.6" style="stop-color: var(--color-dorado)" stop-opacity="0.45" />
                     <stop offset="1" style="stop-color: var(--color-dorado)" stop-opacity="0.15" />
                 </linearGradient>
@@ -104,9 +104,9 @@ const filigree = [
                 </linearGradient>
 
                 <radialGradient :id="id('page-sheen')" cx="32%" cy="42%" r="58%">
-                    <stop offset="0" stop-color="var(--color-moon)" stop-opacity="0.12" />
-                    <stop offset="0.55" stop-color="var(--color-moon)" stop-opacity="0.03" />
-                    <stop offset="1" stop-color="var(--color-moon)" stop-opacity="0" />
+                    <stop offset="0" stop-color="var(--color-ink)" stop-opacity="0.12" />
+                    <stop offset="0.55" stop-color="var(--color-ink)" stop-opacity="0.03" />
+                    <stop offset="1" stop-color="var(--color-ink)" stop-opacity="0" />
                 </radialGradient>
 
                 <linearGradient :id="id('edges')" x1="0" y1="0" x2="0" y2="1">
@@ -125,8 +125,8 @@ const filigree = [
                 </linearGradient>
 
                 <linearGradient :id="id('title-gold')" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" style="stop-color: color-mix(in srgb, var(--color-gold) 62%, var(--color-moon))" />
-                    <stop offset="0.42" style="stop-color: var(--color-gold)" />
+                    <stop offset="0" style="stop-color: color-mix(in srgb, var(--color-accent) 62%, var(--color-ink))" />
+                    <stop offset="0.42" style="stop-color: var(--color-accent)" />
                     <stop offset="1" style="stop-color: var(--color-dorado)" />
                 </linearGradient>
 
@@ -230,8 +230,8 @@ const filigree = [
     border-radius: 999px;
     background: radial-gradient(
         ellipse,
-        color-mix(in srgb, var(--color-arcane) 26%, transparent) 0%,
-        color-mix(in srgb, var(--color-gold) 8%, transparent) 52%,
+        color-mix(in srgb, var(--color-tertiary) 26%, transparent) 0%,
+        color-mix(in srgb, var(--color-accent) 8%, transparent) 52%,
         transparent 76%
     );
     filter: blur(30px);
@@ -255,7 +255,7 @@ const filigree = [
 }
 
 .auth-emblem__shadow {
-    fill: var(--color-night);
+    fill: var(--color-page);
 }
 
 .auth-emblem__shadow--soft {
@@ -289,7 +289,7 @@ const filigree = [
 }
 
 .auth-emblem__filigree circle {
-    fill: color-mix(in srgb, var(--color-gold) 80%, transparent);
+    fill: color-mix(in srgb, var(--color-accent) 80%, transparent);
     stroke: none;
 }
 
@@ -349,7 +349,7 @@ const filigree = [
 }
 
 .auth-emblem__spine-well {
-    fill: var(--color-night);
+    fill: var(--color-page);
     opacity: 0.6;
     filter: blur(4px);
 }
@@ -357,7 +357,7 @@ const filigree = [
 .auth-emblem__word {
     font-family: "Cormorant Garamond", Georgia, serif;
     filter:
-        drop-shadow(0 0 14px color-mix(in srgb, var(--color-gold) 50%, transparent))
+        drop-shadow(0 0 14px color-mix(in srgb, var(--color-accent) 50%, transparent))
         drop-shadow(0 5px 12px rgba(0, 0, 0, 0.55));
 }
 

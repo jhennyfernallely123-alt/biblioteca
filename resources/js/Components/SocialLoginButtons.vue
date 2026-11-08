@@ -28,7 +28,7 @@ const items = computed(() => [
             <a
                 v-if="provider.enabled"
                 :href="`/auth/${provider.key}/redirect`"
-                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-line bg-panel px-3 py-2 text-sm font-medium text-moon hover:bg-panel-raised focus:outline-none focus:ring-2 focus:ring-magic"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-control border border-edge bg-surface px-3 py-2 text-sm font-medium text-ink hover:bg-surface-raised focus:outline-none focus:ring-2 focus:ring-secondary"
             >
                 <svg v-if="provider.key === 'google'" class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                     <path
@@ -50,7 +50,7 @@ const items = computed(() => [
                 type="button"
                 disabled
                 aria-disabled="true"
-                class="inline-flex min-h-11 cursor-not-allowed items-center justify-center gap-2 rounded-control border border-line bg-panel/60 px-3 py-2 text-sm font-medium text-mist opacity-70"
+                class="inline-flex min-h-11 cursor-not-allowed items-center justify-center gap-2 rounded-control border border-edge bg-surface/60 px-3 py-2 text-sm font-medium text-ink-muted opacity-70"
             >
                 <svg v-if="provider.key === 'google'" class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                     <path
@@ -65,7 +65,7 @@ const items = computed(() => [
                     />
                 </svg>
                 <span>{{ provider.label }}</span>
-                <span class="ms-auto rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wide">
+                <span class="ms-auto rounded-full border border-edge px-2 py-0.5 text-[10px] uppercase tracking-wide">
                     Próximamente
                 </span>
             </button>

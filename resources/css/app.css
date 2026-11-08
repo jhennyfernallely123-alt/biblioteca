@@ -4,6 +4,32 @@
 @plugin "@tailwindcss/forms";
 
 @theme {
+  /* Roles semánticos — tema claro por defecto */
+  --color-page: #FDF7F0;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FFF8F1;
+  --color-surface-sunken: #F6EDE3;
+  --color-ink: #3B3630;
+  --color-ink-muted: #7A7068;
+  --color-ink-soft: #9A9088;
+  --color-heading: #3B3630;
+  --color-on-accent: #FFFFFF;
+  --color-edge: #E8D5C4;
+  --color-edge-strong: #D6BEA8;
+  --color-accent: #DB2777;
+  --color-accent-strong: #BE185D;
+  --color-accent-soft: #FDE2E4;
+  --color-secondary: #0F766E;
+  --color-secondary-strong: #115E59;
+  --color-tertiary: #7C3AED;
+  --color-tertiary-strong: #6D28D9;
+  --color-danger: #E11D48;
+  --color-danger-strong: #BE123C;
+  --color-success: #047857;
+  --color-warning: #B45309;
+  --color-ring: #7C3AED;
+  --color-scrim: #1C1A24;
+
   --color-bosque: #2F4A3C;
   --color-salvia: #7A9A7E;
   --color-oliva: #556B4F;
@@ -15,23 +41,26 @@
   --color-tinta: #2B2620;
   --color-terracota: #A9714B;
   --color-dorado: #C2A878;
+  --color-malva: #9E61AB;
+  --color-laton: #E8C887;
 
-  --color-night: #12101F;
-  --color-night-raised: #1A1730;
-  --color-panel: #211D3A;
-  --color-panel-raised: #2B2550;
-  --color-line: #3A3363;
-  --color-moon: #F1ECFF;
-  --color-mist: #B7AED6;
-  --color-arcane: #7C5CE0;
-  --color-arcane-strong: #6A4AC9;
-  --color-magic: #74D8C9;
-  --color-magic-strong: #5FC7B8;
-  --color-gold: #E8C887;
-  --color-danger: #F2A0B0;
-  --color-danger-strong: #A8455C;
-  --color-success: #8FE3B8;
-  --color-orquidea: #9E61AB;
+  /* Álbum de pegatinas: papel claro idéntico en ambos temas */
+  --color-album-paper: #FAF6EE;
+  --color-album-edge: #E5DDCB;
+  --color-album-ink: #2B2620;
+  --color-album-pink: #FDE2E4;
+  --color-album-pink-strong: #F0B3B8;
+  --color-album-amber: #B45309;
+  --color-album-mint: #E2F0CB;
+  --color-album-sky: #B5E2FA;
+  --color-album-lilac: #E0BBE4;
+  --color-album-lemon: #FEF9EF;
+  --color-album-peach: #FFCAD4;
+  --color-album-slate: #3F4A56;
+
+  /* Selector de tema (toggle sol/luna): colores físicos, idénticos en ambos temas */
+  --color-theme-sun: #F59E0B;
+  --color-theme-moon: #3B82F6;
 
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -40,23 +69,55 @@
   --radius-card: 6px;
   --radius-modal: 12px;
 
-  --shadow-soft: 0 1px 2px rgba(43, 38, 32, 0.10);
-  --shadow-card: 0 2px 6px rgba(43, 38, 32, 0.12);
-  --shadow-cover: 0 8px 20px rgba(43, 38, 32, 0.18);
-  --shadow-modal: 0 20px 50px rgba(43, 38, 32, 0.30);
+  --shadow-soft: 0 1px 2px color-mix(in srgb, var(--color-scrim) 12%, transparent);
+  --shadow-card: 0 2px 6px color-mix(in srgb, var(--color-scrim) 16%, transparent);
+  --shadow-cover: 0 8px 20px color-mix(in srgb, var(--color-scrim) 22%, transparent);
+  --shadow-modal: 0 20px 50px color-mix(in srgb, var(--color-scrim) 35%, transparent);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-page: #12101F;
+  --color-surface: #211D3A;
+  --color-surface-raised: #1A1730;
+  --color-surface-sunken: #191632;
+  --color-ink: #F1ECFF;
+  --color-ink-muted: #B7AED6;
+  --color-ink-soft: #8C82B8;
+  --color-heading: #E8C887;
+  --color-on-accent: #FFFFFF;
+  --color-edge: #3A3363;
+  --color-edge-strong: #4A4278;
+  --color-accent: #E8C887;
+  --color-accent-strong: #D4B271;
+  --color-accent-soft: #3A3350;
+  --color-secondary: #74D8C9;
+  --color-secondary-strong: #5FC7B8;
+  --color-tertiary: #7C5CE0;
+  --color-tertiary-strong: #6A4AC9;
+  --color-danger: #F2A0B0;
+  --color-danger-strong: #A8455C;
+  --color-success: #8FE3B8;
+  --color-warning: #E8C887;
+  --color-ring: #74D8C9;
+  --color-scrim: #0A0814;
 }
 
 @layer base {
   body {
-    @apply bg-night text-moon font-sans antialiased;
+    @apply bg-page text-ink font-sans antialiased;
   }
 
   h1, h2, h3 {
-    @apply font-serif text-gold;
+    @apply font-serif text-heading;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-magic ring-offset-2 ring-offset-night;
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-page;
   }
 }
 

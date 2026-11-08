@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Validation\ValidationException;
 
 beforeEach(function () {
+    config(['events.enabled' => false]);
     $this->user = User::factory()->create();
 });
 

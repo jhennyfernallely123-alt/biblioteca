@@ -277,8 +277,8 @@ onBeforeUnmount(() => {
                 class="pointer-events-none fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-card border px-4 py-3 text-sm shadow-modal md:bottom-6"
                 :class="
                     notice.type === 'error'
-                        ? 'border-danger/40 bg-night-raised text-danger'
-                        : 'border-success/40 bg-night-raised text-moon'
+                        ? 'border-danger/40 bg-surface-raised text-danger'
+                        : 'border-success/40 bg-surface-raised text-ink'
                 "
             >
                 {{ notice.text }}

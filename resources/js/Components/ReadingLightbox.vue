@@ -241,18 +241,18 @@ onBeforeUnmount(() => {
 <template>
     <Teleport to="body">
         <div
-            class="fixed inset-0 z-50 flex items-end justify-center bg-night/70 backdrop-blur-sm sm:items-center sm:p-6"
+            class="fixed inset-0 z-50 flex items-end justify-center bg-scrim/70 backdrop-blur-sm sm:items-center sm:p-6"
             @click.self="close"
         >
             <div
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="reading-lightbox-title"
-                class="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-card border border-line bg-panel p-4 text-moon shadow-modal sm:rounded-card sm:p-6"
+                class="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-card border border-edge bg-surface p-4 text-ink shadow-modal sm:rounded-card sm:p-6"
             >
                 <button
                     type="button"
-                    class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-night-raised text-mist transition-colors hover:text-gold"
+                    class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-edge bg-surface-raised text-ink-muted transition-colors hover:text-accent"
                     :aria-label="t('ui.reading_close')"
                     :title="t('ui.reading_close')"
                     @click="close"
@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
                 </button>
 
                 <div class="flex items-start gap-3 pr-8">
-                    <div class="aspect-[2/3] w-16 shrink-0 overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-line">
+                    <div class="aspect-[2/3] w-16 shrink-0 overflow-hidden rounded-card bg-crema shadow-sm ring-1 ring-edge">
                         <img
                             v-if="coverUrl"
                             :src="coverUrl"
@@ -277,36 +277,36 @@ onBeforeUnmount(() => {
 
                     <div class="min-w-0 flex-1">
                         <h2 id="reading-lightbox-title" class="font-serif text-xl leading-tight">{{ bookData.title }}</h2>
-                        <p class="mt-1 text-sm text-mist">{{ bookData.author || t('ui.unknown_author') }}</p>
-                        <p class="mt-2 text-xs text-gold">
+                        <p class="mt-1 text-sm text-ink-muted">{{ bookData.author || t('ui.unknown_author') }}</p>
+                        <p class="mt-2 text-xs text-accent">
                             {{ statusLabel }}
                         </p>
                     </div>
                 </div>
 
-                <p v-if="loading" class="mt-6 text-center text-sm text-mist">{{ t('ui.reading_loading') }}</p>
+                <p v-if="loading" class="mt-6 text-center text-sm text-ink-muted">{{ t('ui.reading_loading') }}</p>
 
                 <template v-else>
                     <div class="mt-5">
                         <div class="mb-1 flex items-baseline justify-between gap-2 text-sm">
-                            <span class="text-mist">{{ t('ui.reading_progress') }}</span>
-                            <span class="font-semibold text-gold">{{ progress }}%</span>
+                            <span class="text-ink-muted">{{ t('ui.reading_progress') }}</span>
+                            <span class="font-semibold text-accent">{{ progress }}%</span>
                         </div>
-                        <div class="h-2 overflow-hidden rounded-full bg-night-raised">
-                            <div class="h-full rounded-full bg-gold transition-[width]" :style="{ width: `${progress}%` }" />
+                        <div class="h-2 overflow-hidden rounded-full bg-surface-raised">
+                            <div class="h-full rounded-full bg-accent transition-[width]" :style="{ width: `${progress}%` }" />
                         </div>
-                        <div class="mt-2 flex flex-wrap justify-between gap-2 text-xs text-mist">
+                        <div class="mt-2 flex flex-wrap justify-between gap-2 text-xs text-ink-muted">
                             <span>{{ pageLabel }}</span>
                             <span>{{ t('ui.reading_total_time') }}: {{ durationLabel(totalMinutes) }}</span>
                         </div>
                     </div>
 
-                    <div class="mt-5 rounded-card border border-line bg-night-raised/60 p-3">
+                    <div class="mt-5 rounded-card border border-edge bg-surface-raised/60 p-3">
                         <div class="flex items-center justify-between gap-3">
-                            <span class="font-mono text-3xl font-semibold tabular-nums text-moon">{{ timerLabel }}</span>
+                            <span class="font-mono text-3xl font-semibold tabular-nums text-ink">{{ timerLabel }}</span>
                             <button
                                 type="button"
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-arcane text-moon shadow-card transition-colors hover:bg-arcane-strong disabled:opacity-50"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-on-accent shadow-card transition-colors hover:bg-accent-strong disabled:opacity-50"
                                 :aria-label="running ? t('ui.reading_pause') : t('ui.reading_start')"
                                 :title="running ? t('ui.reading_pause') : t('ui.reading_start')"
                                 :disabled="saving"
@@ -321,35 +321,35 @@ onBeforeUnmount(() => {
                                 </svg>
                             </button>
                         </div>
-                        <p class="mt-1 text-xs text-mist">{{ t('ui.reading_timer_hint') }}</p>
-                        <p v-if="tooShort" class="mt-1 text-xs text-gold">{{ t('ui.reading_too_short') }}</p>
+                        <p class="mt-1 text-xs text-ink-muted">{{ t('ui.reading_timer_hint') }}</p>
+                        <p v-if="tooShort" class="mt-1 text-xs text-accent">{{ t('ui.reading_too_short') }}</p>
 
                         <div class="mt-3 grid grid-cols-2 gap-2">
-                            <label class="text-xs text-mist">
+                            <label class="text-xs text-ink-muted">
                                 {{ t('ui.reading_current_page') }}
                                 <input
                                     v-model="currentPage"
                                     type="number"
                                     min="0"
                                     inputmode="numeric"
-                                    class="mt-1 w-full rounded-control border border-line bg-panel px-2 py-1 text-sm text-moon"
+                                    class="mt-1 w-full rounded-control border border-edge bg-surface px-2 py-1 text-sm text-ink"
                                 >
                             </label>
-                            <label class="text-xs text-mist">
+                            <label class="text-xs text-ink-muted">
                                 {{ t('ui.reading_total_pages') }}
                                 <input
                                     v-model="totalPages"
                                     type="number"
                                     min="1"
                                     inputmode="numeric"
-                                    class="mt-1 w-full rounded-control border border-line bg-panel px-2 py-1 text-sm text-moon"
+                                    class="mt-1 w-full rounded-control border border-edge bg-surface px-2 py-1 text-sm text-ink"
                                 >
                             </label>
                         </div>
 
                         <button
                             type="button"
-                            class="mt-2 w-full rounded-control border border-line px-3 py-2 text-sm text-moon transition-colors hover:border-magic hover:text-gold disabled:opacity-50"
+                            class="mt-2 w-full rounded-control border border-edge px-3 py-2 text-sm text-ink transition-colors hover:border-secondary hover:text-accent disabled:opacity-50"
                             :disabled="saving"
                             @click="saveProgress"
                         >
@@ -362,7 +362,7 @@ onBeforeUnmount(() => {
                     <div class="mt-5">
                         <h3 class="mb-2 font-serif text-lg">{{ t('ui.reading_history') }}</h3>
 
-                        <p v-if="sessions.length === 0" class="text-sm text-mist">
+                        <p v-if="sessions.length === 0" class="text-sm text-ink-muted">
                             {{ t('ui.reading_history_empty') }}
                         </p>
 
@@ -370,18 +370,18 @@ onBeforeUnmount(() => {
                             <li
                                 v-for="session in sessions"
                                 :key="session.id"
-                                class="flex items-center justify-between gap-3 rounded-card border border-line bg-panel-raised/50 px-3 py-2 text-sm"
+                                class="flex items-center justify-between gap-3 rounded-card border border-edge bg-surface-raised/50 px-3 py-2 text-sm"
                             >
                                 <div class="min-w-0">
-                                    <p class="text-moon">{{ dateLabel(session.read_on) }}</p>
-                                    <p class="text-xs text-mist">
+                                    <p class="text-ink">{{ dateLabel(session.read_on) }}</p>
+                                    <p class="text-xs text-ink-muted">
                                         {{ durationLabel(session.minutes) }}
                                         <template v-if="session.page !== null"> · {{ t('ui.reading_page') }} {{ session.page }}</template>
                                     </p>
                                 </div>
                                 <button
                                     type="button"
-                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-mist transition-colors hover:text-danger"
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:text-danger"
                                     :aria-label="t('ui.reading_delete_session')"
                                     :title="t('ui.reading_delete_session')"
                                     @click="removeSession(session)"

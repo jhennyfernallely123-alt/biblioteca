@@ -8,6 +8,7 @@ use App\Services\CardDeckService;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
+    config(['events.enabled' => false]);
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
     Book::factory()->for($this->user)->create([

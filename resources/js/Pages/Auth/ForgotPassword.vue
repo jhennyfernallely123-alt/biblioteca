@@ -26,8 +26,8 @@ const submit = () => {
         <Head title="Recuperar contraseña" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Recuperar contraseña</h1>
-            <p class="mt-1 text-sm text-mist">
+            <h1 class="font-serif text-2xl text-accent">Recuperar contraseña</h1>
+            <p class="mt-1 text-sm text-ink-muted">
                 Escribe tu correo y te enviaremos un enlace para elegir una nueva contraseña.
             </p>
         </div>
@@ -62,8 +62,8 @@ const submit = () => {
             </PrimaryButton>
         </form>
 
-        <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
-            <Link href="/login" class="font-medium text-magic underline hover:text-gold">
+        <div class="mt-6 border-t border-edge pt-5 text-center text-sm text-ink-muted">
+            <Link href="/login" class="font-medium text-secondary underline hover:text-accent">
                 Volver a iniciar sesión
             </Link>
         </div>

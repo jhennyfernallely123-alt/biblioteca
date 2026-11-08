@@ -45,12 +45,12 @@ onMounted(() => {
             :autocomplete="autocomplete"
             :required="required"
             :autofocus="autofocus"
-            class="w-full rounded-control border-line bg-panel px-3 py-2 pe-12 text-moon shadow-soft placeholder:text-mist focus:border-magic focus:ring-magic"
+            class="w-full rounded-control border-edge bg-surface px-3 py-2 pe-12 text-ink shadow-soft placeholder:text-ink-muted focus:border-secondary focus:ring-secondary"
         />
 
         <button
             type="button"
-            class="absolute inset-y-0 end-0 flex w-11 items-center justify-center rounded-control text-mist hover:text-moon focus:outline-none focus:ring-2 focus:ring-magic"
+            class="absolute inset-y-0 end-0 flex w-11 items-center justify-center rounded-control text-ink-muted hover:text-ink focus:outline-none focus:ring-2 focus:ring-secondary"
             :aria-label="visible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
             @click="visible = !visible"
         >

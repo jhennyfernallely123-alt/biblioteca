@@ -40,8 +40,8 @@ const submit = () => {
         <Head title="Iniciar sesión" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Iniciar sesión</h1>
-            <p class="mt-1 text-sm text-mist">Entra para ver tus estanterías.</p>
+            <h1 class="font-serif text-2xl text-accent">Iniciar sesión</h1>
+            <p class="mt-1 text-sm text-ink-muted">Entra para ver tus estanterías.</p>
         </div>
 
         <div v-if="status" class="mb-4 text-sm font-medium text-success">
@@ -82,13 +82,13 @@ const submit = () => {
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <label class="flex min-h-11 items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-mist">Recordarme</span>
+                    <span class="ms-2 text-sm text-ink-muted">Recordarme</span>
                 </label>
 
                 <Link
                     v-if="canResetPassword"
                     href="/forgot-password"
-                    class="text-sm text-magic underline hover:text-gold focus:outline-none focus:ring-2 focus:ring-magic"
+                    class="text-sm text-secondary underline hover:text-accent focus:outline-none focus:ring-2 focus:ring-secondary"
                 >
                     ¿Olvidaste tu contraseña?
                 </Link>
@@ -104,17 +104,17 @@ const submit = () => {
             </PrimaryButton>
         </form>
 
-        <div class="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-mist">
-            <span class="h-px flex-1 bg-line" />
+        <div class="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+            <span class="h-px flex-1 bg-edge" />
             o continúa con
-            <span class="h-px flex-1 bg-line" />
+            <span class="h-px flex-1 bg-edge" />
         </div>
 
         <SocialLoginButtons :providers="socialProviders" />
 
-        <div class="mt-6 border-t border-line pt-5 text-center text-sm text-mist">
+        <div class="mt-6 border-t border-edge pt-5 text-center text-sm text-ink-muted">
             ¿Aún no tienes cuenta?
-            <Link href="/register" class="font-medium text-magic underline hover:text-gold">
+            <Link href="/register" class="font-medium text-secondary underline hover:text-accent">
                 Crear cuenta
             </Link>
         </div>

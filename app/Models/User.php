@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'nickname', 'email', 'password', 'default_view_mode', 'locale'])]
+#[Fillable(['name', 'nickname', 'email', 'password', 'default_view_mode', 'locale', 'theme'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $attributes = [
         'default_view_mode' => 'covers',
         'locale' => 'es',
+        'theme' => 'light',
     ];
 
     public function shelves(): HasMany
@@ -62,6 +63,16 @@ class User extends Authenticatable
     public function wallet(): HasOne
     {
         return $this->hasOne(UserWallet::class);
+    }
+
+    public function eventProgress(): HasMany
+    {
+        return $this->hasMany(EventProgress::class);
+    }
+
+    public function collectibles(): HasMany
+    {
+        return $this->hasMany(UserCollectible::class);
     }
 
     /**

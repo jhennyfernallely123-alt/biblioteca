@@ -37,8 +37,8 @@ const submit = () => {
         <Head title="Nueva contraseña" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Nueva contraseña</h1>
-            <p class="mt-1 text-sm text-mist">Elige una contraseña nueva para tu cuenta.</p>
+            <h1 class="font-serif text-2xl text-accent">Nueva contraseña</h1>
+            <p class="mt-1 text-sm text-ink-muted">Elige una contraseña nueva para tu cuenta.</p>
         </div>
 
         <form @submit.prevent="submit" class="space-y-4">

@@ -1,6 +1,6 @@
 # DISEÑO — Biblioteca
 
-**Última actualización:** 2026-11-04
+**Última actualización:** 2026-11-08
 **Estado:** vigente
 **Alcance:** identidad visual, componentes, estructura de interfaz y convenciones de diseño de la aplicación Biblioteca.
 
@@ -10,14 +10,14 @@
 
 ## 1. Concepto
 
-Una biblioteca personal con aire de biblioteca antigua, ahora vivida de noche: una sala en penumbra violeta donde las estanterías de madera son lo único cálido e iluminado. El resto de la interfaz se viste de noche profunda, oro y turquesa mágico. La sensación debe ser íntima, ordenada y un poco arcana, no recargada. La estantería sigue siendo la protagonista; la interfaz la acompaña sin competir con las portadas.
+Una biblioteca personal con aire de biblioteca antigua. Por defecto se vive de día, en tonos pastel: papel crema, tarjetas blancas y acentos rosas que dejan todo el protagonismo a la madera. Quien lo prefiera puede cambiar a la **noche arcana** —violeta profundo, oro y turquesa mágico— desde **Ajustes → Apariencia**. La sensación debe ser íntima, ordenada y un poco arcana, no recargada. La estantería sigue siendo la protagonista; la interfaz la acompaña sin competir con las portadas.
 
 Principios:
 
-1. **Las portadas mandan.** El mueble conserva su madera y sus colores cálidos; el entorno nocturno es sobrio para que los libros destaquen.
+1. **Las portadas mandan.** El mueble conserva su madera y sus colores cálidos; el entorno es sobrio para que los libros destaquen.
 2. **Antiguo, no viejo.** Texturas sutiles, buena legibilidad y contrastes modernos.
 3. **Ligero.** Nada de imágenes pesadas; texturas con CSS/SVG. El hosting es compartido.
-4. **Cálido y nocturno.** Mensajes breves, en español, con tono literario pero directo.
+4. **Cálido y literario.** Mensajes breves, en español, con tono literario pero directo.
 5. **Consistencia.** Todo componente nuevo reutiliza los tokens de este documento.
 6. **El mueble no se toca.** Madera, espaldar, balda, portadas y lomos conservan su paleta y sus reglas.
 
@@ -25,30 +25,74 @@ Principios:
 
 ## 2. Paleta de colores
 
-### Paleta de la noche (interfaz)
+La interfaz usa **roles semánticos**: los componentes no nombran colores concretos. El
+**tema claro pastel** es el valor por defecto; el **tema oscuro** recupera la paleta de
+noche arcana. La persona elige en **Ajustes → Apariencia** y la elección se guarda en su
+cuenta (columna `users.theme`). El álbum de eventos usa siempre papel claro.
+
+### Tema claro (por defecto)
 
 | Token | Hex | Uso |
 |---|---|---|
-| `night` | `#12101F` | Fondo base de la aplicación y del cielo arcano |
-| `night-raised` | `#1A1730` | Barras de navegación, cabeceras y superficies elevadas sobre la noche |
-| `panel` | `#211D3A` | Tarjetas, paneles, modales e inputs |
-| `panel-raised` | `#2B2550` | Hover de tarjetas, opción activa de listas, botones secundarios |
-| `line` | `#3A3363` | Bordes, separadores y anillos suaves |
-| `moon` | `#F1ECFF` | Texto principal sobre la noche |
-| `mist` | `#B7AED6` | Texto secundario, metadatos, placeholders y ayudas |
-| `arcane` | `#7C5CE0` | Acción principal, pestaña activa |
-| `arcane-strong` | `#6A4AC9` | Hover y estado activo de la acción principal |
-| `magic` | `#74D8C9` | Enlaces, foco, borde activo y acentos mágicos |
-| `magic-strong` | `#5FC7B8` | Hover de acentos turquesa |
-| `gold` | `#E8C887` | Títulos, estrellas, logo y detalles dorados |
-| `danger` | `#F2A0B0` | Errores, texto y bordes destructivos |
-| `danger-strong` | `#A8455C` | Fondo de botones destructivos |
-| `success` | `#8FE3B8` | Mensajes de éxito |
-| `orquidea` | `#9E61AB` | Cuadro del emblema en Acceso y Registro y botón **Entrar** |
+| `page` | `#FDF7F0` | Fondo de página y cielo arcano |
+| `surface` | `#FFFFFF` | Tarjetas, paneles, modales e inputs |
+| `surface-raised` | `#FFF8F1` | Navegación, cabeceras, hover suave |
+| `surface-sunken` | `#F6EDE3` | Zonas hundidas, pistas y previsualizaciones |
+| `ink` | `#3B3630` | Texto principal |
+| `ink-muted` | `#7A7068` | Texto secundario, metadatos y placeholders |
+| `ink-soft` | `#9A9088` | Texto terciario y ayudas |
+| `heading` | `#3B3630` | Títulos `h1`–`h3` |
+| `on-accent` | `#FFFFFF` | Texto sobre fondos saturados |
+| `edge` | `#E8D5C4` | Bordes, separadores y anillos suaves |
+| `edge-strong` | `#D6BEA8` | Bordes destacados y hover |
+| `accent` | `#DB2777` | Acento principal: títulos, estrellas, logo y detalles |
+| `accent-strong` | `#BE185D` | Hover del acento |
+| `accent-soft` | `#FDE2E4` | Fondos de insignias y selección |
+| `secondary` | `#0F766E` | Enlaces, foco, borde activo y acentos mágicos |
+| `secondary-strong` | `#115E59` | Hover de acentos turquesa |
+| `tertiary` | `#7C3AED` | Acción principal y pestaña activa |
+| `tertiary-strong` | `#6D28D9` | Hover y estado activo de la acción principal |
+| `danger` | `#E11D48` | Errores, texto y bordes destructivos |
+| `danger-strong` | `#BE123C` | Fondo de botones destructivos |
+| `success` | `#047857` | Mensajes de éxito |
+| `warning` | `#B45309` | Avisos |
+| `ring` | `#7C3AED` | Anillo de foco |
+| `scrim` | `#1C1A24` | Velos de modales (siempre oscuro) |
+
+### Tema oscuro
+
+Mismos roles, sobrescritos en `:root[data-theme='dark']`:
+
+| Token | Hex |
+|---|---|
+| `page` | `#12101F` |
+| `surface` | `#211D3A` |
+| `surface-raised` | `#1A1730` |
+| `surface-sunken` | `#191632` |
+| `ink` | `#F1ECFF` |
+| `ink-muted` | `#B7AED6` |
+| `ink-soft` | `#8C82B8` |
+| `heading` | `#E8C887` |
+| `on-accent` | `#FFFFFF` |
+| `edge` | `#3A3363` |
+| `edge-strong` | `#4A4278` |
+| `accent` | `#E8C887` |
+| `accent-strong` | `#D4B271` |
+| `accent-soft` | `#3A3350` |
+| `secondary` | `#74D8C9` |
+| `secondary-strong` | `#5FC7B8` |
+| `tertiary` | `#7C5CE0` |
+| `tertiary-strong` | `#6A4AC9` |
+| `danger` | `#F2A0B0` |
+| `danger-strong` | `#A8455C` |
+| `success` | `#8FE3B8` |
+| `warning` | `#E8C887` |
+| `ring` | `#74D8C9` |
+| `scrim` | `#0A0814` |
 
 ### Paleta del mueble (estanterías y libros)
 
-Estos tokens siguen definidos con sus valores originales y quedan reservados al mueble y a los libros. No se usan en el resto de la interfaz.
+Estos tokens siguen definidos con sus valores originales y quedan reservados al mueble y a los libros. No se usan en el resto de la interfaz y no cambian entre temas.
 
 | Token | Hex | Uso |
 |---|---|---|
@@ -63,32 +107,18 @@ Estos tokens siguen definidos con sus valores originales y quedan reservados al 
 | `tinta` | `#2B2620` | Texto sobre portadas claras y lomos |
 | `terracota` | `#A9714B` | Lomo sin portada |
 | `dorado` | `#C2A878` | Halo de portadas y lomos |
-
-### Colores semánticos
-
-| Token | Valor | Uso |
-|---|---|---|
-| `surface` | `night` | Fondo de página |
-| `surface-raised` | `panel` | Tarjetas, modales, inputs |
-| `text` | `moon` | Texto principal |
-| `text-muted` | `mist` | Texto secundario, metadatos |
-| `border` | `line` | Bordes y separadores |
-| `primary` | `arcane` | Acción principal |
-| `primary-hover` | `arcane-strong` | Hover de la acción principal |
-| `accent` | `magic` | Enlaces, foco y estados activos |
-| `danger` | `danger` / `danger-strong` | Errores y acciones destructivas |
-| `success` | `success` | Confirmaciones |
-| `focus` | `magic` | Anillo de foco |
+| `malva` | `#9E61AB` | Objetos decorativos rosados |
+| `laton` | `#E8C887` | Objetos decorativos dorados |
 
 ### Reglas de contraste
 
-- Texto `moon` sobre `night`, `night-raised`, `panel` y `panel-raised`: cumple AA.
-- Texto `mist` se usa para secundarios; no para párrafos largos.
-- Texto `moon` sobre `arcane` y `danger-strong`: cumple AA.
-- `gold` se reserva a títulos, estrellas, logo y detalles; no para párrafos.
-- `magic` se usa en enlaces cortos y foco; no como color de cuerpo de texto.
+- Texto `ink` sobre `page`, `surface`, `surface-raised` y `surface-sunken`: cumple AA.
+- `ink-muted` se usa para secundarios; no para párrafos largos.
+- Texto `on-accent` (blanco) sobre `tertiary`, `accent-strong` y `danger-strong`: cumple AA.
+- `accent` se reserva a títulos, estrellas, logo y detalles; no para párrafos.
+- `secondary` se usa en enlaces cortos y foco; no como color de cuerpo de texto.
 - El mueble mantiene sus combinaciones propias: `crema`/`tinta` sobre madera, portadas y lomos.
-- Nunca usar `dorado` como color de texto pequeño sobre fondos claros; pertenece al mueble.
+- Nunca usar `dorado` ni `laton` como color de texto pequeño sobre fondos claros; pertenecen al mueble.
 
 ---
 
@@ -126,18 +156,18 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - **Padding de página:** 16 px en móvil, 24–32 px en tablet/escritorio.
 - **Ancho máximo de contenido:** 1200 px, centrado.
 - **Radios:** 4 px (inputs y botones), 6 px (tarjetas), 12 px (modales). Las baldas son rectas.
-- **Sombras:**
-  - Suave: `0 1px 2px rgba(43, 38, 32, 0.10)`
-  - Tarjeta: `0 2px 6px rgba(43, 38, 32, 0.12)`
-  - Portada en hover: `0 8px 20px rgba(43, 38, 32, 0.18)`
-  - Modal: `0 20px 50px rgba(43, 38, 32, 0.30)`
+- **Sombras:** derivadas de `scrim` con `color-mix`, para que funcionen en ambos temas.
+  - Suave: `0 1px 2px color-mix(in srgb, var(--color-scrim) 12%, transparent)`
+  - Tarjeta: `0 2px 6px color-mix(in srgb, var(--color-scrim) 16%, transparent)`
+  - Portada en hover: `0 8px 20px color-mix(in srgb, var(--color-scrim) 22%, transparent)`
+  - Modal: `0 20px 50px color-mix(in srgb, var(--color-scrim) 35%, transparent)`
   - Balda: `0 6px 6px rgba(43, 38, 32, 0.22)` con frente biselado y sombra interior de contacto.
 
 ---
 
 ## 5. Texturas
 
-- **Cielo arcano:** clase `.arcane-sky` sobre `night`, con dos resplandores radiales (`arcane` al 30 % arriba a la izquierda y `magic` al 16 % abajo a la derecha) y el componente decorativo `ArcaneStars` con cuatro capas de estrellas de 0.7–1.8 px en `moon` y acentos `gold`. Las capas derivan en diagonal durante 70–150 s y parpadean suavemente cada 6–14 s, con desfases entre capas. Solo se animan `transform` y `opacity`; sin canvas ni imágenes. La capa va detrás del contenido (`z-index: -1`) y no captura clics. Con `prefers-reduced-motion: reduce` las estrellas quedan fijas. En Acceso y Registro, `ArcaneStars` se reutiliza dentro del cuadro `orquidea` en posición absoluta, recortado al cuadro; la columna sigue con el cielo oscuro de fondo.
+- **Cielo arcano:** clase `.arcane-sky` sobre `page`, con dos resplandores radiales (`tertiary` al 30 % arriba a la izquierda y `secondary` al 16 % abajo a la derecha) y el componente decorativo `ArcaneStars` con cuatro capas de estrellas de 0.7–1.8 px en `ink` y acentos `accent`. Las capas derivan en diagonal durante 70–150 s y parpadean suavemente cada 6–14 s, con desfases entre capas. Solo se animan `transform` y `opacity`; sin canvas ni imágenes. La capa va detrás del contenido (`z-index: -1`) y no captura clics. Con `prefers-reduced-motion: reduce` las estrellas quedan fijas. En Acceso y Registro, `ArcaneStars` se reutiliza dentro del cuadro `tertiary` en posición absoluta, recortado al cuadro; la columna sigue con el cielo arcano de fondo.
 - **Madera:** degradado vertical `#6B4F3A → #8B6B4F` con vetas hechas con `repeating-linear-gradient` a baja opacidad. Sin imágenes bitmap.
 - **Peso:** ninguna textura debe superar 50 KB en total; preferir CSS/SVG inline.
 
@@ -147,25 +177,25 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Navegación
 
-- **Escritorio:** barra lateral fija de 240 px, fondo `night-raised` con borde final `line`, texto `mist`. Logo en Cormorant `gold`. Enlaces con icono y etiqueta. El botón **Cerrar sesión** va en la parte superior, bajo el logo; no se muestra el nombre real en la barra lateral.
-- **Móvil:** barra inferior fija de 56 px, fondo `night-raised` con borde superior `line`, tres acciones: Biblioteca, Estanterías y un botón de **tres líneas** (icono de 20 px, trazo 1.6, sin texto visible; el nombre se expone con `aria-label` y `title`). Ese botón abre un panel flotante encima de la barra con Decoraciones y Configuraciones; se cierra al elegir una opción, al tocar fuera o con Escape. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
-- Enlace activo: fondo `panel`, borde inicial `magic` y texto `moon` (escritorio); texto `gold` y subrayado `magic` (móvil).
+- **Escritorio:** barra lateral fija de 240 px, fondo `surface-raised` con borde final `edge`, texto `ink-muted`. Logo en Cormorant `accent`. Enlaces con icono y etiqueta. El botón **Cerrar sesión** va en la parte superior, bajo el logo; no se muestra el nombre real en la barra lateral.
+- **Móvil:** barra inferior fija de 56 px, fondo `surface-raised` con borde superior `edge`, tres acciones: Biblioteca, Estanterías y un botón de **tres líneas** (icono de 20 px, trazo 1.6, sin texto visible; el nombre se expone con `aria-label` y `title`). Ese botón abre un panel flotante encima de la barra con Decoraciones y Configuraciones; se cierra al elegir una opción, al tocar fuera o con Escape. Añadir libro se abre desde el botón de la cabecera de la Biblioteca. Zona segura inferior respetada.
+- Enlace activo: fondo `surface`, borde inicial `secondary` y texto `ink` (escritorio); texto `accent` y subrayado `secondary` (móvil).
 
 ### Botones
 
-- **Primario:** fondo `arcane`, texto `moon`, radio 4 px, altura mínima 44 px. Hover y activo `arcane-strong`. Foco con anillo `magic` de 2 px y offset `night`. Variante `orquidea`: fondo `orquidea` y texto `night`, hover al 85 % y activo al 75 %; se usa en el botón **Entrar** del acceso.
-- **Secundario:** fondo `panel`, borde `line`, texto `moon`. Hover `panel-raised`.
-- **Peligro:** borde y texto `danger`; en confirmaciones, fondo `danger-strong` y texto `moon`.
-- **Icono:** cuadrado de 44 × 44 px, sin borde, hover con fondo `panel`.
-- **Enlaces:** `magic`; hover `gold`.
+- **Primario:** fondo `accent` (rosado en modo claro), texto `on-accent`, radio 4 px, altura mínima 44 px. Hover y activo `accent-strong`. Foco con anillo `accent` de 2 px y offset `page`. Variante **Entrar** (`tone="orquidea"`): fondo `tertiary`, texto `on-accent`, hover al 85 % y activo al 75 %.
+- **Secundario:** fondo `surface`, borde `edge`, texto `ink`. Hover `surface-raised`.
+- **Peligro:** borde y texto `danger`; en confirmaciones, fondo `danger-strong` y texto `on-accent`.
+- **Icono:** cuadrado de 44 × 44 px, sin borde, hover con fondo `surface`.
+- **Enlaces:** `secondary`; hover `accent`.
 
 ### Inputs
 
-- Fondo `panel`, borde 1 px `line`, radio 4 px, altura 44 px.
-- Texto `moon`; placeholder `mist`.
-- Foco: borde `magic` + anillo `magic`.
+- Fondo `surface`, borde 1 px `edge`, radio 4 px, altura 44 px.
+- Texto `ink`; placeholder `ink-muted`.
+- Foco: borde `secondary` + anillo `secondary`.
 - Error: mensaje `small` en `danger` debajo.
-- Archivos: botón nativo en `panel-raised` con texto `moon`.
+- Archivos: botón nativo en `surface-raised` con texto `ink`.
 
 ### Tarjeta de libro (`BookCard`)
 
@@ -174,7 +204,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - La tarjeta muestra solo la portada: sin título ni autor debajo. Título y autor aparecen en el tooltip nativo y en el texto alternativo de la imagen.
 - Sin portada: fondo `crema`, borde `madera` al 35 %, título y autor centrados en Cormorant como portada de sustitución.
 - Portada con `alt="Portada de {título}"`.
-- En la estantería **Leyendo**, la portada lleva una insignia circular arriba a la izquierda (`night` al 85 %, anillo y triángulo de reproducción `gold`) y una barra de progreso `gold` sobre una franja `night` al 70 % en la base. El clic abre el diálogo de lectura en lugar de la ficha.
+- En la estantería **Leyendo**, la portada lleva una insignia circular arriba a la izquierda (`page` al 85 %, anillo y triángulo de reproducción `accent`) y una barra de progreso `accent` sobre una franja `page` al 70 % en la base. El clic abre el diálogo de lectura en lugar de la ficha.
 
 ### Lomo (`BookSpine`)
 
@@ -183,12 +213,12 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 - El título se muestra en vertical, centrado en el lomo. Si es largo, el lomo se engrosa y el texto se reparte en varias columnas (con el cuerpo de 10 a 8 px si hace falta) para que no se corte; aun así el tooltip y el `aria-label` llevan el título completo.
 - El color del texto se elige automáticamente entre `crema` y `tinta` según el brillo del fondo.
 - Al pasar el cursor: halo `dorado` alrededor del lomo, sin desplazamiento, y tooltip con título y autor.
-- En la estantería **Leyendo**, el lomo muestra la insignia de reproducción `gold` centrada arriba y una barra de progreso `gold` en la base; el clic abre el diálogo de lectura en lugar de la ficha.
+- En la estantería **Leyendo**, el lomo muestra la insignia de reproducción `accent` centrada arriba y una barra de progreso `accent` en la base; el clic abre el diálogo de lectura en lugar de la ficha.
 
 ### Objeto decorativo (`DecorationArt` + `ShelfDecoration`)
 
 - Quince dibujos SVG planos en un lienzo de 64 × 80: taza, rosas, planta, vela, reloj de arena, bola de cristal, lámpara, gato, calavera, jaula, astrolabio, set de té, caja de música, pluma y tintero, marco de fotos.
-- La pieza principal usa el color elegido entre seis tokens existentes: `orquidea` (rosa), `crema`, `salvia` (verde), `bosque`, `gold` (dorado) y `terracota`. Los neutros salen de `madera`, `tinta` y `pergamino`; no se añaden colores nuevos.
+- La pieza principal usa el color elegido entre seis tokens existentes: `tertiary` (rosa), `crema`, `salvia` (verde), `bosque`, `accent` (dorado) y `terracota`. Los neutros salen de `madera`, `tinta` y `pergamino`; no se añaden colores nuevos.
 - En la balda ocupa ~56 px de ancho (64 px desde `sm`) y se apoya en el fondo como los libros, con halo `dorado` al pasar el cursor y sombra suave.
 - Al pasar el ratón aparece una **×** circular arriba a la derecha (solo escritorio) para quitarlo; en móvil se quita desde Ajustes.
 - `title` y `aria-label` con el nombre traducido del objeto.
@@ -206,11 +236,11 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Lectura en curso (`ReadingLightbox`)
 
 - Se abre al pulsar un libro de la estantería virtual **Leyendo** en Estanterías o el botón **Registrar lectura** de la ficha.
-- Modal `panel` de hasta 512 px: portada de 64 px, título en Cormorant `moon`, autor en `mist` y estado de lectura en `gold` (Sin empezar, Leyendo, Terminado).
-- Barra de progreso `gold` sobre `night-raised` con el porcentaje en `gold`; debajo, «Página X de Y» y el tiempo total leído (`X h Y min`). Sin páginas totales se muestra «Sin páginas totales» y el porcentaje queda en 0.
-- Cronómetro `font-mono` de 30 px con un único botón circular `arcane` que alterna **Empezar** (triángulo) y **Pausar y guardar** (dos barras). Al pausar se guarda la sesión del día con los minutos cronometrados y la página actual si han pasado al menos 10 s; si no, se muestra el aviso «La sesión es demasiado corta; no se guardó.» en `gold`.
-- Campos numéricos de página actual y páginas totales con el botón **Guardar progreso** (borde `line`, hover `magic`/`gold`).
-- Historial en lista: fecha en `moon`, minutos y página en `mist`, y una × `mist` que pasa a `danger` al pasar el cursor; antes de borrar pide confirmación. Vacío: «Todavía no hay sesiones.»
+- Modal `surface` de hasta 512 px: portada de 64 px, título en Cormorant `ink`, autor en `ink-muted` y estado de lectura en `accent` (Sin empezar, Leyendo, Terminado).
+- Barra de progreso `accent` sobre `surface-raised` con el porcentaje en `accent`; debajo, «Página X de Y» y el tiempo total leído (`X h Y min`). Sin páginas totales se muestra «Sin páginas totales» y el porcentaje queda en 0.
+- Cronómetro `font-mono` de 30 px con un único botón circular `tertiary` que alterna **Empezar** (triángulo) y **Pausar y guardar** (dos barras). Al pausar se guarda la sesión del día con los minutos cronometrados y la página actual si han pasado al menos 10 s; si no, se muestra el aviso «La sesión es demasiado corta; no se guardó.» en `accent`.
+- Campos numéricos de página actual y páginas totales con el botón **Guardar progreso** (borde `edge`, hover `secondary`/`accent`).
+- Historial en lista: fecha en `ink`, minutos y página en `ink-muted`, y una × `ink-muted` que pasa a `danger` al pasar el cursor; antes de borrar pide confirmación. Vacío: «Todavía no hay sesiones.»
 - Cierre con el botón de la esquina, Escape o pulsando el fondo; el desplazamiento del fondo queda bloqueado. En móvil se ancla abajo con las esquinas superiores redondeadas; en escritorio se centra.
 
 ### Biblioteca completa (`Bookcase` + `BookcaseBand`)
@@ -230,26 +260,26 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 | Mes | Tema | Partículas | Adornos y paleta |
 |---|---|---|---|
-| Enero | Invierno | Copos | Copos; `moon`, `mist`, `crema`, `gold` |
-| Febrero | San Valentín | Corazones | Corazones; `danger`, `orquidea`, `crema`, `gold` |
-| Marzo | Primavera | Pétalos | Pétalos; `salvia`, `orquidea`, `crema`, `gold` |
-| Abril | Lluvia | Gotas | Gotas; `mist`, `salvia`, `moon`, `crema` |
-| Mayo | Flores | Pétalos | Pétalos; `orquidea`, `gold`, `salvia`, `crema` |
-| Junio | Verano | Motas | Motas; `gold`, `dorado`, `crema`, `salvia` |
-| Julio | Sol | Estrellas | Estrellas; `gold`, `terracota`, `dorado`, `crema` |
-| Agosto | Girasoles | Motas | Motas; `dorado`, `oliva`, `gold`, `crema` |
-| Septiembre | Vendimia | Hojas | Hojas; `terracota`, `oliva`, `madera-clara`, `gold` |
-| Octubre | Halloween | — | Murciélagos, telarañas y arañas; `orquidea`, `terracota`, `crema`, `gold` |
-| Noviembre | Otoño | Hojas | Hojas; `terracota`, `oliva`, `gold`, `madera-clara` |
-| Diciembre | Navidad | Copos | Bolas; `crema`, `danger`, `success`, `gold` |
+| Enero | Invierno | Copos | Copos; `ink`, `ink-muted`, `crema`, `accent` |
+| Febrero | San Valentín | Corazones | Corazones; `danger`, `tertiary`, `crema`, `accent` |
+| Marzo | Primavera | Pétalos | Pétalos; `salvia`, `tertiary`, `crema`, `accent` |
+| Abril | Lluvia | Gotas | Gotas; `ink-muted`, `salvia`, `ink`, `crema` |
+| Mayo | Flores | Pétalos | Pétalos; `tertiary`, `accent`, `salvia`, `crema` |
+| Junio | Verano | Motas | Motas; `accent`, `dorado`, `crema`, `salvia` |
+| Julio | Sol | Estrellas | Estrellas; `accent`, `terracota`, `dorado`, `crema` |
+| Agosto | Girasoles | Motas | Motas; `dorado`, `oliva`, `accent`, `crema` |
+| Septiembre | Vendimia | Hojas | Hojas; `terracota`, `oliva`, `madera-clara`, `accent` |
+| Octubre | Halloween | — | Murciélagos, telarañas y arañas; `tertiary`, `terracota`, `crema`, `accent` |
+| Noviembre | Otoño | Hojas | Hojas; `terracota`, `oliva`, `accent`, `madera-clara` |
+| Diciembre | Navidad | Copos | Bolas; `crema`, `danger`, `success`, `accent` |
 
 - Cada tema define además su resplandor de fondo en `.arcane-sky[data-season="…"]::after` con los mismos tokens. Cambiar de mes no requiere tocar componentes: basta con que `seasons.js` devuelva la clave del mes.
 
 ### Arrastrar libros entre estanterías
 
 - Origen: cualquier `BookCard`, `BookSpine` o `ShelfDecoration`. En escritorio se arrastra con el botón principal y el gesto se activa tras 6 px. En móvil se mantiene pulsado 320 ms y después se arrastra; si hay un desplazamiento mayor de 8 px antes de ese tiempo, el gesto se cancela y la página puede hacer scroll.
-- Al activarse, el libro de origen se atenúa al 30 %, el cursor pasa a `grabbing` y aparece una miniatura flotante sobre el puntero: la portada (76 px de ancho) o el lomo (28 × 148 px) según cómo se muestre ese libro. La miniatura no intercepta eventos y lleva un resplandor `magic` suave.
-- Todas las estanterías se delinean con un trazo discontinuo `magic` al 28 %. La estantería bajo el puntero usa un trazo continuo de 2 px `magic`, un resplandor exterior `magic` al 24 % y la etiqueta **Suelta aquí** en `magic` con texto `night`.
+- Al activarse, el libro de origen se atenúa al 30 %, el cursor pasa a `grabbing` y aparece una miniatura flotante sobre el puntero: la portada (76 px de ancho) o el lomo (28 × 148 px) según cómo se muestre ese libro. La miniatura no intercepta eventos y lleva un resplandor `secondary` suave.
+- Todas las estanterías se delinean con un trazo discontinuo `secondary` al 28 %. La estantería bajo el puntero usa un trazo continuo de 2 px `secondary`, un resplandor exterior `secondary` al 24 % y la etiqueta **Suelta aquí** en `secondary` con texto `page`.
 - Cerca de los bordes superior o inferior de la ventana, la página se desplaza automáticamente hasta 18 px por fotograma mientras se mantiene el arrastre.
 - Soltar fuera de una estantería, en el mismo hueco o pulsar Escape cancela el movimiento sin hacer peticiones ni abrir la ficha.
 - Al soltar en otra estantería, el cambio se aplica de forma optimista y se anuncia con un aviso `role="status"`; si la petición falla, el libro vuelve a su posición y se muestra el aviso en `danger`.
@@ -257,7 +287,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Reordenar libros dentro de una estantería
 
-- Al arrastrar dentro de la misma estantería, aparece una línea vertical de 2 px en `magic` con resplandor suave en el hueco donde quedará el libro.
+- Al arrastrar dentro de la misma estantería, aparece una línea vertical de 2 px en `secondary` con resplandor suave en el hueco donde quedará el libro.
 - La línea se dibuja antes o después del libro bajo el puntero según su mitad horizontal. Si se suelta en la zona vacía, el libro va al final.
 - Soltar en la misma posición no hace ninguna petición.
 - El orden se guarda por libro y se mantiene al recargar. Los libros nuevos y los que llegan de otra estantería se añaden al final.
@@ -266,31 +296,31 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Valoración (`RatingStars`)
 
-- Cinco escalas independientes por libro, cada una de 0 a 5: **estrellas** (`rating`, `gold`), **picante** (`spice_rating`, `danger`), **corazón** (`heart_rating`, `orquidea`), **gotas** (`drop_rating`, `mist`) y **bola de cristal** (`crystal_rating`, `magic`).
+- Cinco escalas independientes por libro, cada una de 0 a 5: **estrellas** (`rating`, `accent`), **picante** (`spice_rating`, `danger`), **corazón** (`heart_rating`, `tertiary`), **gotas** (`drop_rating`, `ink-muted`) y **bola de cristal** (`crystal_rating`, `secondary`).
 - Iconos SVG de 16 px con `currentColor`: estrella, chile, corazón, gota y bola de cristal. Los valores alcanzados usan el color de la escala y los vacíos el mismo color al 40 %.
 - Editable con clic y accesible: cada grupo expone su nombre (`Estrellas`, `Picante`, `Corazón`) y cada botón su valor solo para lectores de pantalla; no hay textos visibles en el bloque.
 - Se editan en la ficha del libro (`Books/Edit`) y en el alta (`Books/Create`), como tres filas de iconos sin etiquetas visibles.
 
 ### Modales
 
-- Panel `panel`, borde `line`, radio 12 px, sombra de modal, ancho máximo 560 px (640 px para el buscador).
-- Fondo oscurecido `night` al 80 % con desenfoque suave.
-- Título en Cormorant `h2` color `gold`; cierre con botón y tecla Escape.
+- Panel `surface`, borde `edge`, radio 12 px, sombra de modal, ancho máximo 560 px (640 px para el buscador).
+- Fondo oscurecido `page` al 80 % con desenfoque suave.
+- Título en Cormorant `h2` color `accent`; cierre con botón y tecla Escape.
 - En móvil ocupan el ancho completo con márgenes de 16 px.
 
 ### Toasts
 
-- Fondo `night-raised`, borde `line`, texto `moon`, radio 6 px, duración 4 s.
+- Fondo `surface-raised`, borde `edge`, texto `ink`, radio 6 px, duración 4 s.
 - Éxito con acento `success`; error con acento `danger`.
 - `aria-live="polite"`.
 - El aviso global de éxito se muestra flotando abajo, centrado, con ancho máximo de 384 px y sin capturar clics. Al guardar la ficha de un libro aparece «Libro actualizado.».
 
 ### Intro de bienvenida (`MagicWelcome`)
 
-- Velo a pantalla completa `night` al 80 % con desenfoque, aura radial `arcane`, `magic` y `gold`, y diez destellos dorados flotando en los bordes.
-- Placa de cristal centrada de hasta 480 px: fondo `panel` al 70 %, borde `magic` al 30 %, desenfoque, sombra de modal con halo arcano y filo superior dorado.
-- Sello circular con estrella `gold`, título «Bienvenida, {apodo}» en Cormorant `gold` y subtítulo «Tu mundo mágico te espera.» en `mist`.
-- Botón **Entrar** en `arcane`, con resplandor suave y hover `arcane-strong`.
+- Velo a pantalla completa `page` al 80 % con desenfoque, aura radial `tertiary`, `secondary` y `accent`, y diez destellos dorados flotando en los bordes.
+- Placa de cristal centrada de hasta 480 px: fondo `surface` al 70 %, borde `secondary` al 30 %, desenfoque, sombra de modal con halo arcano y filo superior dorado.
+- Sello circular con estrella `accent`, título «Bienvenida, {apodo}» en Cormorant `accent` y subtítulo «Tu mundo mágico te espera.» en `ink-muted`.
+- Botón **Entrar** en `tertiary`, con resplandor suave y hover `tertiary-strong`.
 - Aparece una vez por carga de la aplicación autenticada: al iniciar sesión y al abrir o recargar. No se repite al navegar entre Biblioteca y Ajustes.
 - Se cierra con **Entrar** o Escape; el foco inicial está en el botón, Tab se mantiene dentro de la intro y el desplazamiento del fondo queda bloqueado.
 - En móvil ocupa el ancho disponible con 16 px de margen. Con `prefers-reduced-motion: reduce`, sin animaciones.
@@ -298,18 +328,18 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ### Emblema de acceso (`LibraryEmblem`)
 
 - Un único lienzo SVG de 560 × 480 que compone toda la escena; el arco y el libro comparten coordenadas y no hay piezas recortadas ni placas superpuestas.
-- Arco «BIBLIOTECA» en mayúsculas, Cormorant Garamond 600 a 70 px sobre `textPath` (curva `M 24 132 Q 280 4 536 132`), relleno en degradado `gold`/`dorado` y doble sombra dorada para leerse sobre el cielo.
-- Libro abierto en 3D visto desde arriba y en perspectiva: tapas `night`/`panel` con canto de cartón visible, filo dorado y filigrana en la esquina delantera; bloque de páginas `crema`/`pergamino` con canto apilado de líneas finas y sombra proyectada sobre la tapa; páginas curvadas con degradado hacia el lomo, sombra interior en los bordes, brillo de canto y grano de papel.
+- Arco «BIBLIOTECA» en mayúsculas, Cormorant Garamond 600 a 70 px sobre `textPath` (curva `M 24 132 Q 280 4 536 132`), relleno en degradado `accent`/`dorado` y doble sombra dorada para leerse sobre el cielo.
+- Libro abierto en 3D visto desde arriba y en perspectiva: tapas `page`/`surface` con canto de cartón visible, filo dorado y filigrana en la esquina delantera; bloque de páginas `crema`/`pergamino` con canto apilado de líneas finas y sombra proyectada sobre la tapa; páginas curvadas con degradado hacia el lomo, sombra interior en los bordes, brillo de canto y grano de papel.
 - Lomo en valle: pliegue oscuro central, dos luces paralelas y pozo de sombra en el pie, sin sello ni ilustraciones impresas.
 - Sin letras manuscritas, sellos, astrolabios, chispas ni haz de luz: sobre las páginas solo queda el papel.
-- Sombra de contacto doble bajo el libro y halo `gold`/`arcane` difuminado detrás.
+- Sombra de contacto doble bajo el libro y halo `accent`/`tertiary` difuminado detrás.
 - Tamaño máximo 480 px de ancho en escritorio y 214 px en la versión compacta, siempre con proporción 560:480. Ningún SVG puede quedar sin ancho definido: eso estiraba el dibujo a todo el contenedor.
 - Ids SVG únicas por instancia (`useId`) para que la versión compacta y la de escritorio convivan en el mismo documento.
 - Movimiento: solo respiración del halo y pulso del resplandor dorado. Con `prefers-reduced-motion: reduce` queda estático.
 
 ### Esqueletos de carga
 
-- Bloques `mist` al 20 % con animación de brillo de 1.2 s. Con `prefers-reduced-motion`, sin animación.
+- Bloques `ink-muted` al 20 % con animación de brillo de 1.2 s. Con `prefers-reduced-motion`, sin animación.
 
 ---
 
@@ -336,15 +366,28 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Cartas (`Cards/Index`)
 
-- **Navegación:** quinto destino **Cartas** en la barra lateral y en el menú móvil, entre Estanterías y Decoraciones. Cabecera con título `gold`, subtítulo `mist` y frasco de tinta (`card-ink`) con el contador y la ayuda en `title`/`sr-only`.
+- **Navegación:** tercer destino **Cartas** en la barra lateral y en el menú móvil, entre Estanterías y Eventos. Cabecera con título `accent`, subtítulo `ink-muted` y frasco de tinta (`card-ink`) con el contador y la ayuda en `title`/`sr-only`.
 - **Bombo (`CardMachine`):** máquina expendedora vintage renderizada en **3D real con Three.js** (carga diferida, escena propia en `card-machine__scene`): **iluminación por entorno** (`RoomEnvironment` + PMREM) que da reflejos metálicos de verdad al oro (`metalness` 0.88) y a las perlas de porcelana (`MeshPhysicalMaterial` con clearcoat); cámara en ángulo (30°, ligeramente arriba a la derecha) y máquina girada −0.07 rad para volumen; **foco cálido** sobre el frontal, luz interior en la ventana y halo de fondo aditivo. Cuerpo con **bisel perimetral** (caja exterior más grande detrás), tapa, costado oscuro, ventana con **agujero real**, marco extruido, cristal y grabados por textura de lienzo (marcos, curlas, libro, destellos). Columna derecha con **moneda «!»** arriba y **palanca de varilla con pomo esférico** debajo; **compartimento inferior con trampilla bisagrada**. **Flujo de gachapon:** no se elige perla; al pulsar la manivela la máquina escoge una perla al azar (emite `crank` con el índice), la palanca desciende y regresa con rebote, el cuerpo vibra, las perlas se agitan, la perla elegida **cae por la trampilla** (se abre, espera y se cierra) y aparece el sobre con la carta. Sin WebGL (o en pruebas) el componente degrada sin escena; los controles siguen siendo botones accesibles (`aria-label`, foco visible) y `prefers-reduced-motion` amortigua las oscilaciones.
 - **Sobre (`CardEnvelope`):** papel `crema` (`.card-envelope`) con solapa triangular (`.card-envelope__flap`), sello de lacre `danger-strong` (`.card-envelope__seal`) con el emblema de familia y etiqueta de apertura `card-envelope__label`. El monograma del personaje no se muestra en el sobre: se reserva para la carta y el álbum. Carta repetida avisa «+1 tinta» en `danger`.
-- **Carta (`CardLetterModal`):** hoja `pergamino` (`.card-letter`) con borde `dorado` y renglones sutiles; cabecera mínima con solo «Carta de {personaje}» y botón **Cerrar** (sin emblema, monograma ni familia); cuerpo `tinta` en Cormorant con interlineado 1.9 y capitular `dorado` (`.card-letter__dropcap`); pie con estado y «×N» si hay copias. Cartas de ~120 palabras (rango 120–160), tres párrafos breves con firma y posdata opcional. Modal `panel` de hasta 2xl.
-- **Álbum (`CardAlbum`):** gabinete de madera (`.card-album`) con barra de progreso `gold` y texto «N de M cartas». Rejilla de 2 columnas (3 en tablet, 4–5 en escritorio) de ranuras `card-slot`: desbloqueadas como botón con emblema, monograma, personaje y familia; bloqueadas como reverso geométrico `card-back` con `?`, sin clic, con la pista en `title`. Pie con el aviso de derechos.
+- **Carta (`CardLetterModal`):** hoja `pergamino` (`.card-letter`) con borde `dorado` y renglones sutiles; cabecera mínima con solo «Carta de {personaje}» y botón **Cerrar** (sin emblema, monograma ni familia); cuerpo `tinta` en Cormorant con interlineado 1.9 y capitular `dorado` (`.card-letter__dropcap`); pie con estado y «×N» si hay copias. Cartas de ~120 palabras (rango 120–160), tres párrafos breves con firma y posdata opcional. Modal `surface` de hasta 2xl.
+- **Álbum (`CardAlbum`):** gabinete de madera (`.card-album`) con barra de progreso `accent` y texto «N de M cartas». Rejilla de 2 columnas (3 en tablet, 4–5 en escritorio) de ranuras `card-slot`: desbloqueadas como botón con emblema, monograma, personaje y familia; bloqueadas como reverso geométrico `card-back` con `?`, sin clic, con la pista en `title`. Pie con el aviso de derechos.
 - **Estados:** página vacía con invitación a añadir libro; errores de tirada y apertura en aviso `danger` con `role="alert"`; región `aria-live="polite"` para el resultado; cuenta atrás «Vuelve en Xh Ymin» bajo el sobre.
 - **Responsive:** 360 px bombo a ancho completo con balotas de 44 px; 768 px dos columnas (bombo y álbum) y cúpula más ancha; 1280 px álbum hasta 5 columnas.
 - **Accesibilidad:** balotas y manivela con `aria-label`, balota elegida con `aria-pressed`, álbum con `progressbar`, ayuda de tinta en `sr-only`, cierre de modal con Escape. Con `prefers-reduced-motion: reduce` se desactivan la caída de la balota, el giro de la manivela, la solapa del sobre y las partículas.
-- **Clases nuevas en `textures.css`:** `card-machine`, `card-machine__base`, `card-machine__dome`, `card-machine__ball` (+`--selected`, `--drop`), `card-machine__crank` (+`--turning`), `card-machine__chute`, `card-envelope` (+`__flap`, `__seal`, `__label`), `card-letter` (+`__body`, `__dropcap`), `card-album`, `card-slot`, `card-back`, `card-monogram`, `card-ink`. Tokens usados: `madera`, `madera-clara`, `pergamino`, `crema`, `tinta`, `dorado`, `night`, `panel`, `panel-raised`, `line`, `moon`, `mist`, `gold`, `danger`, `danger-strong`. No se añaden colores nuevos.
+- **Clases nuevas en `textures.css`:** `card-machine`, `card-machine__base`, `card-machine__dome`, `card-machine__ball` (+`--selected`, `--drop`), `card-machine__crank` (+`--turning`), `card-machine__chute`, `card-envelope` (+`__flap`, `__seal`, `__label`), `card-letter` (+`__body`, `__dropcap`), `card-album`, `card-slot`, `card-back`, `card-monogram`, `card-ink`. Tokens usados: `madera`, `madera-clara`, `pergamino`, `crema`, `tinta`, `dorado`, `page`, `surface`, `surface-raised`, `edge`, `ink`, `ink-muted`, `accent`, `danger`, `danger-strong`. No se añaden colores nuevos.
+
+### Eventos (`Events/Index`)
+
+- **Navegación:** cuarto destino **Eventos** en la barra lateral y en el menú móvil, entre Cartas y Decoraciones. Cabecera con el nombre del evento en `accent`, la línea «Día X de Y» en `ink-muted`, un chip de temática (`.event-theme-chip`, atributo `data-event-theme`) y el frasco de tinta (`card-ink`).
+- **Tareas del día:** panel `.event-panel` con lista de tareas (`.event-task`): marca circular `.event-task__mark`, nombre traducido, recompensa `+N` en `accent` y estado hecho/pendiente. Las completadas usan `.event-task--done` (borde `dorado` y fondo degradado) y `aria-current`.
+- **Tienda del evento:** rejilla de pegatinas y cartas de evento. Pegatinas con `EventSticker` (`.event-sticker`: círculo de 56 px con borde punteado `dorado` y emblema de línea reutilizado de `CardEmblem`); cartas con monograma `card-monogram` de 56 px. Cada artículo muestra nombre, coste en tinta y botón `.event-buy` (deshabilitado sin tinta suficiente) o la etiqueta «En tu colección» (`.event-item__owned`).
+- **Mi colección:** misma rejilla con los coleccionables ya obtenidos; no se muestra nada si aún no hay ninguno. Junto al título, botón «Ver el álbum de pegatinas» que lleva a `/events/album`.
+- **Pegatinas ilustradas (`EventSticker`):** cada pegatina es una ilustración SVG original (pluma, lámpara, huevo de dragón, dragón, bola de nieve, campana, corazón sellado, rosa, calavera, poción, ramo y planta) con silueta blanca troquelada (`.event-sticker__cut`) y sombra suave. La versión bloqueada muestra una silueta gris con «?».
+- **Álbum de pegatinas (`Events/Album`):** réplica del álbum digital de referencia, siempre en papel claro incluso con tema oscuro. Contenedor `.sticker-album` (papel `--color-album-paper`, borde grueso `--color-album-edge`, radio 24 px, sombra suave) con ocho anillas metálicas (`.sticker-album__ring`) sobre el borde superior, visibles solo desde 640 px. Cabecera con título y pista «Toca una pegatina para ver sus detalles». Tarjeta de progreso: etiqueta, título «Tu álbum de estampas», contador «X / 12 — Completado», barra degradada rosa → rosa fuerte → ámbar (`role="progressbar"`) y tira de tres contadores (comunes, raras y épicas obtenidas). Filtros: pestaña «Todas» más una pildora por cada uno de los 6 eventos del catálogo; filtrado en cliente por `event_key`; estado activo en fondo oscuro (`--color-album-slate`). Cuaderno con rejilla de 2 columnas a 360 px, 3 en tablet, 4 en escritorio. Tarjeta obtenida: fondo blanco, borde ámbar, sombra, número `#01`, insignia de rareza con color, dibujo de 112 px, nombre y evento. Tarjeta bloqueada: fondo translúcido, borde discontinuo, «Bloqueado», nombre «???», sin ilustración y sin clic. Hover: elevación, escala y giro leve de 1° (respetando `prefers-reduced-motion`). Ficha de detalle (solo obtenidas): `Modal` centrado con dibujo grande (160 px), pildora de rareza, nombre, descripción corta y caja con rareza, número y fecha de obtención (`Intl.DateTimeFormat` según el idioma); botón «Entendido»; cierre con Escape y clic en el velo.
+- **Estados:** errores de compra en aviso `danger` con `role="alert"`; confirmación silenciosa en región `role="status"`; botones con `aria-label`.
+- **Temáticas:** el chip usa los tokens existentes (`accent` por defecto, `tertiary` para dragones y brujas, `secondary` para invierno, `danger` para enamorados y `success` para flores). No se añaden colores nuevos.
+- **Clases nuevas en `textures.css`:** `event-panel`, `event-theme-chip`, `event-task` (+`--done`, `__mark`), `event-item` (+`--owned`, `__owned`), `event-buy`, `event-sticker`, `sticker-album`, `sticker-album__rings`, `sticker-album__ring`, `sticker-album__header`, `sticker-album__title`, `sticker-album__hint`, `sticker-album__progress`, `sticker-album__label`, `sticker-album__title-big`, `sticker-album__completed`, `sticker-album__bar`, `sticker-album__bar-fill`, `sticker-album__counters`, `sticker-album__counter`, `sticker-album__filters`, `sticker-album__pill` (+`--active`), `sticker-album__grid`, `sticker-album__card` (+`--locked`), `sticker-album__number`, `sticker-album__sticker`, `sticker-album__name`, `sticker-album__event`, `sticker-album__badge` (+`--comun`, `--rara`, `--epica`), `sticker-album__locked-tag`. Tokens usados: `dorado`, `accent`, `page`, `surface-raised`, `surface`, `edge`, `ink`, `ink-muted`, `tertiary`, `secondary`, `danger`, `success`, más los tokens físicos del álbum (`--color-album-paper`, `--color-album-edge`, `--color-album-ink`, `--color-album-pink`, `--color-album-pink-strong`, `--color-album-amber`, `--color-album-mint`, `--color-album-sky`, `--color-album-lilac`, `--color-album-lemon`, `--color-album-peach`, `--color-album-slate`), idénticos en ambos temas.
+- **Responsive:** a 360 px tareas y tienda se apilan en una columna; tienda a 2 columnas y colección a 3. En escritorio dos columnas para tareas/tienda y hasta 6 columnas en la colección.
 
 ### Añadir/editar libro
 
@@ -361,11 +404,11 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Decoraciones (`Decorations/Index`)
 
-- Módulo propio, con entrada **Decoraciones** en la barra lateral y en la barra inferior móvil, entre Estanterías y Configuraciones.
+- Módulo propio, con entrada **Decoraciones** en la barra lateral y en la barra inferior móvil, entre Eventos y Configuraciones.
 - Título “Decoraciones” y una línea de ayuda. Después, una barra de filtros en la parte superior con seis botones circulares de 48 px: **Todos**, **Mesa y té**, **Flores y plantas**, **Luz y velas**, **Curiosidades** y **Mascotas y recuerdos**. Cada círculo contiene únicamente un icono de línea de 24 px trazado con `currentColor` (retícula, taza, flor, vela, destello y corazón), sin texto visible; el nombre de la categoría se expone con `aria-label` y `title`. En móvil la barra se desliza en horizontal sin barra de desplazamiento visible (utilidad `scrollbar-hidden`, que oculta el scroll nativo pero mantiene el gesto) y en escritorio pasa a varias líneas.
-- El botón activo usa borde `magic`, fondo `panel` y texto `gold`, con `aria-pressed`. Al elegir una categoría la cuadrícula muestra solo sus objetos; **Todos** muestra los quince en una sola cuadrícula, sin encabezados de sección. Hasta 3 columnas en escritorio, 2 en tablet y 1 en móvil.
+- El botón activo usa borde `secondary`, fondo `surface` y texto `accent`, con `aria-pressed`. Al elegir una categoría la cuadrícula muestra solo sus objetos; **Todos** muestra los quince en una sola cuadrícula, sin encabezados de sección. Hasta 3 columnas en escritorio, 2 en tablet y 1 en móvil.
 - **Mesa y té:** taza, set de té y caja de música. **Flores y plantas:** rosas y planta. **Luz y velas:** vela y lámpara. **Curiosidades:** reloj de arena, bola de cristal, calavera, jaula, astrolabio, pluma y tintero. **Mascotas y recuerdos:** gato y marco de fotos.
-- Cada tarjeta repite el patrón del catálogo: dibujo y botón. El nombre del objeto va dentro del recuadro, en el borde izquierdo y en vertical (mismo `writing-mode: vertical-rl` que los lomos), centrado, en Cormorant `gold` y con una pastilla `night` al 60 % detrás. El recuadro mide 128 px de alto y reserva 40 px a la izquierda para el nombre, así la etiqueta acompaña al dibujo tanto en los objetos altos como en los bajos. Dentro del recuadro, en su esquina superior derecha, hay un círculo de 24 px con el color actual; al pulsarlo se despliega un pequeño panel flotante de 3×2 con los seis colores, y al elegir uno el dibujo cambia y el panel se cierra. El color elegido se mantiene al cambiar de categoría.
+- Cada tarjeta repite el patrón del catálogo: dibujo y botón. El nombre del objeto va dentro del recuadro, en el borde izquierdo y en vertical (mismo `writing-mode: vertical-rl` que los lomos), centrado, en Cormorant `accent` y con una pastilla `page` al 60 % detrás. El recuadro mide 128 px de alto y reserva 40 px a la izquierda para el nombre, así la etiqueta acompaña al dibujo tanto en los objetos altos como en los bajos. Dentro del recuadro, en su esquina superior derecha, hay un círculo de 24 px con el color actual; al pulsarlo se despliega un pequeño panel flotante de 3×2 con los seis colores, y al elegir uno el dibujo cambia y el panel se cierra. El color elegido se mantiene al cambiar de categoría.
 - Si ese objeto ya está colocado, el botón **Añadir** pasa a **Quitar** (borde y texto `danger`) y elimina la última copia añadida de ese tipo. No hay listado de objetos colocados ni botón **Quitar todas**.
 - La sección deja de mostrarse en Configuraciones, que vuelve a quedar en Perfil, Contraseña, Idioma y Estanterías.
 
@@ -378,16 +421,17 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 
 ### Autenticación
 
-- Diseño a dos columnas a altura completa en escritorio: cielo arcano con el emblema de la biblioteca a la izquierda (arco «BIBLIOTECA» sobre un libro abierto en 3D) y formulario a la derecha sobre `night-raised`. Las dos columnas se centran verticalmente en la misma línea, sin que la página entera se desplace; si el formulario no cabe, solo esa columna tiene desplazamiento interno.
+- Diseño a dos columnas a altura completa en escritorio: cielo arcano con el emblema de la biblioteca a la izquierda (arco «BIBLIOTECA» sobre un libro abierto en 3D) y formulario a la derecha sobre `surface-raised`. Las dos columnas se centran verticalmente en la misma línea, sin que la página entera se desplace; si el formulario no cabe, solo esa columna tiene desplazamiento interno.
 - Emblema sin placa de cristal ni rectángulos: el libro flota sobre el cielo.
-- La columna del emblema mantiene el cielo arcano oscuro. Encima flota un cuadro redondeado de hasta 528 px con fondo `orquidea` (`#9E61AB`), degradado suave hacia `moon` en el centro y `night` en el borde inferior, filo dorado y sombra, que contiene el título y el libro con estrellas en movimiento dentro. En móvil, la franja superior muestra el mismo cuadro en versión compacta. La columna del formulario sigue en `night-raised`.
+- La columna del emblema mantiene el cielo arcano. Encima flota un cuadro redondeado de hasta 528 px con fondo `tertiary`, degradado suave hacia `ink` en el centro y `page` en el borde inferior, filo dorado y sombra, que contiene el título y el libro con estrellas en movimiento dentro. En móvil, la franja superior muestra el mismo cuadro en versión compacta. La columna del formulario sigue en `surface-raised`.
 - Móvil: franja superior de 14rem con el emblema compacto; debajo, el formulario.
-- Tarjeta interna de 420 px máximo, título en Cormorant `gold` y texto de apoyo en `mist`.
-- Campo de contraseña con botón de ojo para mostrar u ocultar (`PasswordInput`); el botón usa `mist`/`moon` y anillo `magic`.
-- Botones sociales Google y Facebook (`SocialLoginButtons`): visibles en Login y Registro; deshabilitados con la etiqueta «Próximamente» mientras no haya credenciales. Separador «o continúa con» con líneas `line`.
+- Tarjeta interna de 420 px máximo, título en Cormorant `accent` y texto de apoyo en `ink-muted`.
+- Campo de contraseña con botón de ojo para mostrar u ocultar (`PasswordInput`); el botón usa `ink-muted`/`ink` y anillo `secondary`.
+- Botones sociales Google y Facebook (`SocialLoginButtons`): visibles en Login y Registro; deshabilitados con la etiqueta «Próximamente» mientras no haya credenciales. Separador «o continúa con» con líneas `edge`.
 - Tras el primer acceso social, pantalla `CompleteNickname` para elegir apodo antes de entrar a la biblioteca.
-- Enlaces en `magic`; errores en `danger`. Los errores flash de OAuth se muestran en una alerta superior del layout.
-- Se mantiene la paleta existente (`night`, `night-raised`, `panel`, `line`, `moon`, `mist`, `gold`, `magic`, `arcane`); no se introducen azules ni blancos de las referencias externas.
+- Enlaces en `secondary`; errores en `danger`. Los errores flash de OAuth se muestran en una alerta superior del layout.
+- Se mantiene la paleta existente (`page`, `surface-raised`, `surface`, `edge`, `ink`, `ink-muted`, `accent`, `secondary`, `tertiary`); no se introducen azules ni blancos de las referencias externas.
+- **Tema:** selector visual tipo toggle con sol (naranja, modo claro) y luna (azul, modo oscuro) mediante `ThemeSwitch`. El círculo se desplaza de un lado a otro y el fondo del switch se adapta al tema activo (`--color-theme-sun` y `--color-theme-moon`, colores físicos idénticos en ambos temas). La elección se persiste en la cuenta (`users.theme`) y se aplica al `<html>` mediante `data-theme`.
 
 ---
 
@@ -420,7 +464,7 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 ## 10. Accesibilidad
 
 - Contraste AA en texto y controles.
-- Foco visible con anillo `magic` de 2 px y offset `night`.
+- Foco visible con anillo `secondary` de 2 px y offset `page`.
 - Navegación completa con teclado; modales con trampa de foco y Escape.
 - La intro de bienvenida es un diálogo modal: foco inicial en **Entrar**, cierre con Escape y bloqueo del desplazamiento del fondo.
 - `aria-label` en botones de icono, estrellas y lomos con título recortado.
@@ -575,4 +619,12 @@ En móvil, `display` baja a 32/40 px y `h1` a 28/36 px.
 | 2026-11-04 | Salida realista de la perla: aparece **dentro del cajón oscuro** (detrás del marco de la ranura, se desvanece al entrar en escena), rueda hacia afuera pasando el labio de la ranura (avanza en z, gira sobre sí misma) y luego cae con aceleración desvaneciéndose — ya no se superpone sobre la puertecita cerrada. | Agente |
 | 2026-11-04 | Las perlas se **apilan desde el piso** según cuántas haya (pirámide por filas, ninguna flotando) y, cuando sale una por la trampilla, **las de arriba caen a rellenar el hueco** con rebote suave — el montón se agota de forma natural con cada tirada. | Agente |
 | 2026-11-04 | El **álbum se separa a página propia** (`/cards/album`, componente `Cards/Album`): a ancho completo con cabecera de título, tinta y barra de progreso. La página de la máquina queda centrada en una columna y añade un **botón «Ver el álbum de cartas»** bajo la máquina (clave `ui.cards_open_album` en los 8 idiomas); el álbum abre cartas con el mismo modal. | Agente |
+| 2026-11-04 | La cabecera de la página de la máquina queda **solo con el título «Cartas»** (se retiran el subtítulo y el frasco de tinta, a petición de la usuaria); la tinta sigue visible en la página del álbum. | Agente |
+| 2026-11-04 | La cabecera del **álbum** también pierde el subtítulo: queda «Álbum» + frasco de tinta. | Agente |
 | 2026-11-04 | Se elimina la pieza lateral suelta del lado derecho (caja `side` que sobresalía del cuerpo y parecía despegada); el canto derecho ahora es el propio lateral del cuerpo extruido. | Agente |
+| 2026-11-05 | Nueva página **Eventos** (`/events`): evento rotativo con «Día X de Y», chip de temática, tareas diarias con recompensa en tinta, tienda de pegatinas y cartas de evento, y colección propia. Entrada **Eventos** en la navegación entre Cartas y Decoraciones. Clases `event-*` en `textures.css`; sin colores nuevos. | Agente |
+| 2026-11-05 | Las **12 pegatinas de evento** se rediseñan como ilustraciones SVG originales estilo dibujo a mano, con silueta blanca troquelada y sombra (`EventSticker`); la versión bloqueada es una silueta gris con «?». Se añade el **álbum de pegatinas** (`/events/album`, `Events/Album`) como página de álbum en papel `crema`/`pergamino` con rejilla de casillas, progreso y botón de acceso desde Eventos. Clases `.event-sticker*` y `.event-album*`; sin colores nuevos. | Agente |
+| 2026-11-08 | Tema claro pastel por defecto y tema oscuro conmutables desde **Ajustes → Apariencia** (persistido en la cuenta). La interfaz pasa a tokens semánticos (`page`, `surface`, `surface-raised`, `surface-sunken`, `ink`, `ink-muted`, `ink-soft`, `heading`, `on-accent`, `edge`, `edge-strong`, `accent`, `accent-strong`, `accent-soft`, `secondary`, `secondary-strong`, `tertiary`, `tertiary-strong`, `danger`, `danger-strong`, `success`, `warning`, `ring`, `scrim`); se retiran los tokens de la paleta anterior. Sin cambios de tipografía. El mueble y las decoraciones conservan sus colores físicos (`malva` y `laton` se añaden para los objetos). | Agente |
+| 2026-11-08 | Álbum de pegatinas réplica de la referencia digital: cuaderno claro (`--color-album-paper`, borde `--color-album-edge`, anillas metálicas visibles desde 640 px), tarjeta de progreso con barra degradada rosa → rosa fuerte → ámbar y contadores por rareza, filtros por evento, tarjetas numeradas con insignia de rareza (común/rara/épica) y ficha de detalle en `Modal` con dibujo grande, rareza, número y fecha de obtención. Clases `sticker-album*` y tokens físicos `--color-album-*` en `textures.css`/`app.css`; 14 claves de álbum en los 8 idiomas. Siempre papel claro, también con tema oscuro. | Agente |
+| 2026-11-08 | Botones principales pasan de fondo `tertiary` (púrpura en modo claro) a fondo `accent` (rosado en modo claro, dorado en oscuro), con hover/activo `accent-strong` y anillo de foco `accent`. Se aplica a `PrimaryButton` (tono por defecto) y a todos los botones directos con clases `bg-tertiary`/`hover:bg-tertiary-strong` en páginas y componentes. | Agente |
+| 2026-11-08 | Selector de tema visual (`ThemeSwitch`): toggle sol / luna estilo Uiverse (rishi chawda) con SVG inline — sol amarillo sobre cielo claro y luna con cráteres sobre cielo nocturno azul (`#2b4360`) — en Ajustes → Apariencia. El círculo se desplaza al alternar y el fondo del switch se adapta al tema activo. Colores físicos del diseño original; persistencia en `users.theme` y `data-theme` en `<html>`. | Agente |

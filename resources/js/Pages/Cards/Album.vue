@@ -18,13 +18,10 @@ const { t } = useI18n();
 
     <AuthenticatedLayout>
         <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
-            <div>
-                <h1 class="font-serif text-3xl text-gold">{{ t('ui.cards_album') }}</h1>
-                <p class="mt-1 text-mist">{{ t('ui.cards_subtitle') }}</p>
-            </div>
+            <h1 class="font-serif text-3xl text-accent">{{ t('ui.cards_album') }}</h1>
             <div class="card-ink" :title="t('ui.cards_ink_help')">
-                <span class="text-sm text-mist">{{ t('ui.cards_ink') }}</span>
-                <strong class="text-2xl text-gold">{{ ink }}</strong>
+                <span class="text-sm text-ink-muted">{{ t('ui.cards_ink') }}</span>
+                <strong class="text-2xl text-accent">{{ ink }}</strong>
                 <span class="sr-only">{{ t('ui.cards_ink_help') }}</span>
             </div>
         </header>

@@ -56,7 +56,7 @@ function remove(image) {
         >
             <div
                 v-if="imageFor(slot)"
-                class="relative h-28 w-full overflow-hidden rounded-card border border-line bg-night-raised shadow-card"
+                class="relative h-28 w-full overflow-hidden rounded-card border border-edge bg-surface-raised shadow-card"
             >
                 <img
                     :src="`/book-images/${imageFor(slot).id}`"
@@ -66,7 +66,7 @@ function remove(image) {
                 >
                 <button
                     type="button"
-                    class="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-line bg-night-raised text-moon hover:text-danger"
+                    class="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-edge bg-surface-raised text-ink hover:text-danger"
                     :aria-label="t('ui.remove_book_image')"
                     :title="t('ui.remove_book_image')"
                     @click.prevent="remove(imageFor(slot))"
@@ -80,7 +80,7 @@ function remove(image) {
             <button
                 v-else
                 type="button"
-                class="flex h-28 w-full flex-col items-center justify-center gap-1 rounded-card border border-dashed border-line bg-panel-raised/60 text-mist transition-colors hover:border-magic hover:text-gold"
+                class="flex h-28 w-full flex-col items-center justify-center gap-1 rounded-card border border-dashed border-edge bg-surface-raised/60 text-ink-muted transition-colors hover:border-secondary hover:text-accent"
                 :aria-label="t('ui.add_book_image')"
                 :title="t('ui.add_book_image')"
                 @click="choose(slot)"

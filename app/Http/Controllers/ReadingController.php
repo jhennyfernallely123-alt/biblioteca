@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\ReadingSession;
+use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,7 @@ class ReadingController extends Controller
         return response()->json(['book' => $this->payload($book->fresh())]);
     }
 
-    public function storeSession(Request $request, Book $book): JsonResponse
+    public function storeSession(Request $request, Book $book, EventService $events): JsonResponse
     {
         $this->authorize('update', $book);
 
@@ -74,6 +75,8 @@ class ReadingController extends Controller
                 'current_page' => max((int) $book->current_page, $page),
             ]);
         }
+
+        $events->completeTask($request->user(), 'read');
 
         return response()->json([
             'book' => $this->payload($book->fresh()),

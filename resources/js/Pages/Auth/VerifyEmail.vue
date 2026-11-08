@@ -26,8 +26,8 @@ const verificationLinkSent = computed(
         <Head title="Verificar correo" />
 
         <div class="mb-6">
-            <h1 class="font-serif text-2xl text-gold">Verifica tu correo</h1>
-            <p class="mt-1 text-sm text-mist">
+            <h1 class="font-serif text-2xl text-accent">Verifica tu correo</h1>
+            <p class="mt-1 text-sm text-ink-muted">
                 Te enviamos un enlace de verificación. Si no lo recibiste, podemos enviarte otro.
             </p>
         </div>
@@ -49,7 +49,7 @@ const verificationLinkSent = computed(
                 href="/logout"
                 method="post"
                 as="button"
-                class="block w-full text-center text-sm text-magic underline hover:text-gold focus:outline-none focus:ring-2 focus:ring-magic"
+                class="block w-full text-center text-sm text-secondary underline hover:text-accent focus:outline-none focus:ring-2 focus:ring-secondary"
             >
                 Cerrar sesión
             </Link>
