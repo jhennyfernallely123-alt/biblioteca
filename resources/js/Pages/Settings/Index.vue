@@ -4,7 +4,6 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import LanguageSelect from '@/Components/LanguageSelect.vue';
-import ThemeSwitch from '@/Components/ThemeSwitch.vue';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
@@ -38,14 +37,6 @@ const progress = ref(0);
 const languageError = ref('');
 const languageSuccess = ref(false);
 
-const theme = ref(props.user.theme ?? 'light');
-const themeError = ref('');
-
-const themes = [
-    { value: 'light', label: 'ui.theme_light', help: 'ui.theme_light_help' },
-    { value: 'dark', label: 'ui.theme_dark', help: 'ui.theme_dark_help' },
-];
-
 const currentLanguage = computed(() => {
     try {
         return new Intl.DisplayNames([props.locale], { type: 'language' }).of(props.locale) ?? props.locale;
@@ -62,26 +53,6 @@ function savePassword() {
     password.put('/settings/password', {
         preserveScroll: true,
         onSuccess: () => password.reset(),
-    });
-}
-
-function applyTheme(value) {
-    if (value === theme.value) {
-        return;
-    }
-
-    const previous = theme.value;
-    theme.value = value;
-    themeError.value = '';
-    document.documentElement.dataset.theme = value;
-
-    router.patch('/settings/theme', { theme: value }, {
-        preserveScroll: true,
-        onError: () => {
-            theme.value = previous;
-            document.documentElement.dataset.theme = previous;
-            themeError.value = t('ui.theme_error');
-        },
     });
 }
 
@@ -176,19 +147,6 @@ async function applyLanguage() {
                 {{ t('ui.save_profile') }}
             </button>
         </form>
-
-        <section class="mb-8 space-y-3">
-            <h2 class="text-2xl">{{ t('ui.appearance_heading') }}</h2>
-            <p class="text-sm text-ink-muted">{{ t('ui.appearance_help') }}</p>
-
-            <ThemeSwitch
-                :value="theme"
-                @update="applyTheme"
-                class="mb-4"
-            />
-
-            <p v-if="themeError" class="text-sm text-danger">{{ themeError }}</p>
-        </section>
 
         <form class="mb-8 space-y-3" @submit.prevent="savePassword">
             <h2 class="text-2xl">{{ t('ui.password_heading') }}</h2>

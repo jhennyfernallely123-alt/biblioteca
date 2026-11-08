@@ -13,7 +13,7 @@ vi.mock('@inertiajs/vue3', () => ({
             return () => h('a', { href: props.href, ...attrs }, slots.default?.());
         },
     },
-    router: { post: vi.fn() },
+    router: { post: vi.fn(), push: vi.fn() },
     usePage: () => mocks.page,
 }));
 
@@ -54,43 +54,45 @@ describe('AppShell', () => {
         await nextTick();
         await wrapper.get('[data-welcome-enter]').trigger('click');
 
-        const nav = wrapper.get('nav');
-        const links = nav.findAll('a');
+        const tabs = wrapper.get('.bottom-nav').findAll('.tab');
+        await tabs[2].trigger('click');
+        await nextTick();
 
-        expect(links.map((link) => link.attributes('href'))).toEqual([
-            '/',
-            '/shelves',
-            '/cards',
-            '/events',
-            '/decorations',
-            '/settings',
-        ]);
-        expect(nav.text()).toContain('Estanterías');
+        const menu = wrapper.find('.album-menu');
+        const links = menu.findAll('.album-menu__item');
+
+        expect(menu.exists()).toBe(true);
+        expect(links).toHaveLength(9);
+        expect(menu.text()).toContain('Inicio');
+        expect(menu.text()).toContain('Estanterías');
+        expect(menu.text()).toContain('Cerrar sesión');
     });
 
-    it('deja Biblioteca y Estanterías en la barra móvil y el resto en un menú', async () => {
+    it('deja Biblioteca y Estanterías en la barra móvil y el resto en el menú álbum', async () => {
         const wrapper = mount(AppShell, {
             slots: { default: '<p>Contenido</p>' },
         });
         await nextTick();
         await wrapper.get('[data-welcome-enter]').trigger('click');
+        await nextTick();
 
-        const nav = wrapper.get('[data-mobile-nav]');
-        const links = nav.findAll('a');
+        const nav = wrapper.get('.bottom-nav');
+        const tabs = nav.findAll('.tab');
+        expect(tabs).toHaveLength(3);
 
-        expect(links.map((link) => link.attributes('href'))).toEqual(['/', '/shelves']);
-        expect(wrapper.find('[data-nav-menu]').exists()).toBe(false);
+        // Hacer clic en el tab de menú para abrir el álbum
+        await tabs[2].trigger('click');
 
-        await nav.get('[data-nav-menu-toggle]').trigger('click');
+        expect(wrapper.find('.album-menu').exists()).toBe(true);
+        const menu = wrapper.find('.album-menu');
+        expect(menu.findAll('.album-menu__item')).toHaveLength(9);
+        expect(menu.text()).toContain('Inicio');
+        expect(menu.text()).toContain('Galería');
+        expect(menu.text()).toContain('Cerrar sesión');
 
-        expect(nav.get('[data-nav-menu-toggle]').attributes('aria-expanded')).toBe('true');
-        expect(
-            nav.findAll('[data-nav-menu] a').map((link) => link.attributes('href'))
-        ).toEqual(['/cards', '/events', '/decorations', '/settings']);
-
-        await nav.get('[data-nav-menu-toggle]').trigger('click');
-
-        expect(wrapper.find('[data-nav-menu]').exists()).toBe(false);
+        // Cerrar el álbum haciendo clic de nuevo en el menú
+        await tabs[2].trigger('click');
+        expect(wrapper.find('.album-menu').exists()).toBe(false);
     });
 
     it('aplica la temática del mes actual', async () => {
