@@ -8,6 +8,8 @@ defineProps({
     cards: { type: Array, required: true },
     progress: { type: Object, required: true },
     ink: { type: Number, default: 0 },
+    stickers: { type: Array, required: true },
+    stickerProgress: { type: Object, required: true },
 });
 
 const { t } = useI18n();
@@ -26,6 +28,11 @@ const { t } = useI18n();
             </div>
         </header>
 
-        <CardAlbum :cards="cards" :progress="progress" />
+        <CardAlbum
+            :cards="cards"
+            :progress="progress"
+            :stickers="stickers"
+            :sticker-progress="stickerProgress"
+        />
     </AuthenticatedLayout>
 </template>

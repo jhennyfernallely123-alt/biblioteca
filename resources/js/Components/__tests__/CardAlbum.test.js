@@ -40,26 +40,33 @@ const cards = [
     },
 ];
 
+const stickers = [
+    { key: 'maquina_libro', name: 'Libro abierto', unlocked: true, acquired_at: '2026-11-10T12:00:00Z' },
+    { key: 'maquina_pluma', name: 'Pluma de ganso', unlocked: false, acquired_at: null },
+];
+
+function mountAlbum(overrides = {}) {
+    return mount(CardAlbum, {
+        props: {
+            cards,
+            progress: { unlocked: 2, total: 3 },
+            stickers,
+            stickerProgress: { unlocked: 1, total: 2 },
+            ...overrides,
+        },
+    });
+}
+
 describe('CardAlbum', () => {
     it('muestra una ranura por carta con su progreso', () => {
-        const wrapper = mount(CardAlbum, {
-            props: {
-                cards,
-                progress: { unlocked: 2, total: 3 },
-            },
-        });
+        const wrapper = mountAlbum();
 
         expect(wrapper.findAll('.card-slot')).toHaveLength(3);
         expect(wrapper.text()).toContain('2 de 3 cartas');
     });
 
     it('deja las cartas bloqueadas con interrogante y sin botón', () => {
-        const wrapper = mount(CardAlbum, {
-            props: {
-                cards,
-                progress: { unlocked: 2, total: 3 },
-            },
-        });
+        const wrapper = mountAlbum();
 
         const locked = wrapper.findAll('.card-slot')[2];
 
@@ -69,12 +76,7 @@ describe('CardAlbum', () => {
     });
 
     it('abre la carta desbloqueada con su clave', async () => {
-        const wrapper = mount(CardAlbum, {
-            props: {
-                cards,
-                progress: { unlocked: 2, total: 3 },
-            },
-        });
+        const wrapper = mountAlbum();
 
         const unlocked = wrapper.findAll('.card-slot');
 
@@ -87,13 +89,19 @@ describe('CardAlbum', () => {
     });
 
     it('muestra el número de copias repetidas', () => {
-        const wrapper = mount(CardAlbum, {
-            props: {
-                cards,
-                progress: { unlocked: 2, total: 3 },
-            },
-        });
+        const wrapper = mountAlbum();
 
         expect(wrapper.text()).toContain('×2');
+    });
+
+    it('muestra la sección de stickers con su progreso', () => {
+        const wrapper = mountAlbum();
+
+        expect(wrapper.text()).toContain('Stickers de la máquina');
+        expect(wrapper.text()).toContain('1 de 2 stickers');
+        expect(wrapper.findAll('.sticker-slot')).toHaveLength(2);
+        expect(wrapper.findAll('.library-sticker')).toHaveLength(2);
+        expect(wrapper.text()).toContain('Libro abierto');
+        expect(wrapper.text()).toContain('Bloqueado');
     });
 });

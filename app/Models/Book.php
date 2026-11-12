@@ -14,7 +14,7 @@ class Book extends Model
     public const BOOKS_PER_BAND = 5;
 
     protected $fillable = [
-        'shelf_id', 'position', 'band', 'band_position', 'view_mode', 'title', 'author',
+        'shelf_id', 'catalog_book_id', 'position', 'band', 'band_position', 'view_mode', 'title', 'author',
         'isbn', 'publisher', 'published_year', 'total_pages', 'current_page', 'cover_path',
         'rating', 'spice_rating', 'heart_rating', 'drop_rating', 'crystal_rating', 'notes',
     ];
@@ -43,6 +43,11 @@ class Book extends Model
     public function shelf(): BelongsTo
     {
         return $this->belongsTo(Shelf::class);
+    }
+
+    public function catalogBook(): BelongsTo
+    {
+        return $this->belongsTo(CatalogBook::class);
     }
 
     public function images(): HasMany

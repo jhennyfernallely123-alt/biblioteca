@@ -47,9 +47,12 @@ onBeforeUnmount(() => {
 const links = computed(() => [
     { label: t('ui.nav_library'), href: '/' },
     { label: t('ui.nav_shelves'), href: '/shelves' },
+    ...(user.value?.is_master
+        ? [{ label: t('ui.nav_catalog'), href: '/catalog' }]
+        : []),
     { label: t('ui.nav_cards'), href: '/cards' },
-    { label: t('ui.nav_events'), href: '/events' },
     { label: t('ui.nav_decorations'), href: '/decorations' },
+    { label: t('ui.nav_album'), href: '/album' },
     { label: t('ui.nav_settings'), href: '/settings' },
 ]);
 

@@ -18,6 +18,36 @@ class CardCatalogService
         return config('cards.cards');
     }
 
+    public function machineStickers(): array
+    {
+        return config('cards.machine_stickers', []);
+    }
+
+    public function machineSticker(string $key): ?array
+    {
+        foreach ($this->machineStickers() as $sticker) {
+            if ($sticker['key'] === $key) {
+                return $sticker;
+            }
+        }
+
+        return null;
+    }
+
+    public function machineStickerMetadata(string $key): ?array
+    {
+        $sticker = $this->machineSticker($key);
+
+        if ($sticker === null) {
+            return null;
+        }
+
+        return [
+            'key' => $sticker['key'],
+            'name' => __($sticker['name']),
+        ];
+    }
+
     public function exists(string $key): bool
     {
         return array_key_exists($key, $this->cards());

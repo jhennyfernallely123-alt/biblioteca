@@ -12,13 +12,10 @@ import CardMachine from '../CardMachine.vue';
 
 enableAutoUnmount(afterEach);
 
-const offers = [
-    { index: 0, family: 'empireo', familyLabel: 'Empíreo', familyEmblem: 'dragon' },
-    { index: 1, family: 'empireo', familyLabel: 'Empíreo', familyEmblem: 'dragon' },
-    { index: 2, family: 'empireo', familyLabel: 'Empíreo', familyEmblem: 'dragon' },
-];
+const offers = [{ index: 0 }, { index: 1 }, { index: 2 }];
 
-const result = {
+const cardResult = {
+    kind: 'card',
     card: {
         key: 'violet',
         family: 'empireo',
@@ -28,9 +25,16 @@ const result = {
         monogram: 'VS',
         emblem: 'dragon',
     },
-    duplicate: false,
-    copies: 1,
-    inkEarned: 0,
+    sticker: null,
+};
+
+const stickerResult = {
+    kind: 'sticker',
+    card: null,
+    sticker: {
+        key: 'maquina_libro',
+        name: 'Libro abierto',
+    },
 };
 
 function mountMachine(props = {}) {
@@ -40,6 +44,7 @@ function mountMachine(props = {}) {
             drawing: false,
             result: null,
             resetAt: '2026-11-04T05:00:00Z',
+            complete: false,
             ...props,
         },
     });
@@ -66,7 +71,7 @@ describe('CardMachine', () => {
         const lever = wrapper.get('.card-machine__lever');
 
         expect(lever.attributes('disabled')).toBeUndefined();
-        expect(wrapper.text()).toContain('Gira la manivela para sacar una carta.');
+        expect(wrapper.text()).toContain('Gira la manivela para sacar una sorpresa.');
     });
 
     it('emite crank con un índice de perla válido al pulsar', async () => {
@@ -88,11 +93,11 @@ describe('CardMachine', () => {
 
         expect(lever.attributes('disabled')).toBeDefined();
         expect(lever.classes()).toContain('card-machine__crank--turning');
-        expect(wrapper.text()).toContain('Girando…');
+        expect(wrapper.text()).toContain('Girando');
     });
 
-    it('muestra el sobre con el resultado y emite open', async () => {
-        const wrapper = mountMachine({ result });
+    it('muestra el sobre cuando el resultado es una carta', async () => {
+        const wrapper = mountMachine({ result: cardResult });
 
         expect(wrapper.get('.card-envelope').exists()).toBe(true);
         expect(wrapper.text()).toContain('Carta nueva');
@@ -102,11 +107,22 @@ describe('CardMachine', () => {
         expect(wrapper.emitted('open')).toEqual([[]]);
     });
 
-    it('avisa de una carta repetida con tinta', () => {
-        const wrapper = mountMachine({
-            result: { ...result, duplicate: true, copies: 2, inkEarned: 1 },
-        });
+    it('muestra el sticker y no emite open', async () => {
+        const wrapper = mountMachine({ result: stickerResult });
 
-        expect(wrapper.text()).toContain('Ya tenías esta carta: +1 tinta');
+        expect(wrapper.find('.library-sticker').exists()).toBe(true);
+        expect(wrapper.text()).toContain('Libro abierto');
+        expect(wrapper.text()).toContain('¡Sticker nuevo!');
+
+        await wrapper.get('.library-sticker').trigger('click');
+
+        expect(wrapper.emitted('open')).toBeUndefined();
+    });
+
+    it('muestra la colección completa sin manivela', () => {
+        const wrapper = mountMachine({ complete: true });
+
+        expect(wrapper.text()).toContain('¡Colección completa!');
+        expect(wrapper.find('.card-machine__lever').exists()).toBe(false);
     });
 });

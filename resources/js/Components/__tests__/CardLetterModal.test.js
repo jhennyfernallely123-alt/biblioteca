@@ -65,10 +65,10 @@ describe('CardLetterModal', () => {
         expect(wrapper.text()).not.toContain('VS');
     });
 
-    it('muestra las copias de una carta repetida', () => {
-        const wrapper = mountModal();
+    it('muestra las copias guardadas de una carta', () => {
+        const wrapper = mountModal({ duplicate: false });
 
-        expect(wrapper.text()).toContain('Ya tenías esta carta: +1 tinta');
+        expect(wrapper.text()).toContain('Carta nueva');
         expect(wrapper.text()).toContain('×2');
     });
 

@@ -15,7 +15,14 @@ class GoogleBooksService
 
     public function search(string $query): array
     {
-        return $this->fetch(['q' => $query]);
+        $params = ['q' => $query];
+        $locale = app()->getLocale();
+
+        if (in_array($locale, ['es', 'en'], true)) {
+            $params['langRestrict'] = $locale;
+        }
+
+        return $this->fetch($params);
     }
 
     private function fetch(array $params): array
@@ -61,7 +68,7 @@ class GoogleBooksService
 
         return [
             'title' => $title,
-            'language' => isset($info['language']) ? strtolower(substr($info['language'], 0, 2)) : null,
+            'language' => isset($info['language']) ? strtolower(trim($info['language'])) : null,
             'author' => implode(', ', $info['authors'] ?? []),
             'isbn' => $isbn13['identifier'] ?? $isbn10['identifier'] ?? null,
             'publisher' => $info['publisher'] ?? null,

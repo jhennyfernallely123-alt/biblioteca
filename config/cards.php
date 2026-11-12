@@ -3,7 +3,6 @@
 return [
     'timezone' => env('CARDS_TIMEZONE', 'America/Bogota'),
     'daily_balls' => 8,
-    'ink_per_duplicate' => 1,
     'allow_multiple_draws' => env('CARDS_ALLOW_MULTIPLE_DRAWS', false),
 
     'families' => [
@@ -54,5 +53,28 @@ return [
         'aegan' => ['family' => 'perfectos', 'character' => 'Aegan Cash', 'monogram' => 'AG', 'emblem' => 'crown'],
         'adrik' => ['family' => 'perfectos', 'character' => 'Adrik Cash', 'monogram' => 'AD', 'emblem' => 'key'],
         'alex' => ['family' => 'perfectos', 'character' => 'Alex Cash', 'monogram' => 'AL', 'emblem' => 'rose'],
+    ],
+
+    'machine_stickers' => [
+        ['key' => 'maquina_libro', 'name' => 'ui.machine_sticker_libro'],
+        ['key' => 'maquina_pluma', 'name' => 'ui.machine_sticker_pluma'],
+        ['key' => 'maquina_tintero', 'name' => 'ui.machine_sticker_tintero'],
+        ['key' => 'maquina_taza', 'name' => 'ui.machine_sticker_taza'],
+        ['key' => 'maquina_gato', 'name' => 'ui.machine_sticker_gato'],
+        ['key' => 'maquina_luna', 'name' => 'ui.machine_sticker_luna'],
+        ['key' => 'maquina_vela', 'name' => 'ui.machine_sticker_vela'],
+        ['key' => 'maquina_planta', 'name' => 'ui.machine_sticker_planta'],
+        ['key' => 'maquina_lupa', 'name' => 'ui.machine_sticker_lupa'],
+        ['key' => 'maquina_llave', 'name' => 'ui.machine_sticker_llave'],
+        ['key' => 'maquina_gafas', 'name' => 'ui.machine_sticker_gafas'],
+        ['key' => 'maquina_marcapaginas', 'name' => 'ui.machine_sticker_marcapaginas'],
+        ['key' => 'maquina_reloj', 'name' => 'ui.machine_sticker_reloj'],
+        ['key' => 'maquina_buho', 'name' => 'ui.machine_sticker_buho'],
+        ['key' => 'maquina_pocion', 'name' => 'ui.machine_sticker_pocion'],
+        ['key' => 'maquina_pergamino', 'name' => 'ui.machine_sticker_pergamino'],
+        ['key' => 'maquina_maquina_escribir', 'name' => 'ui.machine_sticker_maquina_escribir'],
+        ['key' => 'maquina_rosa', 'name' => 'ui.machine_sticker_rosa'],
+        ['key' => 'maquina_cuervo', 'name' => 'ui.machine_sticker_cuervo'],
+        ['key' => 'maquina_cristal', 'name' => 'ui.machine_sticker_cristal'],
     ],
 ];

@@ -28,6 +28,7 @@
     "dependencies": {
         "@fontsource/cormorant-garamond": "^5.3.0",
         "@fontsource/inter": "^5.3.0",
+        "@vueuse/motion": "^3.0.3",
         "@zxing/browser": "^0.2.1",
         "@zxing/library": "^0.23.0",
         "three": "^0.187.0"

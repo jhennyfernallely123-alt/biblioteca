@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import CardEnvelope from './CardEnvelope.vue';
+import LibrarySticker from './LibrarySticker.vue';
 import { countdownParts } from '@/cards';
 import { useI18n } from '@/i18n';
 
@@ -9,6 +10,7 @@ const props = defineProps({
     drawing: { type: Boolean, default: false },
     result: { type: Object, default: null },
     resetAt: { type: String, required: true },
+    complete: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['crank', 'open']);
@@ -748,41 +750,59 @@ onBeforeUnmount(() => {
 
 <template>
     <section class="card-machine mx-auto w-full max-w-md">
-        <div class="card-machine__body" :class="{ 'card-machine__body--cranking': drawing }">
-            <div ref="sceneEl" class="card-machine__scene" aria-hidden="true"></div>
-
-            <div class="card-machine__window">
-                <div class="card-machine__dome"></div>
-            </div>
-
-            <div class="card-machine__panel">
-                <button
-                    type="button"
-                    class="card-machine__crank card-machine__lever"
-                    :class="{ 'card-machine__crank--turning': drawing }"
-                    :disabled="drawing"
-                    :aria-label="t('ui.cards_crank')"
-                    @click="pull"
-                ></button>
-            </div>
-
-            <div class="card-machine__slot" :class="{ 'card-machine__slot--open': !!result }" aria-hidden="true"></div>
+        <div v-if="complete" class="rounded-card border border-edge bg-surface p-6 text-center">
+            <p class="font-serif text-xl text-accent">{{ t('ui.cards_complete') }}</p>
+            <p class="mt-2 text-ink-muted">{{ t('ui.cards_complete_help') }}</p>
         </div>
 
-        <div aria-live="polite" class="mt-6">
-            <p v-if="!result" class="text-center text-ink-muted">{{ t('ui.cards_choose_ball') }}</p>
+        <template v-else>
+            <div class="card-machine__body" :class="{ 'card-machine__body--cranking': drawing }">
+                <div ref="sceneEl" class="card-machine__scene" aria-hidden="true"></div>
 
-            <span v-if="drawing" class="sr-only">{{ t('ui.cards_cranking') }}</span>
+                <div class="card-machine__window">
+                    <div class="card-machine__dome"></div>
+                </div>
 
-            <template v-if="result">
-                <p v-if="!result.duplicate" class="mb-3 text-center font-serif text-lg text-accent">
-                    {{ t('ui.cards_new_card') }}
-                </p>
-                <CardEnvelope :card="result.card" :duplicate="result.duplicate" @open="emit('open')" />
-                <p v-if="countdown" class="mt-4 text-center text-sm text-ink-muted">
-                    {{ t('ui.cards_reset_in', { time: countdownText }) }}
-                </p>
-            </template>
-        </div>
+                <div class="card-machine__panel">
+                    <button
+                        type="button"
+                        class="card-machine__crank card-machine__lever"
+                        :class="{ 'card-machine__crank--turning': drawing }"
+                        :disabled="drawing"
+                        :aria-label="t('ui.cards_crank')"
+                        @click="pull"
+                    ></button>
+                </div>
+
+                <div class="card-machine__slot" :class="{ 'card-machine__slot--open': !!result }" aria-hidden="true"></div>
+            </div>
+
+            <div aria-live="polite" class="mt-6">
+                <p v-if="!result" class="text-center text-ink-muted">{{ t('ui.cards_choose_ball') }}</p>
+
+                <span v-if="drawing" class="sr-only">{{ t('ui.cards_cranking') }}</span>
+
+                <template v-if="result">
+                    <template v-if="result.kind === 'sticker'">
+                        <p class="mb-3 text-center font-serif text-lg text-accent">
+                            {{ t('ui.cards_sticker_new') }}
+                        </p>
+                        <div class="flex flex-col items-center gap-3">
+                            <LibrarySticker :sticker="result.sticker.key" :size="170" />
+                            <p class="text-center font-serif text-lg text-ink">{{ result.sticker.name }}</p>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <p class="mb-3 text-center font-serif text-lg text-accent">
+                            {{ t('ui.cards_new_card') }}
+                        </p>
+                        <CardEnvelope :card="result.card" @open="emit('open')" />
+                    </template>
+                    <p v-if="countdown" class="mt-4 text-center text-sm text-ink-muted">
+                        {{ t('ui.cards_reset_in', { time: countdownText }) }}
+                    </p>
+                </template>
+            </div>
+        </template>
     </section>
 </template>

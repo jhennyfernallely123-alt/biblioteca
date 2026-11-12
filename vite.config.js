@@ -19,4 +19,7 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    optimizeDeps: {
+        exclude: ['@zxing/browser'],
+    },
 });

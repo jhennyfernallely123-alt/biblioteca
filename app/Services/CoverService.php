@@ -49,6 +49,22 @@ class CoverService
         }
     }
 
+    public function copy(?string $path): ?string
+    {
+        if (! $path || ! Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION) ?: 'jpg';
+        $destination = 'covers/'.Str::uuid().'.'.$extension;
+
+        if (! Storage::disk('public')->copy($path, $destination)) {
+            return null;
+        }
+
+        return $destination;
+    }
+
     public function delete(?string $path): void
     {
         if ($path) {

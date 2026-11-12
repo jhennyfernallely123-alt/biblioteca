@@ -1,13 +1,13 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import BookcaseBand from '@/Components/BookcaseBand.vue';
 import BookDragGhost from '@/Components/BookDragGhost.vue';
 import DecorationDragGhost from '@/Components/DecorationDragGhost.vue';
 import EmptyShelf from '@/Components/EmptyShelf.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useI18n } from '@/i18n';
-import { BOOKS_PER_BAND, buildBands, insertBookInBand } from '@/bookcaseBands';
+import { buildBands, insertBookInBand, packBands, visualDropTarget } from '@/bookcaseBands';
 import { useLibraryDrag } from '@/useLibraryDrag';
 import { currentSeason } from '@/seasons';
 
@@ -18,6 +18,12 @@ const props = defineProps({
 
 const { t } = useI18n();
 const season = currentSeason();
+
+const bookcaseRef = ref(null);
+const availableWidth = ref(0);
+const isDesktop = ref(false);
+let mediaQuery = null;
+let resizeObserver = null;
 
 const localBooks = ref(props.books.map((book) => ({ ...book })));
 const localDecorations = ref(props.decorations.map((decoration) => ({ ...decoration })));
@@ -40,7 +46,12 @@ watch(
     { deep: true }
 );
 
-const bands = computed(() => buildBands(localBooks.value, localDecorations.value));
+const availableRowWidth = computed(() => Math.max(0, availableWidth.value - 68));
+const bands = computed(() =>
+    isDesktop.value && availableRowWidth.value > 0
+        ? packBands(localBooks.value, localDecorations.value, availableRowWidth.value)
+        : buildBands(localBooks.value, localDecorations.value)
+);
 const visibleBands = computed(() =>
     bands.value.filter((band) => band.books.length > 0 || band.decorations.length > 0)
 );
@@ -60,30 +71,16 @@ function moveBook(book, insertion) {
         return;
     }
 
-    const others = band.books.filter((item) => item.id !== book.id);
-    const after = insertion?.position !== 'before';
-    let index = others.length;
-
-    if (insertion?.bookId) {
-        const target = others.findIndex((item) => item.id === insertion.bookId);
-
-        if (target !== -1) {
-            index = target + (after ? 1 : 0);
-        }
-    } else if (!after) {
-        index = 0;
-    }
-
-    index = Math.max(0, Math.min(index, others.length, BOOKS_PER_BAND - 1));
+    const target = visualDropTarget(band, insertion, localBooks.value, book.id);
 
     const snapshot = localBooks.value;
-    localBooks.value = insertBookInBand(localBooks.value, book, band.id, index);
+    localBooks.value = insertBookInBand(localBooks.value, book, target.band, target.position);
 
     let settled = false;
 
     router.patch(
         '/bookcase/move',
-        { book_id: book.id, band: band.id, position: index },
+        { book_id: book.id, band: target.band, position: target.position },
         {
             preserveScroll: true,
             preserveState: true,
@@ -205,8 +202,55 @@ const {
     onClickCapture,
 } = useLibraryDrag(() => visibleBands.value, handleDrop, { virtual: true });
 
+function measureBookcase() {
+    if (bookcaseRef.value) {
+        availableWidth.value = bookcaseRef.value.clientWidth;
+    }
+}
+
+function syncViewport(event) {
+    isDesktop.value = event.matches;
+    measureBookcase();
+}
+
+onMounted(() => {
+    if (typeof window.matchMedia === 'function') {
+        mediaQuery = window.matchMedia('(min-width: 640px)');
+        isDesktop.value = mediaQuery.matches;
+        mediaQuery.addEventListener?.('change', syncViewport);
+    }
+
+    if (typeof ResizeObserver === 'function') {
+        resizeObserver = new ResizeObserver(measureBookcase);
+    }
+
+    measureBookcase();
+
+    if (resizeObserver && bookcaseRef.value) {
+        resizeObserver.observe(bookcaseRef.value);
+    }
+});
+
+watch(bookcaseRef, (element) => {
+    if (!resizeObserver) {
+        measureBookcase();
+
+        return;
+    }
+
+    resizeObserver.disconnect();
+
+    if (element) {
+        resizeObserver.observe(element);
+    }
+
+    measureBookcase();
+});
+
 onBeforeUnmount(() => {
     window.clearTimeout(noticeTimer);
+    mediaQuery?.removeEventListener?.('change', syncViewport);
+    resizeObserver?.disconnect();
 });
 </script>
 
@@ -219,6 +263,7 @@ onBeforeUnmount(() => {
 
         <div
             v-else
+            ref="bookcaseRef"
             class="bookcase"
             aria-describedby="bookcase-drag-hint"
             @pointerdown="onPointerDown"

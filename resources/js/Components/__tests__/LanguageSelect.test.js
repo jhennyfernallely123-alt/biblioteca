@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import LanguageSelect from '../LanguageSelect.vue';
 
 describe('LanguageSelect', () => {
-    it('filtra idiomas y muestra los revisados', async () => {
+    it('muestra los idiomas revisados y emite la selección', async () => {
         const wrapper = mount(LanguageSelect, {
             props: {
                 modelValue: 'es',
@@ -13,10 +13,12 @@ describe('LanguageSelect', () => {
             },
         });
 
+        expect(wrapper.find('input').exists()).toBe(false);
         expect(wrapper.text()).toContain('Revisado');
         expect(wrapper.text()).toContain('Automático');
 
-        await wrapper.find('input').setValue('engl');
-        expect(wrapper.text()).toContain('English');
+        await wrapper.findAll('button')[0].trigger('click');
+
+        expect(wrapper.emitted('update:modelValue')).toEqual([['en']]);
     });
 });

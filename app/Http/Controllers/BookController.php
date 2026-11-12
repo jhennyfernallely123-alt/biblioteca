@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
+use App\Models\CatalogBook;
+use App\Services\BookPlacementService;
 use App\Services\CoverService;
-use App\Services\EventService;
 use App\Services\Isbn;
-use App\Services\TranslationService;
+use App\Services\ShelfDisplayService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,13 +21,14 @@ class BookController extends Controller
 {
     public function __construct(
         private CoverService $covers,
-        private TranslationService $translator,
+        private BookPlacementService $placement,
+        private ShelfDisplayService $shelves,
     ) {}
 
     public function create(Request $request): Response
     {
         return Inertia::render('Books/Create', [
-            'shelves' => $this->shelvesFor($request),
+            'shelves' => $this->shelves->forUser($request->user()),
         ]);
     }
 
@@ -40,36 +42,42 @@ class BookController extends Controller
         ]);
     }
 
-    public function store(StoreBookRequest $request, EventService $events): RedirectResponse
+    public function store(StoreBookRequest $request): RedirectResponse
     {
         $this->ensureShelfOwnership($request, $request->integer('shelf_id'));
 
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
 
+        $catalogBook = $request->filled('catalog_book_id')
+            ? CatalogBook::find($request->integer('catalog_book_id'))
+            : null;
+
         unset($data['cover'], $data['cover_url']);
 
         if ($request->hasFile('cover')) {
             $data['cover_path'] = $this->covers->storeUploaded($request->file('cover'));
+        } elseif ($catalogBook?->cover_path) {
+            $data['cover_path'] = $this->covers->copy($catalogBook->cover_path);
         } elseif ($request->filled('cover_url')) {
             $data['cover_path'] = $this->covers->storeFromUrl($request->input('cover_url'));
         }
+
+        $data['catalog_book_id'] = $catalogBook?->id;
 
         $data['isbn'] = $request->filled('isbn')
             ? Isbn::normalize($request->input('isbn'))
             : null;
 
-        $data['position'] = $this->nextPosition((int) $data['shelf_id']);
+        $data['position'] = $this->placement->nextPosition((int) $data['shelf_id']);
         $data['view_mode'] = $request->user()->default_view_mode ?? 'covers';
-        $nextBand = $this->nextBand($request);
+        $nextBand = $this->placement->nextBand($request->user());
         $data['band'] = $nextBand['band'];
         $data['band_position'] = $nextBand['position'];
 
         $request->user()->books()->create($data);
 
-        $events->completeTask($request->user(), 'add_book');
-
-        return redirect()->route('library.index');
+        return redirect()->route('shelves.index');
     }
 
     public function update(UpdateBookRequest $request, Book $book): RedirectResponse
@@ -100,7 +108,7 @@ class BookController extends Controller
         $shelfChanged = isset($data['shelf_id']) && (int) $data['shelf_id'] !== $oldShelfId;
 
         if ($shelfChanged) {
-            $data['position'] = $this->nextPosition((int) $data['shelf_id']);
+            $data['position'] = $this->placement->nextPosition((int) $data['shelf_id']);
         }
 
         $book->update($data);
@@ -135,7 +143,7 @@ class BookController extends Controller
         DB::transaction(function () use ($book, $sourceShelfId, $targetShelfId, $index) {
             $book->update([
                 'shelf_id' => $targetShelfId,
-                'position' => $this->nextPosition($targetShelfId),
+                'position' => $this->placement->nextPosition($targetShelfId),
             ]);
 
             $this->resequenceShelf($sourceShelfId);
@@ -203,27 +211,7 @@ class BookController extends Controller
         $this->covers->delete($book->cover_path);
         $book->delete();
 
-        return back();
-    }
-
-    private function nextPosition(int $shelfId): int
-    {
-        $max = Book::where('shelf_id', $shelfId)->max('position');
-
-        return $max === null ? 0 : (int) $max + 1;
-    }
-
-    private function nextBand(Request $request): array
-    {
-        $last = $request->user()->books()->orderByDesc('band')->first(['band']);
-        $band = $last?->band ?? 0;
-        $count = $request->user()->books()->where('band', $band)->count();
-
-        if ($count >= Book::BOOKS_PER_BAND) {
-            return ['band' => $band + 1, 'position' => 0];
-        }
-
-        return ['band' => $band, 'position' => $count];
+        return redirect()->route('library.index');
     }
 
     private function resequenceShelf(int $shelfId): void
@@ -260,20 +248,5 @@ class BookController extends Controller
             $request->user()->shelves()->whereKey($shelfId)->exists(),
             403
         );
-    }
-
-    private function shelvesFor(Request $request): array
-    {
-        return $request->user()->shelves()
-            ->orderBy('position')
-            ->get(['id', 'name'])
-            ->map(function ($shelf) {
-                $shelf->display_name = app()->getLocale() === 'es'
-                    ? $shelf->name
-                    : ($this->translator->translateText($shelf->name, app()->getLocale(), 'es') ?? $shelf->name);
-
-                return $shelf;
-            })
-            ->all();
     }
 }

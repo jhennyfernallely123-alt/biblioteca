@@ -4,6 +4,7 @@ use App\Models\Book;
 use App\Models\Decoration;
 use App\Models\Shelf;
 use App\Models\User;
+use Inertia\Middleware as InertiaMiddleware;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -192,6 +193,42 @@ it('no permite quitar un objeto ajeno', function () {
     $this->delete(route('decorations.destroy', $decoration))->assertForbidden();
 });
 
+it('responde con una pagina de inertia al quitar un objeto desde la biblioteca', function () {
+    $decoration = Decoration::factory()->for($this->user)->create(['kind' => 'lamp']);
+
+    $delete = $this->delete(route('decorations.destroy', $decoration), [], [
+        'X-Inertia' => 'true',
+        'X-Requested-With' => 'XMLHttpRequest',
+        'Referer' => route('library.index'),
+    ]);
+
+    expect($delete->status())->toBe(303);
+
+    $location = $delete->headers->get('Location');
+
+    expect($location)->not->toBeNull();
+
+    $follow = $this->get($location, [
+        'X-Inertia' => 'true',
+        'X-Requested-With' => 'XMLHttpRequest',
+        'X-Inertia-Version' => app(InertiaMiddleware::class)->version(request()),
+    ]);
+
+    expect($follow->status())->toBe(200)
+        ->and($follow->headers->get('X-Inertia'))->toBe('true')
+        ->and($follow->headers->get('Content-Type'))->toContain('application/json');
+
+    $page = json_decode($follow->getContent(), true);
+
+    expect($page['component'])->toBe('Library/Index')
+        ->and($page['props']['flash']['success'])->toBe(__('ui.decoration_removed', [
+            'name' => __('ui.decoration_lamp'),
+        ]))
+        ->and($page['props']['decorations'])->toBe([]);
+
+    expect(Decoration::find($decoration->id))->toBeNull();
+});
+
 it('quita todos los objetos del usuario', function () {
     $mine = Decoration::factory()->for($this->user)->create();
     $theirs = Decoration::factory()->for(User::factory())->create();
@@ -204,15 +241,14 @@ it('quita todos los objetos del usuario', function () {
         ->and(Decoration::find($theirs->id))->not->toBeNull();
 });
 
-it('entrega las decoraciones en las estanterías', function () {
+it('no entrega las decoraciones en las estanterías', function () {
     $shelf = Shelf::factory()->for($this->user)->create(['position' => 0]);
     Decoration::factory()->for($this->user)->for($shelf)->create(['kind' => 'cup']);
 
     $this->get(route('shelves.index'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->has('shelves.0.decorations', 1)
-            ->where('shelves.0.decorations.0.kind', 'cup'));
+            ->missing('shelves.0.decorations'));
 });
 
 it('entrega solo las decoraciones propias en el módulo de decoraciones', function () {

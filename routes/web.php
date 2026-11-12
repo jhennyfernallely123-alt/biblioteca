@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\Auth\CompleteNicknameController;
 use App\Http\Controllers\BookcaseController;
 use App\Http\Controllers\BookController;
@@ -7,9 +8,10 @@ use App\Http\Controllers\BookImageController;
 use App\Http\Controllers\BookLookupController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CardDrawController;
+use App\Http\Controllers\CatalogBookController;
+use App\Http\Controllers\CatalogCoverController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\DecorationController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
@@ -51,6 +53,9 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::delete('/reading-sessions/{session}', [ReadingController::class, 'destroySession'])->name('reading.sessions.destroy');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
     Route::get('/covers/{book}', CoverController::class)->name('covers.show');
+    Route::get('/catalog-covers/{catalogBook}', CatalogCoverController::class)
+        ->middleware('auth')
+        ->name('catalog-covers.show');
     Route::get('/book-images/{image}', [BookImageController::class, 'show'])->name('book-images.show');
     Route::post('/books/{book}/images', [BookImageController::class, 'store'])->name('book-images.store');
     Route::delete('/book-images/{image}', [BookImageController::class, 'destroy'])->name('book-images.destroy');
@@ -64,11 +69,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
         ->where('card', '[a-z_]+')
         ->name('cards.show');
 
-    Route::get('/events', [EventController::class, 'index'])->name('events.index');
-    Route::get('/events/album', [EventController::class, 'album'])->name('events.album');
-    Route::post('/events/buy', [EventController::class, 'buy'])
-        ->middleware('throttle:30,1')
-        ->name('events.buy');
+    Route::get('/album', [AlbumController::class, 'index'])->name('album.index');
 
     Route::get('/decorations', [DecorationController::class, 'index'])->name('decorations.index');
     Route::post('/decorations', [DecorationController::class, 'store'])->name('decorations.store');
@@ -118,5 +119,17 @@ Route::get('/deploy/cache/{token}', function (string $token) {
 
     return response()->json(['ok' => true]);
 });
+
+Route::middleware(['auth', 'nickname', 'master'])
+    ->prefix('catalog')
+    ->name('catalog.')
+    ->group(function () {
+        Route::get('/', [CatalogBookController::class, 'index'])->name('index');
+        Route::get('/create', [CatalogBookController::class, 'create'])->name('create');
+        Route::post('/', [CatalogBookController::class, 'store'])->name('store');
+        Route::get('/{catalogBook}/edit', [CatalogBookController::class, 'edit'])->name('edit');
+        Route::patch('/{catalogBook}', [CatalogBookController::class, 'update'])->name('update');
+        Route::delete('/{catalogBook}', [CatalogBookController::class, 'destroy'])->name('destroy');
+    });
 
 require __DIR__.'/auth.php';

@@ -5,6 +5,8 @@
 **Documento de identidad visual:** `docs/DISENO.md` (documento vivo, de cumplimiento obligatorio).
 **Reglas del proyecto para agentes:** `AGENTS.md`.
 
+> **Actualización 2026-11-09:** la usuaria decidió reducir el multilingüe a **español e inglés**. Solo se gestionan los catálogos `lang/es.json` y `lang/en.json`; los demás archivos de idioma y los idiomas automáticos quedan fuera. `config/languages.php` define `curated` y `supported` solo con `es` y `en`, y el selector muestra esas dos opciones revisadas. El resto de este documento describe el diseño original y se conserva como referencia histórica.
+
 ---
 
 ## 1. Objetivo
@@ -174,6 +176,11 @@ Los nombres de las estanterías en Configuraciones se muestran en su forma origi
 - Si el idioma del libro coincide con el idioma activo, no se traduce.
 - Si la traducción falla, se conserva el título original.
 - Se guarda `original_title` para trazabilidad.
+- En español se prefiere el título oficial publicado, no una traducción literal:
+  - Google Books recibe `langRestrict=es` para devolver ediciones en español.
+  - Para cada resultado de Open Library se consultan las ediciones de su obra (`/works/{id}/editions.json`) y se elige el título español más frecuente.
+  - Si existe título oficial, `original_title` guarda el título original y no se llama a MyMemory.
+  - Si no existe edición española catalogada, se usa MyMemory como respaldo.
 - La caché de búsqueda se separa de la caché de traducción:
   - Resultados crudos por ISBN o consulta.
   - Traducciones por idioma y título.

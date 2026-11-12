@@ -43,4 +43,11 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function master(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->forceFill(['is_master' => true])->save();
+        });
+    }
 }

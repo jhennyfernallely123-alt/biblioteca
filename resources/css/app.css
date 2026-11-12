@@ -73,6 +73,13 @@
   --shadow-card: 0 2px 6px color-mix(in srgb, var(--color-scrim) 16%, transparent);
   --shadow-cover: 0 8px 20px color-mix(in srgb, var(--color-scrim) 22%, transparent);
   --shadow-modal: 0 20px 50px color-mix(in srgb, var(--color-scrim) 35%, transparent);
+  --shadow-glow-accent: 0 0 15px -3px color-mix(in srgb, var(--color-accent) 45%, transparent);
+  --shadow-glow-tertiary: 0 0 15px -3px color-mix(in srgb, var(--color-tertiary) 45%, transparent);
+
+  --radius-control: 4px;
+  --radius-card: 6px;
+  --radius-lg: 8px;
+  --radius-modal: 12px;
 }
 
 :root[data-theme='light'] {

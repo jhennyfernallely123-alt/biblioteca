@@ -1,9 +1,13 @@
 <?php
 
+use App\Models\CatalogBook;
 use App\Services\BookLookupService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+
+uses(RefreshDatabase::class);
 
 it('encuentra un libro por isbn en Google Books', function () {
     Http::fake([
@@ -204,4 +208,208 @@ it('no traduce si el libro ya está en el idioma activo', function () {
 
     expect($result[0]['title'])->toBe('The Hobbit')
         ->and($result[0])->not->toHaveKey('original_title');
+});
+
+it('normaliza los c�digos de idioma de Open Library antes de traducir', function () {
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([], 500),
+        'openlibrary.org/search.json*' => Http::response([
+            'docs' => [[
+                'title' => 'The Housemaid',
+                'language' => ['ger'],
+                'author_name' => ['Freida McFadden'],
+            ]],
+        ]),
+        'api.mymemory.translated.net/*' => Http::response([
+            'responseData' => ['translatedText' => 'La criada'],
+            'responseStatus' => 200,
+        ]),
+    ]);
+
+    app(BookLookupService::class)->search('the housemaid');
+
+    Http::assertSent(fn ($request) => str_contains($request->url(), 'mymemory')
+        && $request['langpair'] === 'de|es');
+});
+
+it('conserva el t�tulo original si MyMemory rechaza el idioma de origen', function () {
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([
+            'items' => [[
+                'volumeInfo' => [
+                    'title' => 'The Housemaid',
+                    'language' => 'en',
+                ],
+            ]],
+        ]),
+        'api.mymemory.translated.net/*' => Http::response([
+            'responseData' => [
+                'translatedText' => "'GE' IS AN INVALID SOURCE LANGUAGE . EXAMPLE: LANGPAIR=EN|IT USING 2 LETTER ISO OR RFC3066 LIKE ZH-CN. ALMOST ALL LANGUAGES SUPPORTED BUT SOME MAY HAVE NO CONTENT",
+            ],
+            'responseStatus' => 403,
+        ]),
+    ]);
+
+    $result = app(BookLookupService::class)->search('the housemaid');
+
+    expect($result[0]['title'])->toBe('The Housemaid')
+        ->and($result[0])->not->toHaveKey('original_title');
+});
+
+it('busca en Google Books en el idioma activo', function () {
+    Http::fake([
+        'www.googleapis.com/*' => Http::response(['items' => []]),
+        'openlibrary.org/*' => Http::response(['docs' => []]),
+    ]);
+
+    app(BookLookupService::class)->search('the hobbit');
+
+    Http::assertSent(fn ($request) => str_contains($request->url(), 'googleapis')
+        && $request['langRestrict'] === 'es');
+});
+
+it('usa el título oficial de la edición española de Open Library', function () {
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([], 500),
+        'openlibrary.org/search.json*' => Http::response([
+            'docs' => [[
+                'key' => '/works/OL27729743W',
+                'title' => 'The Housemaid',
+                'language' => ['eng'],
+                'author_name' => ['Freida McFadden'],
+            ]],
+        ]),
+        'openlibrary.org/works/OL27729743W/editions.json*' => Http::response([
+            'entries' => [
+                [
+                    'title' => 'The Housemaid',
+                    'languages' => [['key' => '/languages/eng']],
+                ],
+                [
+                    'title' => 'La empleada',
+                    'languages' => [['key' => '/languages/spa']],
+                    'publish_date' => '2023',
+                ],
+            ],
+        ]),
+    ]);
+
+    $result = app(BookLookupService::class)->search('the housemaid');
+
+    expect($result[0]['title'])->toBe('La empleada')
+        ->and($result[0]['original_title'])->toBe('The Housemaid')
+        ->and($result[0]['language'])->toBe('es');
+
+    Http::assertNotSent(fn ($request) => str_contains($request->url(), 'mymemory'));
+});
+
+it('elige el título español más frecuente entre las ediciones', function () {
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([], 500),
+        'openlibrary.org/search.json*' => Http::response([
+            'docs' => [[
+                'key' => '/works/OL14860424W',
+                'title' => 'Rayuela',
+                'language' => ['heb'],
+                'author_name' => ['Julio Cortázar'],
+            ]],
+        ]),
+        'openlibrary.org/works/OL14860424W/editions.json*' => Http::response([
+            'entries' => [
+                [
+                    'title' => 'Rayuela',
+                    'languages' => [['key' => '/languages/spa']],
+                    'publish_date' => '2016',
+                ],
+                [
+                    'title' => 'Rayuela',
+                    'languages' => [['key' => '/languages/spa']],
+                    'publish_date' => '1999',
+                ],
+                [
+                    'title' => 'Hopscotch',
+                    'languages' => [['key' => '/languages/spa']],
+                    'publish_date' => '2020',
+                ],
+            ],
+        ]),
+    ]);
+
+    $result = app(BookLookupService::class)->search('rayuela');
+
+    expect($result[0]['title'])->toBe('Rayuela')
+        ->and($result[0])->not->toHaveKey('original_title');
+
+    Http::assertNotSent(fn ($request) => str_contains($request->url(), 'mymemory'));
+});
+
+it('devuelve las fichas locales antes que los resultados de la api', function () {
+    $local = CatalogBook::factory()->create([
+        'title' => 'Rayuela local',
+        'isbn' => '9788437604947',
+    ]);
+
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([
+            'items' => [['volumeInfo' => ['title' => 'Rayuela API', 'language' => 'es']]],
+        ]),
+    ]);
+
+    $results = app(BookLookupService::class)->search('rayuela');
+
+    expect($results[0]['title'])->toBe('Rayuela local')
+        ->and($results[0]['catalog_book_id'])->toBe($local->id)
+        ->and($results[1]['title'])->toBe('Rayuela API');
+});
+
+it('devuelve fichas locales aunque las apis fallen', function () {
+    CatalogBook::factory()->create(['title' => 'Rayuela local']);
+
+    Http::fake(fn () => throw new ConnectionException('fallo'));
+
+    $results = app(BookLookupService::class)->search('rayuela');
+
+    expect($results)->toHaveCount(1)
+        ->and($results[0]['title'])->toBe('Rayuela local');
+});
+
+it('encuentra fichas locales por isbn', function () {
+    $local = CatalogBook::factory()->create([
+        'title' => 'Rayuela local',
+        'isbn' => '9788437604947',
+    ]);
+
+    Http::fake([
+        'www.googleapis.com/*' => Http::response(['items' => []]),
+        'openlibrary.org/*' => Http::response(['docs' => []]),
+    ]);
+
+    $results = app(BookLookupService::class)->byIsbn('978-84-376-0494-7');
+
+    expect($results[0]['catalog_book_id'])->toBe($local->id)
+        ->and($results[0]['title'])->toBe('Rayuela local');
+});
+
+it('no traduce las fichas locales', function () {
+    CatalogBook::factory()->create(['title' => 'The Local Book']);
+
+    Http::fake([
+        'www.googleapis.com/*' => Http::response([
+            'items' => [[
+                'volumeInfo' => [
+                    'title' => 'The API Book',
+                    'language' => 'en',
+                ],
+            ]],
+        ]),
+        'api.mymemory.translated.net/*' => Http::response([
+            'responseData' => ['translatedText' => 'El libro API'],
+            'responseStatus' => 200,
+        ]),
+    ]);
+
+    $results = app(BookLookupService::class)->search('book');
+
+    expect($results[0]['title'])->toBe('The Local Book')
+        ->and($results[1]['title'])->toBe('El libro API');
 });

@@ -131,7 +131,7 @@ Modal o página con dos pestañas:
 2. **Manual**
    - Título (obligatorio), autor, ISBN, editorial, año, portada y estantería destino.
 
-Antes de guardar siempre se elige la estantería. El usuario puede editar los datos precargados. Si el libro ya existe en su biblioteca (mismo ISBN), se avisa y se permite guardarlo igualmente.
+Antes de guardar siempre se elige la estantería. El usuario puede editar los datos precargados. Si el libro ya existe en su biblioteca (mismo ISBN), se avisa y se permite guardarlo igualmente. Al guardar, se vuelve a **Estanterías**, que es donde se añaden los libros.
 
 ### 5.3 Escáner de código de barras
 
@@ -152,7 +152,7 @@ Orden de consulta:
 - Si existe `GOOGLE_BOOKS_API_KEY`, se usa; si no, se consulta el endpoint público.
 - Tiempo máximo por proveedor: 5 segundos.
 - Resultados cacheados 24 horas.
-- Los títulos se muestran en español aunque la edición encontrada esté en otro idioma: se traduce el título con MyMemory y se conserva el original para referencia. Si la traducción falla, se mantiene el título original. `MYMEMORY_EMAIL` es opcional y amplía la cuota diaria del servicio.
+- Los títulos se muestran en el idioma activo. En español se prefiere el título oficial de una edición publicada: Google Books recibe `langRestrict=es` y, para Open Library, se consultan las ediciones de la obra y se elige el título español más frecuente. Si no hay edición española catalogada, se traduce con MyMemory y se conserva el original para referencia. `MYMEMORY_EMAIL` es opcional y amplía la cuota diaria del servicio.
 - Si ningún proveedor responde o no hay resultados, se muestra un mensaje claro y se ofrece el alta manual.
 - Al guardar un libro con portada remota, el servidor descarga la imagen, valida que sea JPG/PNG/WebP de hasta 5 MB y la guarda en el disco `public`. Si la descarga falla, el libro se guarda sin portada y se muestra la portada provisional. No se almacenan URL externas.
 

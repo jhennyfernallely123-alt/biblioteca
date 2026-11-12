@@ -20,6 +20,7 @@ class StoreBookRequest extends FormRequest
             'publisher' => ['nullable', 'string', 'max:150'],
             'published_year' => ['nullable', 'integer', 'min:0', 'max:2100'],
             'shelf_id' => ['required', 'integer', 'exists:shelves,id'],
+            'catalog_book_id' => ['nullable', 'integer', 'exists:catalog_books,id'],
             'rating' => ['nullable', 'integer', 'min:0', 'max:5'],
             'spice_rating' => ['nullable', 'integer', 'min:0', 'max:5'],
             'heart_rating' => ['nullable', 'integer', 'min:0', 'max:5'],

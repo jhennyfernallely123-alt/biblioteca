@@ -2,7 +2,6 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import BookDragGhost from '@/Components/BookDragGhost.vue';
-import DecorationDragGhost from '@/Components/DecorationDragGhost.vue';
 import ReadingLightbox from '@/Components/ReadingLightbox.vue';
 import Shelf from '@/Components/Shelf.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -21,7 +20,6 @@ function cloneShelves(shelves) {
     return shelves.map((shelf) => ({
         ...shelf,
         books: (shelf.books ?? []).map((book) => ({ ...book })),
-        decorations: (shelf.decorations ?? []).map((decoration) => ({ ...decoration })),
     }));
 }
 
@@ -52,7 +50,6 @@ const readingShelf = computed(() => ({
     name: t('ui.reading_shelf'),
     display_name: t('ui.reading_shelf'),
     books: localReading.value,
-    decorations: [],
 }));
 
 function openReading(book) {
@@ -192,12 +189,6 @@ function reorderBook(book, shelfId, target) {
 }
 
 function handleDrop(dragged, targetShelfId, target = null) {
-    if (dragged.type === 'decoration') {
-        moveDecoration(dragged.item, targetShelfId, target);
-
-        return;
-    }
-
     if (target) {
         reorderBook(dragged.item, targetShelfId, target);
 
@@ -205,68 +196,6 @@ function handleDrop(dragged, targetShelfId, target = null) {
     }
 
     moveBook(dragged.item, targetShelfId);
-}
-
-function moveDecoration(decoration, targetShelfId, anchor) {
-    const sourceShelf = localShelves.value.find((shelf) =>
-        (shelf.decorations ?? []).some((item) => item.id === decoration.id)
-    );
-    const targetShelf = localShelves.value.find((shelf) => shelf.id === targetShelfId);
-
-    if (!sourceShelf || !targetShelf || !anchor) {
-        return;
-    }
-
-    const snapshot = cloneShelves(localShelves.value);
-    const index = sourceShelf.decorations.findIndex((item) => item.id === decoration.id);
-
-    if (index === -1) {
-        return;
-    }
-
-    const [moved] = sourceShelf.decorations.splice(index, 1);
-    moved.shelf_id = targetShelf.id;
-    moved.after_book_id = anchor.afterBookId;
-    moved.sort = anchor.sort;
-    targetShelf.decorations.push(moved);
-
-    let settled = false;
-
-    router.patch(
-        `/decorations/${decoration.id}`,
-        {
-            shelf_id: targetShelf.id,
-            after_book_id: anchor.afterBookId,
-            sort: anchor.sort,
-        },
-        {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                settled = true;
-                showNotice(
-                    'success',
-                    t('ui.decoration_moved', {
-                        name: t(`ui.decoration_${decoration.kind}`),
-                        shelf: targetShelf.display_name ?? targetShelf.name,
-                    })
-                );
-            },
-            onError: () => {
-                settled = true;
-                localShelves.value = snapshot;
-                showNotice('error', t('ui.decoration_move_error'));
-            },
-            onFinish: () => {
-                if (settled) {
-                    return;
-                }
-
-                localShelves.value = snapshot;
-                showNotice('error', t('ui.decoration_move_error'));
-            },
-        }
-    );
 }
 
 const {
@@ -322,7 +251,6 @@ onBeforeUnmount(() => {
                 :drag-active="isDragging"
                 :drop-target-id="dropTargetId"
                 :dragging-book-id="draggedItem?.type === 'book' ? draggedItem.item.id : null"
-                :dragging-decoration-id="draggedItem?.type === 'decoration' ? draggedItem.item.id : null"
                 :insertion="insertion"
             />
         </div>
@@ -331,13 +259,6 @@ onBeforeUnmount(() => {
             v-if="draggedItem?.type === 'book'"
             :book="draggedItem.item"
             :mode="dragMode"
-            :x="pointer.x"
-            :y="pointer.y"
-        />
-
-        <DecorationDragGhost
-            v-else-if="draggedItem"
-            :decoration="draggedItem.item"
             :x="pointer.x"
             :y="pointer.y"
         />

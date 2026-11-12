@@ -52,7 +52,7 @@ const paragraphs = computed(
             </div>
 
             <footer class="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-dorado/30 pt-4 text-sm text-tinta">
-                <span>{{ duplicate ? t('ui.cards_duplicate') : t('ui.cards_new_card') }}</span>
+                <span v-if="!duplicate">{{ t('ui.cards_new_card') }}</span>
                 <span v-if="copies > 1" class="font-serif text-base text-dorado">
                     {{ t('ui.cards_copies', { count: copies }) }}
                 </span>

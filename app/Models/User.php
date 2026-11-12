@@ -35,6 +35,11 @@ class User extends Authenticatable
         return $this->hasMany(Book::class);
     }
 
+    public function catalogBooks(): HasMany
+    {
+        return $this->hasMany(CatalogBook::class, 'created_by');
+    }
+
     public function decorations(): HasMany
     {
         return $this->hasMany(Decoration::class);
@@ -65,14 +70,14 @@ class User extends Authenticatable
         return $this->hasOne(UserWallet::class);
     }
 
-    public function eventProgress(): HasMany
-    {
-        return $this->hasMany(EventProgress::class);
-    }
-
     public function collectibles(): HasMany
     {
         return $this->hasMany(UserCollectible::class);
+    }
+
+    public function isMaster(): bool
+    {
+        return (bool) $this->is_master;
     }
 
     /**
@@ -84,6 +89,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_master' => 'boolean',
             'password' => 'hashed',
         ];
     }

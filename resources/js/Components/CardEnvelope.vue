@@ -4,7 +4,6 @@ import { useI18n } from '@/i18n';
 
 defineProps({
     card: { type: Object, required: true },
-    duplicate: { type: Boolean, default: false },
 });
 
 defineEmits(['open']);
@@ -26,7 +25,5 @@ const { t } = useI18n();
             </span>
             <span class="card-envelope__label block text-sm">{{ t('ui.cards_open_letter') }}</span>
         </button>
-
-        <p v-if="duplicate" class="text-sm text-danger">{{ t('ui.cards_duplicate') }}</p>
     </div>
 </template>

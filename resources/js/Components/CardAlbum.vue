@@ -1,10 +1,13 @@
 <script setup>
 import CardEmblem from './CardEmblem.vue';
+import LibrarySticker from './LibrarySticker.vue';
 import { useI18n } from '@/i18n';
 
 defineProps({
     cards: { type: Array, required: true },
     progress: { type: Object, required: true },
+    stickers: { type: Array, required: true },
+    stickerProgress: { type: Object, required: true },
 });
 
 defineEmits(['open']);
@@ -70,5 +73,42 @@ const { t } = useI18n();
         <footer class="mt-4 text-center text-xs text-ink-muted">
             {{ t('ui.cards_disclaimer') }}
         </footer>
+
+        <section class="mt-8" :aria-label="t('ui.cards_machine_stickers')">
+            <header class="mb-4">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <h2 class="font-serif text-xl text-accent">{{ t('ui.cards_machine_stickers') }}</h2>
+                    <span class="text-sm text-ink-muted">
+                        {{ t('ui.cards_sticker_progress', { unlocked: stickerProgress.unlocked, total: stickerProgress.total }) }}
+                    </span>
+                </div>
+                <div
+                    class="mt-2 h-2 rounded-full bg-edge"
+                    role="progressbar"
+                    :aria-valuenow="stickerProgress.unlocked"
+                    :aria-valuemin="0"
+                    :aria-valuemax="stickerProgress.total"
+                    :aria-label="t('ui.cards_machine_stickers')"
+                >
+                    <div
+                        class="h-full rounded-full bg-accent transition-all"
+                        :style="{ width: `${stickerProgress.total ? (stickerProgress.unlocked / stickerProgress.total) * 100 : 0}%` }"
+                    ></div>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                <div
+                    v-for="sticker in stickers"
+                    :key="sticker.key"
+                    class="sticker-slot flex flex-col items-center gap-1 rounded-card border border-edge bg-surface/80 p-2 text-center"
+                >
+                    <LibrarySticker :sticker="sticker.key" :size="96" :locked="!sticker.unlocked" />
+                    <span class="text-xs leading-tight text-ink">
+                        {{ sticker.unlocked ? sticker.name : t('ui.sticker_locked') }}
+                    </span>
+                </div>
+            </div>
+        </section>
     </section>
 </template>

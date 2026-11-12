@@ -62,9 +62,10 @@ describe('AppShell', () => {
         const links = menu.findAll('.album-menu__item');
 
         expect(menu.exists()).toBe(true);
-        expect(links).toHaveLength(9);
-        expect(menu.text()).toContain('Inicio');
+        expect(links).toHaveLength(6);
+        expect(menu.text()).toContain('Biblioteca');
         expect(menu.text()).toContain('Estanterías');
+        expect(menu.text()).toContain('Álbum');
         expect(menu.text()).toContain('Cerrar sesión');
     });
 
@@ -85,9 +86,10 @@ describe('AppShell', () => {
 
         expect(wrapper.find('.album-menu').exists()).toBe(true);
         const menu = wrapper.find('.album-menu');
-        expect(menu.findAll('.album-menu__item')).toHaveLength(9);
-        expect(menu.text()).toContain('Inicio');
-        expect(menu.text()).toContain('Galería');
+        expect(menu.findAll('.album-menu__item')).toHaveLength(6);
+        expect(menu.text()).toContain('Biblioteca');
+        expect(menu.text()).toContain('Decoraciones');
+        expect(menu.text()).toContain('Álbum');
         expect(menu.text()).toContain('Cerrar sesión');
 
         // Cerrar el álbum haciendo clic de nuevo en el menú
@@ -202,5 +204,33 @@ describe('AppShell', () => {
         await nextTick();
 
         expect(second.find('[role="dialog"]').exists()).toBe(false);
+    });
+
+    it('muestra el catálogo en la barra lateral solo para la cuenta master', async () => {
+        mocks.page.props.auth.user = { name: 'Ana', nickname: 'Jhenny', is_master: true };
+
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+        await wrapper.get('[data-welcome-enter]').trigger('click');
+
+        const aside = wrapper.get('aside');
+        expect(aside.text()).toContain('Catálogo');
+        expect(aside.find('a[href="/catalog"]').exists()).toBe(true);
+    });
+
+    it('oculta el catálogo para una cuenta normal', async () => {
+        mocks.page.props.auth.user = { name: 'Ana', nickname: 'Jhenny', is_master: false };
+
+        const wrapper = mount(AppShell, {
+            slots: { default: '<p>Contenido</p>' },
+        });
+        await nextTick();
+        await wrapper.get('[data-welcome-enter]').trigger('click');
+
+        const aside = wrapper.get('aside');
+        expect(aside.text()).not.toContain('Catálogo');
+        expect(aside.find('a[href="/catalog"]').exists()).toBe(false);
     });
 });

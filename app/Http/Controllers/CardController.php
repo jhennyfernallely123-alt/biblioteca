@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardDraw;
+use App\Models\User;
 use App\Services\CardCatalogService;
 use App\Services\CardDeckService;
-use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,36 +23,14 @@ class CardController extends Controller
         $pool = $catalog->poolFor($user);
         $owned = $user->userCards()->whereIn('card_key', $pool)->get()->keyBy('card_key');
         $drawn = config('cards.allow_multiple_draws') ? null : $deck->drawnToday($user);
-
-        $cards = collect($pool)->map(function (string $key) use ($catalog, $owned) {
-            $card = $owned->get($key);
-
-            return $catalog->metadata($key) + [
-                'unlocked' => $card !== null,
-                'copies' => (int) ($card->copies ?? 0),
-            ];
-        })->values();
-
-        $offers = collect($deck->offersFor($user))->values()->map(function (string $key, int $index) use ($catalog) {
-            $meta = $catalog->metadata($key);
-
-            return [
-                'index' => $index,
-                'family' => $meta['family'],
-                'familyLabel' => $meta['familyLabel'],
-                'familyEmblem' => $meta['familyEmblem'],
-            ];
-        });
+        $offers = collect($deck->offersFor($user))
+            ->values()
+            ->map(fn (array $offer, int $index) => ['index' => $index]);
 
         return Inertia::render('Cards/Index', [
-            'cards' => $cards,
+            'cards' => $this->cardsData($pool, $catalog, $owned),
             'offers' => $offers,
-            'drawn' => $drawn ? [
-                'card' => $catalog->metadata($drawn->card_key),
-                'duplicate' => $drawn->duplicate,
-                'copies' => (int) ($owned->get($drawn->card_key)?->copies ?? 0),
-                'inkEarned' => (int) $drawn->ink_earned,
-            ] : null,
+            'drawn' => $drawn ? $this->drawnData($drawn, $catalog, $owned) : null,
             'ink' => (int) ($user->wallet?->ink ?? 0),
             'progress' => [
                 'unlocked' => $owned->count(),
@@ -58,34 +38,24 @@ class CardController extends Controller
             ],
             'resetAt' => $deck->nextResetAt()->toIso8601String(),
             'dailyBalls' => (int) config('cards.daily_balls'),
-        ]);
+            'complete' => $offers->isEmpty(),
+        ] + $this->stickerData($user, $catalog));
     }
 
-    public function album(Request $request, CardCatalogService $catalog, EventService $events): Response
+    public function album(Request $request, CardCatalogService $catalog): Response
     {
         $user = $request->user();
         $pool = $catalog->poolFor($user);
         $owned = $user->userCards()->whereIn('card_key', $pool)->get()->keyBy('card_key');
 
-        $cards = collect($pool)->map(function (string $key) use ($catalog, $owned) {
-            $card = $owned->get($key);
-
-            return $catalog->metadata($key) + [
-                'unlocked' => $card !== null,
-                'copies' => (int) ($card->copies ?? 0),
-            ];
-        })->values();
-
-        $events->completeTask($user, 'album');
-
         return Inertia::render('Cards/Album', [
-            'cards' => $cards,
+            'cards' => $this->cardsData($pool, $catalog, $owned),
             'progress' => [
                 'unlocked' => $owned->count(),
                 'total' => count($pool),
             ],
             'ink' => (int) ($user->wallet?->ink ?? 0),
-        ]);
+        ] + $this->stickerData($user, $catalog));
     }
 
     public function show(Request $request, string $card, CardCatalogService $catalog): JsonResponse
@@ -109,5 +79,64 @@ class CardController extends Controller
             'duplicate' => $owned->copies > 1,
             'copies' => (int) $owned->copies,
         ]);
+    }
+
+    private function cardsData(array $pool, CardCatalogService $catalog, Collection $owned): Collection
+    {
+        return collect($pool)->map(function (string $key) use ($catalog, $owned) {
+            $card = $owned->get($key);
+
+            return $catalog->metadata($key) + [
+                'unlocked' => $card !== null,
+                'copies' => (int) ($card->copies ?? 0),
+            ];
+        })->values();
+    }
+
+    private function stickerData(User $user, CardCatalogService $catalog): array
+    {
+        $catalogStickers = $catalog->machineStickers();
+        $owned = $user->collectibles()
+            ->where('kind', 'sticker')
+            ->where('event_key', 'maquina')
+            ->get()
+            ->keyBy('collectible_key');
+
+        $stickers = collect($catalogStickers)->map(function (array $sticker) use ($owned) {
+            $record = $owned->get($sticker['key']);
+
+            return [
+                'key' => $sticker['key'],
+                'name' => __($sticker['name']),
+                'unlocked' => $record !== null,
+                'acquired_at' => $record?->acquired_at?->toISOString(),
+            ];
+        })->values();
+
+        return [
+            'stickers' => $stickers,
+            'stickerProgress' => [
+                'unlocked' => $owned->count(),
+                'total' => count($catalogStickers),
+            ],
+        ];
+    }
+
+    private function drawnData(CardDraw $draw, CardCatalogService $catalog, Collection $ownedCards): array
+    {
+        if ($draw->kind === 'sticker') {
+            return [
+                'kind' => 'sticker',
+                'card' => null,
+                'sticker' => $catalog->machineStickerMetadata($draw->item_key),
+            ];
+        }
+
+        return [
+            'kind' => 'card',
+            'card' => $catalog->metadata($draw->item_key),
+            'sticker' => null,
+            'copies' => (int) ($ownedCards->get($draw->item_key)?->copies ?? 0),
+        ];
     }
 }

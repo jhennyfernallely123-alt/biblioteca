@@ -19,8 +19,8 @@ it('rechaza un idioma no soportado', function () {
         ->assertSessionHasErrors('locale');
 });
 
-it('prepara un idioma automático', function () {
-    $this->post(route('settings.locale.prepare'), ['locale' => 'af'])
+it('prepara un idioma revisado', function () {
+    $this->post(route('settings.locale.prepare'), ['locale' => 'en'])
         ->assertOk()
-        ->assertJsonPath('ready', false);
+        ->assertJsonPath('ready', true);
 });

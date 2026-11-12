@@ -77,3 +77,16 @@ it('devuelve metadatos completos para las 20 cartas', function () {
             ->and($meta['emblem'])->not->toBe('');
     }
 });
+
+it('expone el catálogo de stickers de la máquina', function () {
+    expect($this->catalog->machineStickers())->toHaveCount(20)
+        ->and($this->catalog->machineSticker('maquina_libro'))->toMatchArray([
+            'key' => 'maquina_libro',
+            'name' => 'ui.machine_sticker_libro',
+        ])
+        ->and($this->catalog->machineStickerMetadata('maquina_libro'))->toBe([
+            'key' => 'maquina_libro',
+            'name' => 'Libro abierto',
+        ])
+        ->and($this->catalog->machineSticker('no_existe'))->toBeNull();
+});

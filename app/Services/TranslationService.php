@@ -10,6 +10,41 @@ use Illuminate\Support\Facades\Log;
 
 class TranslationService
 {
+    private const ISO_ALIASES = [
+        'sp' => 'es',
+        'iw' => 'he',
+        'ji' => 'yi',
+        'in' => 'id',
+        'jw' => 'jv',
+        'mo' => 'ro',
+        'sh' => 'sr',
+        'fil' => 'tl',
+        'tgl' => 'tl',
+    ];
+
+    private const ISO3_TO_ISO1 = [
+        'afr' => 'af', 'alb' => 'sq', 'amh' => 'am', 'ara' => 'ar', 'arm' => 'hy',
+        'aze' => 'az', 'baq' => 'eu', 'ben' => 'bn', 'bos' => 'bs', 'bul' => 'bg',
+        'bur' => 'my', 'cat' => 'ca', 'chi' => 'zh', 'cze' => 'cs', 'dan' => 'da',
+        'dut' => 'nl', 'eng' => 'en', 'epo' => 'eo', 'est' => 'et', 'fin' => 'fi',
+        'fre' => 'fr', 'geo' => 'ka', 'ger' => 'de', 'gle' => 'ga', 'glg' => 'gl',
+        'gre' => 'el', 'guj' => 'gu', 'heb' => 'he', 'hin' => 'hi', 'hrv' => 'hr',
+        'hun' => 'hu', 'ice' => 'is', 'ind' => 'id', 'ita' => 'it', 'jav' => 'jv',
+        'jpn' => 'ja', 'kan' => 'kn', 'kaz' => 'kk', 'khm' => 'km', 'kor' => 'ko',
+        'lao' => 'lo', 'lat' => 'la', 'lav' => 'lv', 'lit' => 'lt', 'mac' => 'mk',
+        'mal' => 'ml', 'mar' => 'mr', 'may' => 'ms', 'mon' => 'mn', 'nep' => 'ne',
+        'nor' => 'no', 'nob' => 'no', 'nno' => 'nn', 'pan' => 'pa', 'per' => 'fa',
+        'pol' => 'pl', 'por' => 'pt', 'rum' => 'ro', 'rus' => 'ru', 'sin' => 'si',
+        'slo' => 'sk', 'slv' => 'sl', 'spa' => 'es', 'srp' => 'sr', 'swa' => 'sw',
+        'swe' => 'sv', 'tam' => 'ta', 'tel' => 'te', 'tha' => 'th', 'tib' => 'bo',
+        'tur' => 'tr', 'ukr' => 'uk', 'urd' => 'ur', 'uzb' => 'uz', 'vie' => 'vi',
+        'wel' => 'cy', 'xho' => 'xh', 'yid' => 'yi', 'zul' => 'zu',
+        'ces' => 'cs', 'deu' => 'de', 'ell' => 'el', 'eus' => 'eu', 'fas' => 'fa',
+        'fra' => 'fr', 'hye' => 'hy', 'isl' => 'is', 'kat' => 'ka', 'mkd' => 'mk',
+        'mya' => 'my', 'nld' => 'nl', 'ron' => 'ro', 'slk' => 'sk', 'sqi' => 'sq',
+        'zho' => 'zh',
+    ];
+
     public function translateText(string $text, string $targetLocale, ?string $sourceLanguage = null): ?string
     {
         if (trim($text) === '' || $this->isSameLanguage($sourceLanguage, $targetLocale)) {
@@ -20,7 +55,11 @@ class TranslationService
         $cached = Cache::get($key);
 
         if (is_string($cached) && $cached !== '') {
-            return $cached;
+            if ($this->isTranslationError($cached)) {
+                Cache::forget($key);
+            } else {
+                return $cached;
+            }
         }
 
         $translated = $this->fetch([[$text, $sourceLanguage]], $targetLocale)[0] ?? null;
@@ -48,10 +87,14 @@ class TranslationService
             $cached = Cache::get($this->cacheKey($targetLocale, $title));
 
             if (is_string($cached) && $cached !== '') {
-                $results[$index]['original_title'] = $title;
-                $results[$index]['title'] = $cached;
+                if ($this->isTranslationError($cached)) {
+                    Cache::forget($this->cacheKey($targetLocale, $title));
+                } else {
+                    $results[$index]['original_title'] = $title;
+                    $results[$index]['title'] = $cached;
 
-                continue;
+                    continue;
+                }
             }
 
             $positions[] = $index;
@@ -91,7 +134,7 @@ class TranslationService
                         ->timeout(5)
                         ->get('https://api.mymemory.translated.net/get', $this->params(
                             $text,
-                            $source ?: 'en',
+                            $source,
                             $target
                         ));
                 }
@@ -113,9 +156,11 @@ class TranslationService
 
             $translated = $response->json('responseData.translatedText');
 
-            if (! is_string($translated)
-                || trim($translated) === ''
-                || str_contains(strtolower($translated), 'mymemory warning')) {
+            if (! is_string($translated) || trim($translated) === '') {
+                continue;
+            }
+
+            if ($this->isTranslationError($translated, $response->json('responseStatus'))) {
                 continue;
             }
 
@@ -125,7 +170,7 @@ class TranslationService
         return $translations;
     }
 
-    private function params(string $text, string $source, string $target): array
+    private function params(string $text, ?string $source, string $target): array
     {
         $params = [
             'q' => $text,
@@ -139,9 +184,29 @@ class TranslationService
         return $params;
     }
 
-    private function apiCode(string $locale): string
+    private function apiCode(?string $locale): string
     {
-        return config("languages.supported.{$locale}", $locale);
+        $code = strtolower(trim((string) $locale));
+
+        if ($code === '') {
+            return 'Autodetect';
+        }
+
+        $mapped = strtolower((string) config("languages.supported.{$code}", $code));
+
+        if (isset(self::ISO_ALIASES[$mapped])) {
+            return self::ISO_ALIASES[$mapped];
+        }
+
+        if (isset(self::ISO3_TO_ISO1[$mapped])) {
+            return self::ISO3_TO_ISO1[$mapped];
+        }
+
+        if (preg_match('/^([a-z]{2})(?:[_-][a-z0-9]+)?$/', $mapped, $matches)) {
+            return $matches[1];
+        }
+
+        return 'Autodetect';
     }
 
     private function isSameLanguage(?string $source, string $target): bool
@@ -150,7 +215,32 @@ class TranslationService
             return false;
         }
 
-        return substr(strtolower($source), 0, 2) === substr(strtolower($target), 0, 2);
+        $sourceCode = $this->apiCode($source);
+
+        return $sourceCode !== 'Autodetect' && $sourceCode === $this->apiCode($target);
+    }
+
+    private function isTranslationError(string $text, mixed $status = null): bool
+    {
+        if ($status !== null && (string) $status !== '200') {
+            return true;
+        }
+
+        $upper = strtoupper($text);
+
+        foreach ([
+            'MYMEMORY WARNING',
+            'INVALID SOURCE LANGUAGE',
+            'INVALID TARGET LANGUAGE',
+            'PLEASE SELECT TWO DISTINCT LANGUAGES',
+            'QUERY LENGTH LIMIT',
+        ] as $marker) {
+            if (str_contains($upper, $marker)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function cacheKey(string $locale, string $text): string

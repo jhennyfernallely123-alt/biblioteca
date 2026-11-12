@@ -15,7 +15,6 @@ class SettingsController extends Controller
     {
         return Inertia::render('Settings/Index', [
             'user' => $request->user(),
-            'shelves' => $request->user()->shelves()->orderBy('position')->get(),
             'locale' => app()->getLocale(),
             'languages' => array_keys(config('languages.supported')),
             'curated' => config('languages.curated'),

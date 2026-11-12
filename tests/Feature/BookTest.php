@@ -1,26 +1,38 @@
 <?php
 
 use App\Models\Book;
+use App\Models\CatalogBook;
 use App\Models\Shelf;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 });
 
-it('crea un libro manual en una estantería propia', function () {
+it('crea un libro manual en una estanterÃ­a propia', function () {
     $shelf = Shelf::factory()->for($this->user)->create();
 
     $this->post(route('books.store'), [
-        'title' => 'Cien años de soledad',
-        'author' => 'Gabriel García Márquez',
+        'title' => 'Cien aÃ±os de soledad',
+        'author' => 'Gabriel GarcÃ­a MÃ¡rquez',
         'shelf_id' => $shelf->id,
         'rating' => 5,
         'notes' => 'Una relectura pendiente.',
     ])->assertRedirect();
 
-    expect($this->user->books()->where('title', 'Cien años de soledad')->exists())->toBeTrue();
+    expect($this->user->books()->where('title', 'Cien aÃ±os de soledad')->exists())->toBeTrue();
+});
+
+it('redirige a la pagina de estanterias al crear un libro', function () {
+    $shelf = Shelf::factory()->for($this->user)->create();
+
+    $this->post(route('books.store'), [
+        'title' => 'Nuevo libro',
+        'shelf_id' => $shelf->id,
+    ])->assertRedirect(route('shelves.index'));
 });
 
 it('guarda las cinco valoraciones de un libro', function () {
@@ -67,7 +79,7 @@ it('actualiza las cinco valoraciones', function () {
     $book = Book::factory()->for($this->user)->create(['title' => 'Antes']);
 
     $this->patch(route('books.update', $book), [
-        'title' => 'Después',
+        'title' => 'DespuÃ©s',
         'rating' => 1,
         'spice_rating' => 2,
         'heart_rating' => 3,
@@ -84,7 +96,7 @@ it('actualiza las cinco valoraciones', function () {
         ->and($book->crystal_rating)->toBe(5);
 });
 
-it('no permite guardar en una estantería ajena', function () {
+it('no permite guardar en una estanterÃ­a ajena', function () {
     $shelf = Shelf::factory()->for(User::factory())->create();
 
     $this->post(route('books.store'), [
@@ -93,7 +105,7 @@ it('no permite guardar en una estantería ajena', function () {
     ])->assertForbidden();
 });
 
-it('mueve un libro a otra estantería propia', function () {
+it('mueve un libro a otra estanterÃ­a propia', function () {
     $from = Shelf::factory()->for($this->user)->create();
     $to = Shelf::factory()->for($this->user)->create();
     $book = Book::factory()->for($this->user)->for($from)->create();
@@ -104,7 +116,7 @@ it('mueve un libro a otra estantería propia', function () {
     expect($book->fresh()->shelf_id)->toBe($to->id);
 });
 
-it('mueve un libro a otra estantería en la posición indicada', function () {
+it('mueve un libro a otra estanterÃ­a en la posiciÃ³n indicada', function () {
     $from = Shelf::factory()->for($this->user)->create(['position' => 0]);
     $to = Shelf::factory()->for($this->user)->create(['position' => 1]);
     $first = Book::factory()->for($this->user)->for($to)->create(['title' => 'A', 'position' => 0]);
@@ -125,7 +137,7 @@ it('no permite mover un libro ajeno', function () {
         ->assertForbidden();
 });
 
-it('no permite mover un libro propio a una estantería ajena', function () {
+it('no permite mover un libro propio a una estanterÃ­a ajena', function () {
     $book = Book::factory()->for($this->user)->create();
     $shelf = Shelf::factory()->for(User::factory())->create();
 
@@ -167,7 +179,17 @@ it('elimina un libro propio', function () {
     expect(Book::find($book->id))->toBeNull();
 });
 
-it('ordena los libros por posición manual y usa el título como desempate', function () {
+it('redirige a la biblioteca al eliminar un libro desde su ficha', function () {
+    $book = Book::factory()->for($this->user)->create();
+
+    $this->from(route('books.edit', $book))
+        ->delete(route('books.destroy', $book))
+        ->assertRedirect(route('library.index'));
+
+    expect(Book::find($book->id))->toBeNull();
+});
+
+it('ordena los libros por posiciÃ³n manual y usa el tÃ­tulo como desempate', function () {
     $shelf = Shelf::factory()->for($this->user)->create();
 
     Book::factory()->for($this->user)->for($shelf)->create([
@@ -182,7 +204,7 @@ it('ordena los libros por posición manual y usa el título como desempate', fun
     expect($shelf->books()->pluck('title')->all())->toBe(['Zeta', 'Alfa']);
 });
 
-it('coloca un libro nuevo al final de su estantería', function () {
+it('coloca un libro nuevo al final de su estanterÃ­a', function () {
     $shelf = Shelf::factory()->for($this->user)->create();
     Book::factory()->for($this->user)->for($shelf)->create(['position' => 0]);
     Book::factory()->for($this->user)->for($shelf)->create(['position' => 1]);
@@ -195,7 +217,7 @@ it('coloca un libro nuevo al final de su estantería', function () {
     expect($this->user->books()->where('title', 'Nuevo')->first()->position)->toBe(2);
 });
 
-it('coloca al final un libro movido a otra estantería', function () {
+it('coloca al final un libro movido a otra estanterÃ­a', function () {
     $from = Shelf::factory()->for($this->user)->create();
     $to = Shelf::factory()->for($this->user)->create();
     Book::factory()->for($this->user)->for($to)->create(['position' => 0]);
@@ -208,7 +230,7 @@ it('coloca al final un libro movido a otra estantería', function () {
     expect($book->fresh()->position)->toBe(1);
 });
 
-it('coloca al final un libro al cambiar de estantería desde la ficha', function () {
+it('coloca al final un libro al cambiar de estanterÃ­a desde la ficha', function () {
     $from = Shelf::factory()->for($this->user)->create();
     $to = Shelf::factory()->for($this->user)->create();
     Book::factory()->for($this->user)->for($to)->create(['position' => 0]);
@@ -226,7 +248,7 @@ it('coloca al final un libro al cambiar de estantería desde la ficha', function
         ->and($book->fresh()->position)->toBe(1);
 });
 
-it('reordena los libros de una estantería propia', function () {
+it('reordena los libros de una estanterÃ­a propia', function () {
     $shelf = Shelf::factory()->for($this->user)->create();
     $a = Book::factory()->for($this->user)->for($shelf)->create(['title' => 'A', 'position' => 0]);
     $b = Book::factory()->for($this->user)->for($shelf)->create(['title' => 'B', 'position' => 1]);
@@ -240,7 +262,7 @@ it('reordena los libros de una estantería propia', function () {
     expect($shelf->books()->pluck('id')->all())->toBe([$c->id, $a->id, $b->id]);
 });
 
-it('no permite reordenar una estantería ajena', function () {
+it('no permite reordenar una estanterÃ­a ajena', function () {
     $shelf = Shelf::factory()->for(User::factory())->create();
     $book = Book::factory()->for($shelf->user)->for($shelf)->create();
 
@@ -250,7 +272,7 @@ it('no permite reordenar una estantería ajena', function () {
     ])->assertForbidden();
 });
 
-it('rechaza una lista que no contiene todos los libros de la estantería', function () {
+it('rechaza una lista que no contiene todos los libros de la estanterÃ­a', function () {
     $shelf = Shelf::factory()->for($this->user)->create();
     $a = Book::factory()->for($this->user)->for($shelf)->create();
     Book::factory()->for($this->user)->for($shelf)->create();
@@ -311,4 +333,80 @@ it('rechaza un modo de vista inválido', function () {
 
     $this->patch(route('books.view-mode', $book), ['view_mode' => 'diagonal'])
         ->assertSessionHasErrors('view_mode');
+});
+
+it('copia la portada del catálogo al guardar un libro', function () {
+    Storage::fake('public');
+
+    $shelf = Shelf::factory()->for($this->user)->create();
+    $catalogBook = CatalogBook::factory()->create(['cover_path' => 'covers/catalog.jpg']);
+    Storage::disk('public')->put('covers/catalog.jpg', 'catalog-image');
+
+    $this->post(route('books.store'), [
+        'title' => 'Desde el catálogo',
+        'shelf_id' => $shelf->id,
+        'catalog_book_id' => $catalogBook->id,
+    ])->assertRedirect();
+
+    $book = Book::where('title', 'Desde el catálogo')->firstOrFail();
+
+    expect($book->catalog_book_id)->toBe($catalogBook->id)
+        ->and($book->cover_path)->not->toBeNull()
+        ->and($book->cover_path)->not->toBe('covers/catalog.jpg');
+
+    Storage::disk('public')->assertExists($book->cover_path);
+});
+
+it('da prioridad al archivo subido sobre la portada del catálogo', function () {
+    Storage::fake('public');
+
+    $shelf = Shelf::factory()->for($this->user)->create();
+    $catalogBook = CatalogBook::factory()->create(['cover_path' => 'covers/catalog.jpg']);
+    Storage::disk('public')->put('covers/catalog.jpg', 'catalog-image');
+
+    $file = UploadedFile::fake()->createWithContent(
+        'cover.png',
+        base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
+    );
+
+    $this->post(route('books.store'), [
+        'title' => 'Con archivo',
+        'shelf_id' => $shelf->id,
+        'catalog_book_id' => $catalogBook->id,
+        'cover' => $file,
+    ])->assertRedirect();
+
+    $book = Book::where('title', 'Con archivo')->firstOrFail();
+
+    expect($book->cover_path)->not->toBeNull()
+        ->and($book->cover_path)->not->toBe('covers/catalog.jpg');
+
+    Storage::disk('public')->assertExists($book->cover_path);
+});
+
+it('rechaza un catalog_book_id inexistente', function () {
+    $shelf = Shelf::factory()->for($this->user)->create();
+
+    $this->post(route('books.store'), [
+        'title' => 'Sin catálogo',
+        'shelf_id' => $shelf->id,
+        'catalog_book_id' => 999999,
+    ])->assertSessionHasErrors('catalog_book_id');
+
+    expect($this->user->books()->count())->toBe(0);
+});
+
+it('no permite cambiar el vínculo al catálogo al editar un libro', function () {
+    $catalogBook = CatalogBook::factory()->create();
+    $otherCatalogBook = CatalogBook::factory()->create();
+    $book = Book::factory()->for($this->user)->create([
+        'catalog_book_id' => $catalogBook->id,
+    ]);
+
+    $this->patch(route('books.update', $book), [
+        'title' => $book->title,
+        'catalog_book_id' => $otherCatalogBook->id,
+    ])->assertRedirect();
+
+    expect($book->fresh()->catalog_book_id)->toBe($catalogBook->id);
 });

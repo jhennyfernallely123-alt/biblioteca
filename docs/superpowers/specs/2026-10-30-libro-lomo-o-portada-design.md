@@ -3,6 +3,8 @@
 **Fecha:** 2026-10-30
 **Estado:** aprobado por la usuaria
 
+> **Actualización 2026-11-09:** la usuaria pidió quitar el selector de vista por defecto de Configuraciones. El modo se cambia por libro en Biblioteca o Estanterías; los libros nuevos usan el valor por defecto de la base de datos (`covers`). El resto del diseño sigue vigente.
+
 ## Objetivo
 
 Que cada libro de la biblioteca se pueda mostrar como portada o como lomo de forma individual, sin depender del modo de su estantería.

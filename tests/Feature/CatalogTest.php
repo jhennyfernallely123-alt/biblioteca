@@ -17,6 +17,18 @@ it('tiene todas las claves en los idiomas revisados', function () {
     }
 });
 
+it('mantiene los catálogos planos y resuelve los textos visibles', function () {
+    $catalog = app(CatalogService::class);
+
+    foreach (config('languages.curated') as $locale) {
+        $all = $catalog->all($locale);
+        $nested = array_filter($all, fn ($value) => ! is_string($value));
+
+        expect($nested)->toBe([], "Hay grupos anidados en {$locale}")
+            ->and(array_key_exists('ui.write_here', $all))->toBeTrue("Falta ui.write_here en {$locale}");
+    }
+});
+
 it('prepara un idioma automático por lotes', function () {
     $catalog = app(CatalogService::class);
     $locale = 'zz-test';

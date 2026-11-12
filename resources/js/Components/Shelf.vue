@@ -5,8 +5,6 @@ import BookCard from './BookCard.vue';
 import BookSpine from './BookSpine.vue';
 import EmptyShelf from './EmptyShelf.vue';
 import ShelfBoard from './ShelfBoard.vue';
-import ShelfDecoration from './ShelfDecoration.vue';
-import { mergeShelfItems } from '@/shelfItems';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
@@ -14,7 +12,6 @@ const props = defineProps({
     dragActive: { type: Boolean, default: false },
     dropTargetId: { type: Number, default: null },
     draggingBookId: { type: Number, default: null },
-    draggingDecorationId: { type: Number, default: null },
     insertion: { type: Object, default: null },
     reading: { type: Boolean, default: false },
 });
@@ -23,25 +20,12 @@ const { t } = useI18n();
 
 const isDropTarget = computed(() => props.dropTargetId === props.shelf.id);
 
-const items = computed(() =>
-    mergeShelfItems(props.shelf.books ?? [], props.shelf.decorations ?? [])
-);
+const items = computed(() => props.shelf.books ?? []);
 
 function dropPositionFor(book) {
     if (
         props.insertion?.shelfId !== props.shelf.id ||
         props.insertion?.bookId !== book.id
-    ) {
-        return null;
-    }
-
-    return props.insertion.position;
-}
-
-function dropPositionForDecoration(decoration) {
-    if (
-        props.insertion?.shelfId !== props.shelf.id ||
-        props.insertion?.decorationId !== decoration.id
     ) {
         return null;
     }
@@ -95,25 +79,21 @@ function toggleBook(book) {
                     v-else
                     class="scrollbar-hidden flex flex-row items-end gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0"
                 >
-                    <template v-for="item in items" :key="item.key">
-                        <div
-                            v-if="item.type === 'book'"
-                            class="group relative shrink-0"
-                            :class="item.book.view_mode === 'spines' ? '' : 'w-[100px] sm:w-[110px]'"
-                        >
+                    <template v-for="item in items" :key="item.id">
+                        <div class="group relative shrink-0" :class="item.view_mode === 'spines' ? '' : 'w-[100px] sm:w-[110px]'">
                             <BookSpine
-                                v-if="item.book.view_mode === 'spines'"
-                                :book="item.book"
-                                :dragging="draggingBookId === item.book.id"
-                                :drop-position="dropPositionFor(item.book)"
+                                v-if="item.view_mode === 'spines'"
+                                :book="item"
+                                :dragging="draggingBookId === item.id"
+                                :drop-position="dropPositionFor(item)"
                                 :reading="reading"
                                 @open="emit('open-book', $event)"
                             />
                             <BookCard
                                 v-else
-                                :book="item.book"
-                                :dragging="draggingBookId === item.book.id"
-                                :drop-position="dropPositionFor(item.book)"
+                                :book="item"
+                                :dragging="draggingBookId === item.id"
+                                :drop-position="dropPositionFor(item)"
                                 :reading="reading"
                                 @open="emit('open-book', $event)"
                             />
@@ -123,10 +103,10 @@ function toggleBook(book) {
                                 class="absolute -right-1 -top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-edge bg-surface-raised text-ink shadow-card transition-opacity focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                                 :aria-label="t('ui.switch_view')"
                                 :title="t('ui.switch_view')"
-                                @click.prevent="toggleBook(item.book)"
+                                @click.prevent="toggleBook(item)"
                             >
                                 <svg
-                                    v-if="item.book.view_mode === 'spines'"
+                                    v-if="item.view_mode === 'spines'"
                                     class="h-4 w-4"
                                     viewBox="0 0 14 14"
                                     fill="none"
@@ -146,13 +126,6 @@ function toggleBook(book) {
                                 </svg>
                             </button>
                         </div>
-
-                        <ShelfDecoration
-                            v-else
-                            :decoration="item.decoration"
-                            :dragging="draggingDecorationId === item.decoration.id"
-                            :drop-position="dropPositionForDecoration(item.decoration)"
-                        />
                     </template>
                 </div>
             </div>

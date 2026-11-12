@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CardDraw extends Model
 {
-    protected $fillable = ['user_id', 'draw_date', 'card_key', 'ball_index', 'duplicate', 'ink_earned'];
+    protected $fillable = ['user_id', 'draw_date', 'kind', 'item_key', 'ball_index', 'duplicate', 'ink_earned'];
 
     protected function casts(): array
     {

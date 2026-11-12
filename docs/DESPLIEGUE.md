@@ -43,14 +43,22 @@ GOOGLE_BOOKS_API_KEY=
 MYMEMORY_EMAIL=
 ```
 
-- `MYMEMORY_EMAIL` es opcional: si se indica un correo válido, MyMemory amplía la cuota diaria de traducción de títulos y de la interfaz. Sin él, los títulos y los idiomas automáticos que no se puedan traducir se muestran en su idioma original o en español.
-- El directorio `storage/app/i18n` debe existir y ser escribible por PHP: guarda las traducciones generadas de los idiomas automáticos. Se crea solo al arrancar la aplicación; si no hay permisos, la app sigue funcionando con los idiomas revisados.
-- Los idiomas automáticos se generan una vez y quedan guardados en `storage/app/i18n`. Si se borra ese directorio, se regeneran al volver a elegir el idioma.
-- Subir también `lang/` completo (incluye los 7 idiomas revisados además del español).
+- `MYMEMORY_EMAIL` es opcional: si se indica un correo válido, MyMemory amplía la cuota diaria de traducción de títulos de libros. Sin él, los títulos que no se puedan traducir se muestran en su idioma original o en español.
+- Los idiomas de la interfaz son solo **español e inglés**, con catálogos revisados a mano; no hay traducciones automáticas ni hace falta `storage/app/i18n`.
+- Subir también `lang/` completo (español e inglés).
 - `mail()` está deshabilitado: usar SMTP externo en el puerto 587 con TLS (Brevo, Gmail con contraseña de aplicación o Zoho).
 - `QUEUE_CONNECTION=sync`: no hay workers de cola.
 - No usar enlaces simbólicos ni `storage:link`. Las portadas se sirven por la ruta autenticada `/covers/{book}`.
 - HTTPS es obligatorio: la cámara del escáner solo funciona en HTTPS o en `localhost`.
+
+## 2.1 Portadas del catálogo master
+
+Las portadas se guardan en `storage/app/public/covers/` **dentro del servidor** y se sirven por la ruta autenticada `/catalog-covers/{id}`.
+
+- **Crea las fichas del catálogo desde el sitio ya desplegado**, no en local. La imagen se sube directamente al servidor y desde ese momento la ven todas las usuarias autenticadas.
+- `deploy.sh` sube los archivos con `curl -T` uno a uno y **no borra** nada del servidor, así que las portadas ya subidas se conservan entre despliegues.
+- `storage/app/public/` está en `.gitignore`: las portadas que subas en tu máquina local **no** viajan al desplegar. No uses `EXTRA_UPLOADS` para subirlas; el catálogo se llena en el servidor.
+- Cada usuaria que añade un libro del catálogo recibe una **copia** del archivo en su propia estantería, de modo que borrar o cambiar la ficha del catálogo no altera las copias ya creadas.
 
 ## 3. Compilar los assets en local
 
@@ -89,6 +97,6 @@ https://tu-dominio.example/deploy/cache/{DEPLOY_TOKEN}
 - Escáner de código de barras en HTTPS.
 - Portadas visibles solo para el usuario autenticado.
 - Estanterías por defecto y gestión desde Configuraciones.
-- Cambio de idioma desde Configuraciones, incluido un idioma automático (por ejemplo, alemán) y su progreso de preparación.
+- Cambio de idioma desde Configuraciones entre español e inglés.
 - La interfaz, las validaciones y los nombres de estanterías cambian de idioma sin alterar los datos guardados.
 - Revisión en 360 px y escritorio.

@@ -112,7 +112,7 @@ describe('Shelf', () => {
         );
     });
 
-    it('intercala los objetos con los libros según su ancla', () => {
+    it('no dibuja decoraciones aunque los datos las traigan', () => {
         const wrapper = mount(Shelf, {
             props: {
                 shelf: makeShelf({
@@ -128,28 +128,9 @@ describe('Shelf', () => {
             },
         });
 
-        const order = wrapper
-            .findAll('[data-book-id], [data-decoration-id]')
-            .map((element) => element.attributes('data-book-id') ?? `d${element.attributes('data-decoration-id')}`);
-
-        expect(order).toEqual(['d10', '3', 'd9', '4']);
-    });
-
-    it('marca la línea de inserción en un objeto', () => {
-        const wrapper = mount(Shelf, {
-            props: {
-                shelf: makeShelf({
-                    decorations: [
-                        { id: 9, kind: 'cup', color: 'rose', shelf_id: 7, after_book_id: 3, sort: 0 },
-                    ],
-                }),
-                dragActive: true,
-                insertion: { shelfId: 7, decorationId: 9, position: 'before' },
-                draggingDecorationId: 9,
-            },
-        });
-
-        expect(wrapper.find('[data-decoration-id="9"]').classes()).toContain('book-drop-before');
+        expect(wrapper.find('[data-decoration-id="9"]').exists()).toBe(false);
+        expect(wrapper.find('[data-decoration-id="10"]').exists()).toBe(false);
+        expect(wrapper.findAll('[data-book-id]').map((el) => el.attributes('data-book-id'))).toEqual(['3', '4']);
     });
 
     it('abre el libro en modo lectura al pulsarlo', async () => {

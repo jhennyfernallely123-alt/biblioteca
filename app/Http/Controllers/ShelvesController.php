@@ -17,7 +17,6 @@ class ShelvesController extends Controller
                 'books' => fn ($query) => $query
                     ->withSum('readingSessions', 'minutes')
                     ->withCount('readingSessions'),
-                'decorations',
             ])
             ->get()
             ->each(function ($shelf) use ($translator) {

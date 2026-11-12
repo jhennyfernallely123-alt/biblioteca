@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
@@ -12,7 +12,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 const { t } = useI18n();
-const query = ref('');
 
 const names = computed(() => {
     try {
@@ -30,12 +29,9 @@ function label(code) {
     }
 }
 
-const filtered = computed(() => {
-    const term = query.value.trim().toLowerCase();
-
+const items = computed(() => {
     return props.languages
         .map((code) => ({ code, label: label(code), curated: props.curated.includes(code) }))
-        .filter((item) => !term || item.label.toLowerCase().includes(term) || item.code.includes(term))
         .sort((a, b) => {
             if (a.curated !== b.curated) return a.curated ? -1 : 1;
             return a.label.localeCompare(b.label, props.locale);
@@ -44,33 +40,20 @@ const filtered = computed(() => {
 </script>
 
 <template>
-    <div class="space-y-2">
-        <input
-            v-model="query"
-            type="search"
-            class="w-full rounded-control border border-edge bg-surface px-3 py-2 text-ink placeholder:text-ink-muted"
-            :placeholder="t('ui.language_search')"
-            :aria-label="t('ui.language_search')"
+    <div class="max-h-64 overflow-y-auto rounded-control border border-edge bg-surface">
+        <button
+            v-for="item in items"
+            :key="item.code"
+            type="button"
+            class="flex w-full items-center justify-between gap-2 border-b border-edge px-3 py-2 text-start text-ink last:border-b-0 hover:bg-surface-raised disabled:opacity-50"
+            :class="item.code === modelValue ? 'bg-surface-raised font-semibold' : ''"
             :disabled="disabled"
+            @click="emit('update:modelValue', item.code)"
         >
-        <div class="max-h-64 overflow-y-auto rounded-control border border-edge bg-surface">
-            <button
-                v-for="item in filtered"
-                :key="item.code"
-                type="button"
-                class="flex w-full items-center justify-between gap-2 border-b border-edge px-3 py-2 text-start text-ink last:border-b-0 hover:bg-surface-raised disabled:opacity-50"
-                :class="item.code === modelValue ? 'bg-surface-raised font-semibold' : ''"
-                :disabled="disabled"
-                @click="emit('update:modelValue', item.code)"
-            >
-                <span>{{ item.label }}</span>
-                <span class="text-xs text-ink-muted">
-                    {{ item.curated ? t('ui.language_reviewed') : t('ui.language_automatic') }}
-                </span>
-            </button>
-            <p v-if="filtered.length === 0" class="p-3 text-sm text-ink-muted">
-                {{ t('ui.language_no_results') }}
-            </p>
-        </div>
+            <span>{{ item.label }}</span>
+            <span class="text-xs text-ink-muted">
+                {{ item.curated ? t('ui.language_reviewed') : t('ui.language_automatic') }}
+            </span>
+        </button>
     </div>
 </template>

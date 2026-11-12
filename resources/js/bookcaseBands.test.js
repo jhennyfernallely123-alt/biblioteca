@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildBands, insertBookInBand } from './bookcaseBands';
+import { buildBands, insertBookInBand, packBands, visualDropTarget } from './bookcaseBands';
 
 const book = (id, band = 0, bandPosition = 0) => ({
     id,
@@ -157,5 +157,126 @@ describe('insertBookInBand', () => {
             9,
         ]);
         expect(next.filter((item) => item.band === 2).map((item) => item.id)).toEqual([10]);
+    });
+});
+
+describe('packBands', () => {
+    it('llena una sola banda cuando los libros caben en el ancho', () => {
+        const books = [book(1, 0, 0), book(2, 0, 1), book(3, 0, 2)];
+
+        const bands = packBands(books, [], 1000);
+
+        expect(bands).toHaveLength(1);
+        expect(bands[0].books.map((item) => item.id)).toEqual([1, 2, 3]);
+    });
+
+    it('reparte en varias bandas cuando se supera el ancho disponible', () => {
+        const books = [
+            book(1, 0, 0),
+            book(2, 0, 1),
+            book(3, 0, 2),
+            book(4, 0, 3),
+            book(5, 0, 4),
+        ];
+
+        const bands = packBands(books, [], 500);
+
+        expect(bands.map((band) => band.books.map((item) => item.id))).toEqual([
+            [1, 2, 3],
+            [4, 5],
+        ]);
+    });
+
+    it('respeta el orden guardado al empaquetar', () => {
+        const books = [book(1, 1, 1), book(2, 0, 1), book(3, 0, 0), book(4, 1, 0)];
+
+        const bands = packBands(books, [], 1000);
+
+        expect(bands[0].books.map((item) => item.id)).toEqual([3, 2, 4, 1]);
+    });
+
+    it('coloca la decoración en la banda visual de su libro ancla', () => {
+        const books = [book(1, 0, 0), book(2, 0, 1), book(3, 1, 0)];
+
+        const bands = packBands(books, [decoration(9, 2)], 300);
+
+        expect(bands[0].decorations).toHaveLength(0);
+        expect(bands[1].decorations.map((item) => item.id)).toEqual([9]);
+    });
+
+    it('reparte las decoraciones sobrantes en bandas siguientes', () => {
+        const books = [book(1, 0, 0), book(2, 0, 1)];
+
+        const bands = packBands(books, [decoration(9, 1), decoration(10, 1)], 1000);
+
+        expect(bands[0].decorations.map((item) => item.id)).toEqual([9]);
+        expect(bands[1].decorations.map((item) => item.id)).toEqual([10]);
+    });
+});
+
+describe('visualDropTarget', () => {
+    const ordered = [
+        book(1, 0, 0),
+        book(2, 0, 1),
+        book(3, 0, 2),
+    ];
+
+    it('inserta antes y después de un libro intermedio', () => {
+        const band = { id: 0, books: ordered };
+
+        expect(visualDropTarget(band, { bookId: 2, position: 'before' }, ordered)).toEqual({
+            band: 0,
+            position: 1,
+        });
+        expect(visualDropTarget(band, { bookId: 2, position: 'after' }, ordered)).toEqual({
+            band: 0,
+            position: 2,
+        });
+    });
+
+    it('inserta al final de una banda con hueco', () => {
+        const band = { id: 0, books: ordered };
+
+        expect(visualDropTarget(band, { bookId: 3, position: 'after' }, ordered)).toEqual({
+            band: 0,
+            position: 3,
+        });
+    });
+
+    it('pasa a la banda siguiente al soltar después del último libro de una banda llena', () => {
+        const full = [
+            book(1, 0, 0),
+            book(2, 0, 1),
+            book(3, 0, 2),
+            book(4, 0, 3),
+            book(5, 0, 4),
+        ];
+
+        expect(visualDropTarget({ id: 0, books: full }, { bookId: 5, position: 'after' }, full)).toEqual({
+            band: 1,
+            position: 0,
+        });
+    });
+
+    it('ignora el libro arrastrado al calcular el ancla', () => {
+        const band = { id: 0, books: ordered };
+
+        expect(visualDropTarget(band, { bookId: 3, position: 'after' }, ordered, 3)).toEqual({
+            band: 0,
+            position: 2,
+        });
+    });
+
+    it('usa el primer o último libro cuando la banda visual no tiene libros', () => {
+        const band = { id: 1, books: [], decorations: [decoration(9, 1)] };
+
+        expect(visualDropTarget(band, { position: 'before' }, ordered)).toEqual({
+            band: 0,
+            position: 0,
+        });
+        expect(visualDropTarget(band, { position: 'after' }, ordered)).toEqual({
+            band: 0,
+            position: 3,
+        });
     });
 });

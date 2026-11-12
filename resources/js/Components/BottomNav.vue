@@ -8,17 +8,17 @@ const page = usePage();
 const isActive = (href) =>
     href === '/' ? page.url === '/' : page.url.startsWith(href);
 
-const menuItems = [
-    { label: 'Inicio', href: '/', icon: { cx: 12, cy: 12, r: 3 } },
-    { label: 'Galería', href: '/books', icon: { cx: 12, cy: 5, r: 3 } },
-    { label: 'Recuerdos', href: '/cards', icon: { path: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' } },
-    { label: 'Actividades', href: '/events', icon: { cx: 12, cy: 8, r: 7 } },
-    { label: 'Juegos', href: '/decorations', icon: { path: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' } },
-    { label: 'Eventos', href: '/events', icon: { cx: 12, cy: 13, r: 3 } },
-    { label: 'Fechas importantes', href: '/events', icon: { cx: 12, cy: 17, r: 3 } },
-    { label: 'Preferencias', href: '/settings', icon: { cx: 12, cy: 12, r: 3 } },
-    { label: 'Estanterías', href: '/shelves', icon: { cx: 12, cy: 8, r: 7 } },
-];
+const menuItems = computed(() => [
+    { label: t('ui.nav_library'), href: '/', iconPath: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' },
+    { label: t('ui.nav_shelves'), href: '/shelves', iconPath: 'M4 5h16v14H4zM7 5h2v14H7zM12 5h2v14h-2zM17 5h2v14h-2z' },
+    ...(page.props.auth.user?.is_master
+        ? [{ label: t('ui.nav_catalog'), href: '/catalog', iconPath: 'M4 6h16M4 12h16M4 18h16' }]
+        : []),
+    { label: t('ui.nav_cards'), href: '/cards', iconPath: 'M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM8 5h5v8H8zM16 6h1M16 9h1M8 16h8v3H8z' },
+    { label: t('ui.nav_decorations'), href: '/decorations', iconPath: 'M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z' },
+    { label: t('ui.nav_album'), href: '/album', iconPath: 'M2 7h20v10H2V7zm2 2h16v6H4V9z' },
+    { label: t('ui.nav_settings'), href: '/settings', iconPath: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a2 2 0 0 0-1.82-.33 1 1 0 0 0-1 1.51V21a1 1 0 1 1-4 0v-.09A1 1 0 0 0 9 19.4a1 1 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1 1 0 0 0 .33-1.82 1 1 0 0 0-1.51-1H3a1 1 0 1 1 0-4h.09A1 1 0 0 0 4.6 9a1 1 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1 1 0 0 0 1.82.33H9a1 1 0 0 0 1-1.51V3a1 1 0 1 1 4 0v.09a1 1 0 0 0 1 1.51 1 1 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1 1 0 0 0-.33 1.82V9a1 1 0 0 0 1.51 1H21a1 1 0 1 1 0 4h-.09A1 1 0 0 0 19.4 15z' },
+]);
 
 const TABS = [
     { id: 'library', href: '/', label: 'Biblioteca', iconPath: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' },
@@ -66,17 +66,35 @@ function handleKeydown(e) {
     }
 }
 
+const desktopQuery =
+    typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(min-width: 768px)')
+        : null;
+
+function handleViewportChange(event) {
+    if (event.matches) {
+        closeMenu();
+    }
+}
+
 onMounted(() => {
     document.addEventListener('keydown', handleKeydown);
+    if (desktopQuery) {
+        if (desktopQuery.matches) {
+            closeMenu();
+        }
+        desktopQuery.addEventListener('change', handleViewportChange);
+    }
 });
 
 onUnmounted(() => {
     document.removeEventListener('keydown', handleKeydown);
+    desktopQuery?.removeEventListener('change', handleViewportChange);
 });
 </script>
 
 <template>
-    <nav class="bottom-nav">
+    <nav class="bottom-nav md:hidden">
         <div class="tabs-container">
             <div class="tabs">
                 <label
@@ -107,7 +125,7 @@ onUnmounted(() => {
 
     <div
         v-if="menuOpen"
-        class="album-menu-overlay"
+        class="album-menu-overlay md:hidden"
         :class="{ 'album-menu-overlay--open': menuOpen }"
         @click="closeMenu"
         aria-hidden="true"
@@ -115,27 +133,11 @@ onUnmounted(() => {
 
     <div
         v-if="menuOpen"
-        class="album-menu"
+        class="album-menu md:hidden"
         :class="{ 'album-menu--open': menuOpen }"
         role="menu"
         aria-label="Menú de la colección"
     >
-        <div class="album-menu__header">
-            <h2 class="album-menu__title">Nuestra Historia</h2>
-            <p class="album-menu__subtitle">Todo nuestro álbum, en un solo lugar</p>
-            <button
-                type="button"
-                class="album-menu__close"
-                @click="closeMenu"
-                aria-hidden="true"
-            >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-            </button>
-        </div>
-
         <div class="album-menu__list">
             <a
                 v-for="(item, index) in menuItems"
@@ -145,9 +147,7 @@ onUnmounted(() => {
                 @click="closeMenu"
             >
                 <svg class="album-menu__item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle :cx="item.icon.cx" :cy="item.icon.cy" :r="item.icon.r" />
-                    <path v-if="item.icon.path" :d="item.icon.path" />
-                    <line v-if="item.icon.line" :x1="item.icon.x1" :y1="item.icon.y1" :x2="item.icon.x2" :y2="item.icon.y2" />
+                    <path :d="item.iconPath" />
                 </svg>
                 <span class="album-menu__item-label">{{ item.label }}</span>
                 <span class="album-menu__item-badge" v-if="item.badge">{{ item.badge }}</span>

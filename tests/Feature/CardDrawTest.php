@@ -1,10 +1,9 @@
 <?php
 
 use App\Models\Book;
-use App\Models\CardDraw;
 use App\Models\User;
 use App\Models\UserCard;
-use App\Models\UserWallet;
+use App\Models\UserCollectible;
 use App\Services\CardDeckService;
 use Carbon\CarbonImmutable;
 use Illuminate\Validation\ValidationException;
@@ -12,33 +11,6 @@ use Illuminate\Validation\ValidationException;
 beforeEach(function () {
     config(['events.enabled' => false]);
     $this->user = User::factory()->create();
-});
-
-it('guarda una tirada única por usuaria y día', function () {
-    CardDraw::create([
-        'user_id' => $this->user->id,
-        'draw_date' => '2026-11-03',
-        'card_key' => 'violet',
-        'ball_index' => 0,
-        'duplicate' => false,
-        'ink_earned' => 0,
-    ]);
-
-    expect($this->user->cardDraws()->count())->toBe(1);
-});
-
-it('relaciona cartas y cartera con la usuaria', function () {
-    UserCard::create([
-        'user_id' => $this->user->id,
-        'card_key' => 'violet',
-        'copies' => 2,
-        'first_unlocked_at' => now(),
-    ]);
-    UserWallet::create(['user_id' => $this->user->id, 'ink' => 3]);
-
-    expect($this->user->userCards()->count())->toBe(1)
-        ->and($this->user->userCards()->first()->copies)->toBe(2)
-        ->and($this->user->wallet->ink)->toBe(3);
 });
 
 function giveEmpyreanBooks(User $user): void
@@ -49,19 +21,52 @@ function giveEmpyreanBooks(User $user): void
     ]);
 }
 
-it('genera las mismas balotas para la misma usuaria y día', function () {
+function ownAllCards(User $user): void
+{
+    foreach (array_keys(config('cards.cards')) as $key) {
+        UserCard::create([
+            'user_id' => $user->id,
+            'card_key' => $key,
+            'copies' => 1,
+            'first_unlocked_at' => now(),
+        ]);
+    }
+}
+
+function ownAllMachineStickers(User $user): void
+{
+    foreach (config('cards.machine_stickers') as $sticker) {
+        UserCollectible::create([
+            'user_id' => $user->id,
+            'collectible_key' => $sticker['key'],
+            'kind' => 'sticker',
+            'event_key' => 'maquina',
+            'source' => 'machine',
+            'acquired_at' => now(),
+        ]);
+    }
+}
+
+function cardOfferIndex(array $offers, string $kind): int
+{
+    foreach ($offers as $index => $offer) {
+        if ($offer['kind'] === $kind) {
+            return $index;
+        }
+    }
+
+    throw new RuntimeException("No hay una bolita de tipo {$kind}.");
+}
+
+it('genera las mismas bolitas para la misma usuaria y día', function () {
     giveEmpyreanBooks($this->user);
     $deck = app(CardDeckService::class);
     $day = CarbonImmutable::parse('2026-11-03', 'UTC');
 
-    $first = $deck->offersFor($this->user, $day);
-    $second = $deck->offersFor($this->user, $day);
-
-    expect($first)->toBe($second)
-        ->and($first)->toHaveCount(8);
+    expect($deck->offersFor($this->user, $day))->toBe($deck->offersFor($this->user, $day));
 });
 
-it('cambia las balotas al día siguiente', function () {
+it('cambia las bolitas al día siguiente', function () {
     giveEmpyreanBooks($this->user);
     $deck = app(CardDeckService::class);
 
@@ -71,49 +76,112 @@ it('cambia las balotas al día siguiente', function () {
     expect($first)->not->toBe($second);
 });
 
-it('muestra todas las balotas si el pool tiene menos de ocho', function () {
-    Book::factory()->for($this->user)->create([
-        'title' => 'El mapa de los anhelos',
-        'author' => 'Alice Kellen',
-    ]);
+it('mezcla cuatro cartas y cuatro stickers cuando hay disponibilidad', function () {
+    giveEmpyreanBooks($this->user);
 
-    expect(app(CardDeckService::class)->offersFor($this->user))->toHaveCount(3);
+    $offers = app(CardDeckService::class)->offersFor($this->user);
+
+    expect($offers)->toHaveCount(8)
+        ->and(collect($offers)->where('kind', 'card'))->toHaveCount(4)
+        ->and(collect($offers)->where('kind', 'sticker'))->toHaveCount(4);
 });
 
-it('entrega una carta nueva y no da tinta', function () {
+it('solo ofrece cartas y stickers que la usuaria no tiene', function () {
     giveEmpyreanBooks($this->user);
-    $deck = app(CardDeckService::class);
-    $offers = $deck->offersFor($this->user);
-    $result = $deck->draw($this->user, 0);
-
-    expect($result['card']['key'])->toBe($offers[0])
-        ->and($result['duplicate'])->toBeFalse()
-        ->and($result['copies'])->toBe(1)
-        ->and($result['ink'])->toBe(0)
-        ->and($result['inkEarned'])->toBe(0);
-
-    expect($this->user->userCards()->count())->toBe(1)
-        ->and($this->user->wallet->ink)->toBe(0);
-});
-
-it('convierte un repetido en una copia y una tinta', function () {
-    giveEmpyreanBooks($this->user);
-    $deck = app(CardDeckService::class);
-    $offers = $deck->offersFor($this->user);
 
     UserCard::create([
         'user_id' => $this->user->id,
-        'card_key' => $offers[0],
+        'card_key' => 'violet',
         'copies' => 1,
         'first_unlocked_at' => now(),
     ]);
 
-    $result = $deck->draw($this->user, 0);
+    UserCollectible::create([
+        'user_id' => $this->user->id,
+        'collectible_key' => 'maquina_libro',
+        'kind' => 'sticker',
+        'event_key' => 'maquina',
+        'source' => 'machine',
+        'acquired_at' => now(),
+    ]);
 
-    expect($result['duplicate'])->toBeTrue()
-        ->and($result['copies'])->toBe(2)
-        ->and($result['inkEarned'])->toBe(1)
-        ->and($result['ink'])->toBe(1);
+    $offers = app(CardDeckService::class)->offersFor($this->user);
+    $keys = collect($offers)->pluck('key');
+
+    expect($keys)->not->toContain('violet')
+        ->and($keys)->not->toContain('maquina_libro');
+});
+
+it('llena la máquina con stickers si no hay libros', function () {
+    $offers = app(CardDeckService::class)->offersFor($this->user);
+
+    expect($offers)->toHaveCount(8)
+        ->and(collect($offers)->every(fn (array $offer) => $offer['kind'] === 'sticker'))->toBeTrue();
+});
+
+it('rellena con cartas si ya no quedan stickers', function () {
+    giveEmpyreanBooks($this->user);
+    ownAllMachineStickers($this->user);
+
+    $offers = app(CardDeckService::class)->offersFor($this->user);
+
+    expect($offers)->toHaveCount(8)
+        ->and(collect($offers)->every(fn (array $offer) => $offer['kind'] === 'card'))->toBeTrue();
+});
+
+it('deja la máquina vacía cuando ya tiene todo', function () {
+    giveEmpyreanBooks($this->user);
+    ownAllCards($this->user);
+    ownAllMachineStickers($this->user);
+
+    expect(app(CardDeckService::class)->offersFor($this->user))->toBe([]);
+});
+
+it('entrega una carta nueva sin tinta', function () {
+    giveEmpyreanBooks($this->user);
+    $deck = app(CardDeckService::class);
+    $offers = $deck->offersFor($this->user);
+    $index = cardOfferIndex($offers, 'card');
+
+    $result = $deck->draw($this->user, $index);
+
+    expect($result['kind'])->toBe('card')
+        ->and($result['card']['key'])->toBe($offers[$index]['key'])
+        ->and($result['sticker'])->toBeNull()
+        ->and($result['ink'])->toBe(0);
+
+    expect($this->user->userCards()->count())->toBe(1)
+        ->and($this->user->collectibles()->count())->toBe(0);
+});
+
+it('entrega un sticker nuevo sin tinta', function () {
+    giveEmpyreanBooks($this->user);
+    $deck = app(CardDeckService::class);
+    $offers = $deck->offersFor($this->user);
+    $index = cardOfferIndex($offers, 'sticker');
+
+    $result = $deck->draw($this->user, $index);
+
+    expect($result['kind'])->toBe('sticker')
+        ->and($result['sticker']['key'])->toBe($offers[$index]['key'])
+        ->and($result['card'])->toBeNull()
+        ->and($result['ink'])->toBe(0);
+
+    expect($this->user->userCards()->count())->toBe(0)
+        ->and($this->user->collectibles()->count())->toBe(1)
+        ->and($this->user->collectibles()->first()->event_key)->toBe('maquina');
+});
+
+it('no vuelve a ofrecer un sticker obtenido', function () {
+    giveEmpyreanBooks($this->user);
+    $deck = app(CardDeckService::class);
+    $offers = $deck->offersFor($this->user);
+    $index = cardOfferIndex($offers, 'sticker');
+    $key = $offers[$index]['key'];
+
+    $deck->draw($this->user, $index);
+
+    expect(collect($deck->offersFor($this->user))->pluck('key'))->not->toContain($key);
 });
 
 it('rechaza una segunda tirada el mismo día', function () {
@@ -126,14 +194,18 @@ it('rechaza una segunda tirada el mismo día', function () {
         ->toThrow(ValidationException::class);
 });
 
-it('rechaza una balota fuera de rango', function () {
+it('rechaza una bolita fuera de rango', function () {
     giveEmpyreanBooks($this->user);
 
     expect(fn () => app(CardDeckService::class)->draw($this->user, 99))
         ->toThrow(ValidationException::class);
 });
 
-it('rechaza la tirada si no hay cartas', function () {
+it('rechaza la tirada si no queda nada por obtener', function () {
+    giveEmpyreanBooks($this->user);
+    ownAllCards($this->user);
+    ownAllMachineStickers($this->user);
+
     expect(fn () => app(CardDeckService::class)->draw($this->user, 0))
         ->toThrow(ValidationException::class);
 });
@@ -152,19 +224,18 @@ it('usa la zona horaria configurada para el cambio de día', function () {
     CarbonImmutable::setTestNow();
 });
 
-it('permite repetir la tirada en modo de pruebas', function () {
+it('permite varias tiradas en modo de pruebas sin repetir', function () {
     config(['cards.allow_multiple_draws' => true]);
     giveEmpyreanBooks($this->user);
     $deck = app(CardDeckService::class);
-    $offers = $deck->offersFor($this->user);
 
     $first = $deck->draw($this->user, 0);
     $second = $deck->draw($this->user, 0);
 
-    expect($first['card']['key'])->toBe($offers[0])
-        ->and($first['duplicate'])->toBeFalse()
-        ->and($second['card']['key'])->toBe($offers[0])
-        ->and($second['duplicate'])->toBeTrue()
-        ->and($second['copies'])->toBe(2)
-        ->and($second['ink'])->toBe(1);
+    $firstKey = $first['card']['key'] ?? $first['sticker']['key'];
+    $secondKey = $second['card']['key'] ?? $second['sticker']['key'];
+
+    expect($secondKey)->not->toBe($firstKey)
+        ->and($first['ink'])->toBe(0)
+        ->and($second['ink'])->toBe(0);
 });

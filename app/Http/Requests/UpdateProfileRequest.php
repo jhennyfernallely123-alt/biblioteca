@@ -25,7 +25,6 @@ class UpdateProfileRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($this->user()->id),
             ],
-            'default_view_mode' => ['required', 'in:covers,spines'],
         ];
     }
 }
