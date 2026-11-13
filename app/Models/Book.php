@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Book extends Model
@@ -82,5 +83,14 @@ class Book extends Model
         $sessions = (int) ($this->reading_sessions_count ?? 0);
 
         return (($this->current_page ?? 0) > 0 || $sessions > 0) ? 'reading' : 'none';
+    }
+
+    public function literaryUniverses(): BelongsToMany
+    {
+        return $this->belongsToMany(LiteraryUniverse::class, 'literary_universe_book')
+            ->using(LiteraryUniverseBook::class)
+            ->withPivot('reading_order')
+            ->withTimestamps()
+            ->orderByPivot('reading_order');
     }
 }

@@ -93,7 +93,7 @@ watch(
             return;
         }
 
-        searchTimer = setTimeout(() => search(value), 400);
+        searchTimer = setTimeout(() => search(value), 600);
     },
 );
 
@@ -117,8 +117,13 @@ async function lookupIsbn(isbn) {
     searching.value = true;
     error.value = '';
 
+    const safetyTimer = setTimeout(() => {
+        searching.value = false;
+        error.value = t('ui.catalog_error');
+    }, 10000);
+
     try {
-        const { data } = await axios.get('/books/lookup', { params: { isbn } });
+        const { data } = await axios.get('/books/lookup', { params: { isbn }, timeout: 8000 });
         results.value = data.results;
         if (data.results.length === 0) {
             error.value = t('ui.isbn_not_found');
@@ -126,6 +131,7 @@ async function lookupIsbn(isbn) {
     } catch (e) {
         error.value = requestError(e, t('ui.catalog_error'));
     } finally {
+        clearTimeout(safetyTimer);
         searching.value = false;
     }
 }
@@ -147,11 +153,21 @@ async function search(query = form.title) {
     searching.value = true;
     error.value = '';
 
+    const safetyTimer = setTimeout(() => {
+        if (request === searchRequest) {
+            searching.value = false;
+            error.value = t('ui.catalog_error');
+        }
+    }, 10000);
+
     try {
         const { data } = await axios.get('/books/lookup', {
             params: { q: value },
             signal: searchController.signal,
+            timeout: 8000,
         });
+
+        clearTimeout(safetyTimer);
 
         if (request !== searchRequest) {
             return;
@@ -163,6 +179,8 @@ async function search(query = form.title) {
             error.value = t('ui.no_results');
         }
     } catch (e) {
+        clearTimeout(safetyTimer);
+
         if (request !== searchRequest || e.code === 'ERR_CANCELED') {
             return;
         }

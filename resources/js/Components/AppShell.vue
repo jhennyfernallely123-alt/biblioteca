@@ -50,6 +50,7 @@ const links = computed(() => [
     ...(user.value?.is_master
         ? [{ label: t('ui.nav_catalog'), href: '/catalog' }]
         : []),
+    { label: t('ui.nav_universes'), href: '/universes' },
     { label: t('ui.nav_cards'), href: '/cards' },
     { label: t('ui.nav_decorations'), href: '/decorations' },
     { label: t('ui.nav_album'), href: '/album' },

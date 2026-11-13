@@ -1,16 +1,20 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useI18n } from '@/i18n';
 
 const props = defineProps({
-    books: { type: Array, required: true },
+    books: { type: Object, required: true },
 });
 
 const { t } = useI18n();
 const deleting = ref(null);
+
+function goPage(page) {
+    router.get(route('catalog.index'), { page }, { preserveScroll: true });
+}
 
 function confirmDelete(book) {
     deleting.value = book;
@@ -27,6 +31,49 @@ function destroy() {
         },
     });
 }
+
+const pagination = computed(() => {
+    const current = props.books.current_page;
+    const last = props.books.last_page;
+
+    if (last <= 1) {
+        return [];
+    }
+
+    const items = [];
+    const pushPage = (n) => items.push({ type: 'page', value: n, label: String(n) });
+    const pushEllipsis = () => items.push({ type: 'ellipsis', value: null, label: '…' });
+
+    const showFirst = current > 3;
+    const showLast = current < last - 2;
+
+    pushPage(1);
+
+    if (showFirst) {
+        pushEllipsis();
+    }
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(last - 1, current + 1);
+
+    for (let n = start; n <= end; n++) {
+        if (n === 1 && showFirst) {
+            continue;
+        }
+        if (n === last && showLast) {
+            continue;
+        }
+        pushPage(n);
+    }
+
+    if (showLast) {
+        pushEllipsis();
+    }
+
+    pushPage(last);
+
+    return items;
+});
 </script>
 
 <template>
@@ -43,13 +90,13 @@ function destroy() {
                 </Link>
             </div>
 
-            <p v-if="books.length === 0" class="rounded-card border border-edge bg-surface p-6 text-center text-ink-muted">
+            <p v-if="books.data.length === 0" class="rounded-card border border-edge bg-surface p-6 text-center text-ink-muted">
                 {{ t('ui.catalog_empty') }}
             </p>
 
             <ul v-else class="space-y-2">
                 <li
-                    v-for="book in books"
+                    v-for="book in books.data"
                     :key="book.id"
                     class="flex items-start gap-3 rounded-control border border-edge bg-surface p-3"
                 >
@@ -91,6 +138,57 @@ function destroy() {
                     </div>
                 </li>
             </ul>
+
+            <div v-if="pagination.length" class="mt-6 flex items-center justify-center gap-1">
+                <button
+                    type="button"
+                    :disabled="books.current_page === 1"
+                    class="rounded-full border border-edge h-9 w-9 flex items-center justify-center text-sm transition-colors"
+                    :class="{
+                        'opacity-40 cursor-not-allowed text-ink-muted border-edge': books.current_page === 1,
+                        'border-accent text-accent hover:bg-accent-soft': books.current_page > 1,
+                    }"
+                    @click="goPage(books.current_page - 1)"
+                    aria-label="{{ t('ui.catalog_prev') }}"
+                >
+                    <span aria-hidden="true">←</span>
+                </button>
+
+                <template v-for="item in pagination" :key="item.type + '-' + item.value">
+                    <span v-if="item.type === 'ellipsis'" class="text-ink-muted">
+                        {{ item.label }}
+                    </span>
+
+                    <button
+                        v-else
+                        type="button"
+                        :aria-current="item.value === books.current_page ? 'page' : undefined"
+                        :aria-label="item.value === books.current_page ? t('ui.catalog_page', { current: item.value, last: books.last_page }) : item.label"
+                        class="rounded-full border h-9 w-9 flex items-center justify-center text-sm font-medium transition-colors"
+                        :class="{
+                            'bg-accent text-on-accent border-accent shadow-glow-accent': item.value === books.current_page,
+                            'border-edge text-ink hover:bg-surface-raised hover:border-accent': item.value !== books.current_page,
+                        }"
+                        @click="goPage(item.value)"
+                    >
+                        {{ item.label }}
+                    </button>
+                </template>
+
+                <button
+                    type="button"
+                    :disabled="books.current_page === books.last_page"
+                    class="rounded-full border border-edge h-9 w-9 flex items-center justify-center text-sm transition-colors"
+                    :class="{
+                        'opacity-40 cursor-not-allowed text-ink-muted border-edge': books.current_page === books.last_page,
+                        'border-accent text-accent hover:bg-accent-soft': books.current_page < books.last_page,
+                    }"
+                    @click="goPage(books.current_page + 1)"
+                    aria-label="{{ t('ui.catalog_next') }}"
+                >
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
         </div>
 
         <Modal :show="deleting !== null" max-width="md" @close="deleting = null">
@@ -108,7 +206,7 @@ function destroy() {
                     </button>
                     <button
                         type="button"
-                        class="rounded-control bg-danger px-4 py-2 text-on-accent hover:bg-danger-strong"
+                        class="rounded-control bg-accent px-4 py-2 text-on-accent hover:bg-accent-strong"
                         @click="destroy"
                     >
                         {{ t('ui.delete') }}

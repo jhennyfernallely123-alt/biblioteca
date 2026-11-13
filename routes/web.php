@@ -13,6 +13,8 @@ use App\Http\Controllers\CatalogCoverController;
 use App\Http\Controllers\CoverController;
 use App\Http\Controllers\DecorationController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\LiteraryUniverseBookController;
+use App\Http\Controllers\LiteraryUniverseController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReadingController;
@@ -100,6 +102,18 @@ Route::middleware(['auth', 'nickname'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/universes', [LiteraryUniverseController::class, 'index'])->name('literary-universes.index');
+    Route::get('/universes/create', [LiteraryUniverseController::class, 'create'])->name('literary-universes.create');
+    Route::post('/universes', [LiteraryUniverseController::class, 'store'])->name('literary-universes.store');
+    Route::get('/universes/{universe}/edit', [LiteraryUniverseController::class, 'edit'])->name('literary-universes.edit');
+    Route::patch('/universes/{universe}', [LiteraryUniverseController::class, 'update'])->name('literary-universes.update');
+    Route::delete('/universes/{universe}', [LiteraryUniverseController::class, 'destroy'])->name('literary-universes.destroy');
+
+    Route::get('/universes/{universe}', [LiteraryUniverseController::class, 'show'])->name('literary-universes.show');
+    Route::post('/universes/{universe}/books', [LiteraryUniverseBookController::class, 'store'])->name('literary-universes.books.store');
+    Route::delete('/universes/{universe}/books/{book}', [LiteraryUniverseBookController::class, 'destroy'])->name('literary-universes.books.destroy');
+    Route::patch('/universes/{universe}/reorder', [LiteraryUniverseBookController::class, 'reorder'])->name('literary-universes.reorder');
 });
 
 Route::get('/deploy/migrate/{token}', function (string $token) {

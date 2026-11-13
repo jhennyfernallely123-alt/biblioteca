@@ -25,10 +25,15 @@ class User extends Authenticatable
         'theme' => 'light',
     ];
 
-    public function shelves(): HasMany
-    {
-        return $this->hasMany(Shelf::class)->orderBy('position');
-    }
+public function shelves(): HasMany
+{
+    return $this->hasMany(Shelf::class)->orderBy('position');
+}
+
+public function literaryUniverses(): HasMany
+{
+    return $this->hasMany(LiteraryUniverse::class)->orderBy('name');
+}
 
     public function books(): HasMany
     {

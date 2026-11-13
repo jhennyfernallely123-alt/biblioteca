@@ -84,8 +84,8 @@ it('lista las fichas del catálogo', function () {
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Catalog/Index')
-            ->has('books', 1)
-            ->where('books.0.title', 'Visible'));
+            ->has('books.data', 1)
+            ->where('books.data.0.title', 'Visible'));
 });
 
 it('muestra las estanterías en el formulario de alta', function () {

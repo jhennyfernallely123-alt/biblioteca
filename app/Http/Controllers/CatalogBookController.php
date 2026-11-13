@@ -23,26 +23,28 @@ class CatalogBookController extends Controller
         private ShelfDisplayService $shelves,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->authorize('manage', CatalogBook::class);
 
+        $paginator = CatalogBook::query()
+            ->orderBy('title')
+            ->paginate(5);
+
+        $books = $paginator->through(fn (CatalogBook $book) => [
+            'id' => $book->id,
+            'title' => $book->title,
+            'author' => $book->author,
+            'isbn' => $book->isbn,
+            'publisher' => $book->publisher,
+            'published_year' => $book->published_year,
+            'cover_url' => $book->cover_path
+                ? route('catalog-covers.show', $book, false)
+                : null,
+        ]);
+
         return Inertia::render('Catalog/Index', [
-            'books' => CatalogBook::query()
-                ->orderBy('title')
-                ->get()
-                ->map(fn (CatalogBook $book) => [
-                    'id' => $book->id,
-                    'title' => $book->title,
-                    'author' => $book->author,
-                    'isbn' => $book->isbn,
-                    'publisher' => $book->publisher,
-                    'published_year' => $book->published_year,
-                    'cover_url' => $book->cover_path
-                        ? route('catalog-covers.show', $book, false)
-                        : null,
-                ])
-                ->all(),
+            'books' => $books,
         ]);
     }
 

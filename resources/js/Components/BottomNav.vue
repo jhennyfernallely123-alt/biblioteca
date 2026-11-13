@@ -16,6 +16,7 @@ const menuItems = computed(() => [
         : []),
     { label: t('ui.nav_cards'), href: '/cards', iconPath: 'M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM8 5h5v8H8zM16 6h1M16 9h1M8 16h8v3H8z' },
     { label: t('ui.nav_decorations'), href: '/decorations', iconPath: 'M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z' },
+    { label: t('ui.nav_universes'), href: '/universes', iconPath: 'M12 2L15 8l9-4-4 6 6 1-5 4-5-4 6-1-9-4zM12 14l-4 4h7l-4-4z' },
     { label: t('ui.nav_album'), href: '/album', iconPath: 'M2 7h20v10H2V7zm2 2h16v6H4V9z' },
     { label: t('ui.nav_settings'), href: '/settings', iconPath: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a2 2 0 0 0-1.82-.33 1 1 0 0 0-1 1.51V21a1 1 0 1 1-4 0v-.09A1 1 0 0 0 9 19.4a1 1 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1 1 0 0 0 .33-1.82 1 1 0 0 0-1.51-1H3a1 1 0 1 1 0-4h.09A1 1 0 0 0 4.6 9a1 1 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1 1 0 0 0 1.82.33H9a1 1 0 0 0 1-1.51V3a1 1 0 1 1 4 0v.09a1 1 0 0 0 1 1.51 1 1 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1 1 0 0 0-.33 1.82V9a1 1 0 0 0 1.51 1H21a1 1 0 1 1 0 4h-.09A1 1 0 0 0 19.4 15z' },
 ]);
