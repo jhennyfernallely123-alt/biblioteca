@@ -30,3 +30,6 @@ phpunit_debug*.txt
 phpunit_results.txt
 phpunit_junit.xml
 GUIAS
+
+# Documentación de proyecto (se mantiene local, no se sube)
+/docs
