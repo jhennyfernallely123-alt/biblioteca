@@ -19,7 +19,7 @@ Aplicación web responsive de biblioteca personal: registrar libros, buscarlos p
 4. **No cambiar la estructura del proyecto** (carpetas, capas, convenciones) sin documentarlo y justificarlo.
 5. **No romper la compatibilidad con InfinityFree.** Sin Node.js en el servidor, sin SSH, sin workers de cola, sin enlaces simbólicos, sin dependencia de `mail()`.
 6. **Idioma:** la interfaz es multilingüe; español por defecto y textos de acceso siempre en español. Los textos visibles se leen del catálogo (`lang/es.json`, `lang/{locale}.json` o `storage/app/i18n/{locale}.json`) mediante `t('ui.*')`; no escribir cadenas visibles nuevas directamente en componentes. Validaciones y mensajes del servidor también se traducen. Código y nombres técnicos en inglés.
-7. **Privacidad:** todas las consultas de estanterías, libros y portadas se filtran por el usuario autenticado.
+7. **Privacidad:** todas las consultas de estanterías, libros y portadas se filtran por el usuario autenticado. Excepción documentada: los **Universos Literarios** creados por la cuenta master son visibles en lectura para todos los usuarios autenticados; su gestión (crear, editar, eliminar, asignar libros y reordenar) queda reservada al master (`is_master`).
 
 ## 3. Documentos del proyecto
 

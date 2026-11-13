@@ -62,9 +62,10 @@ describe('AppShell', () => {
         const links = menu.findAll('.album-menu__item');
 
         expect(menu.exists()).toBe(true);
-        expect(links).toHaveLength(6);
+        expect(links).toHaveLength(7);
         expect(menu.text()).toContain('Biblioteca');
         expect(menu.text()).toContain('Estanterías');
+        expect(menu.text()).toContain('Universos');
         expect(menu.text()).toContain('Álbum');
         expect(menu.text()).toContain('Cerrar sesión');
     });
@@ -86,9 +87,10 @@ describe('AppShell', () => {
 
         expect(wrapper.find('.album-menu').exists()).toBe(true);
         const menu = wrapper.find('.album-menu');
-        expect(menu.findAll('.album-menu__item')).toHaveLength(6);
+        expect(menu.findAll('.album-menu__item')).toHaveLength(7);
         expect(menu.text()).toContain('Biblioteca');
         expect(menu.text()).toContain('Decoraciones');
+        expect(menu.text()).toContain('Universos');
         expect(menu.text()).toContain('Álbum');
         expect(menu.text()).toContain('Cerrar sesión');
 

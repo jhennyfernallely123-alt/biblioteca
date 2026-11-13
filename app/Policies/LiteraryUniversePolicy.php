@@ -14,26 +14,26 @@ class LiteraryUniversePolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->isMaster();
     }
 
     public function view(User $user, LiteraryUniverse $universe): bool
     {
-        return $user->id === $universe->user_id;
+        return $universe->user->isMaster() || $user->id === $universe->user_id;
     }
 
     public function update(User $user, LiteraryUniverse $universe): bool
     {
-        return $user->id === $universe->user_id;
+        return $user->isMaster();
     }
 
     public function delete(User $user, LiteraryUniverse $universe): bool
     {
-        return $user->id === $universe->user_id;
+        return $user->isMaster();
     }
 
     public function manageBooks(User $user, LiteraryUniverse $universe): bool
     {
-        return $user->id === $universe->user_id;
+        return $user->isMaster();
     }
 }

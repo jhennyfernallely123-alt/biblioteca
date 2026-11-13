@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Deploy
+/.deploy-env
+/.last_deploy
+phpunit_debug*.txt
+phpunit_results.txt
+phpunit_junit.xml
+GUIAS

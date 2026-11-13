@@ -14,6 +14,11 @@ export function useI18n() {
         const dictionary = pageProps().translations ?? {};
         let text = dictionary[key] ?? es[key] ?? key;
 
+        if (text.includes('|') && replacements.count !== undefined) {
+            const forms = text.split('|');
+            text = Number(replacements.count) === 1 ? forms[0] : (forms[1] ?? forms[0]);
+        }
+
         for (const [name, value] of Object.entries(replacements)) {
             text = text.replaceAll(`:${name}`, String(value));
         }

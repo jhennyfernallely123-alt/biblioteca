@@ -112,6 +112,7 @@ Route::middleware(['auth', 'nickname'])->group(function () {
 
     Route::get('/universes/{universe}', [LiteraryUniverseController::class, 'show'])->name('literary-universes.show');
     Route::post('/universes/{universe}/books', [LiteraryUniverseBookController::class, 'store'])->name('literary-universes.books.store');
+    Route::get('/universes/{universe}/available-books', [LiteraryUniverseBookController::class, 'available'])->name('literary-universes.books.available');
     Route::delete('/universes/{universe}/books/{book}', [LiteraryUniverseBookController::class, 'destroy'])->name('literary-universes.books.destroy');
     Route::patch('/universes/{universe}/reorder', [LiteraryUniverseBookController::class, 'reorder'])->name('literary-universes.reorder');
 });
