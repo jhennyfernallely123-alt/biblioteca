@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import AddBooksModal from '@/Pages/LiteraryUniverses/AddBooksModal.vue';
 import Modal from '@/Components/Modal.vue';
 import RatingStars from '@/Components/RatingStars.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -18,10 +17,6 @@ const search = ref('');
 const activeType = ref('all');
 const expandedId = ref(null);
 const deleting = ref(null);
-const removing = ref(null);
-const addingTo = ref(null);
-
-const SPINES = { bilogy: 2, trilogy: 3, tetralogy: 4 };
 
 const types = computed(() => {
     const seen = new Map();
@@ -46,15 +41,6 @@ const filtered = computed(() => {
     });
 });
 
-function spines(type) {
-    const count = SPINES[type] ?? 0;
-
-    return Array.from({ length: count }, (_, index) => ({
-        x: 3 + index * 4.5,
-        height: 10 + (index % 2) * 3,
-    }));
-}
-
 function toggle(id) {
     expandedId.value = expandedId.value === id ? null : id;
 }
@@ -74,67 +60,6 @@ function destroy() {
             deleting.value = null;
         },
     });
-}
-
-function confirmRemove(universe, book) {
-    removing.value = { universe, book };
-}
-
-function removeBook() {
-    if (!removing.value) {
-        return;
-    }
-
-    const { universe, book } = removing.value;
-
-    router.delete(`/universes/${universe.id}/books/${book.id}`, {
-        preserveScroll: true,
-        onFinish: () => {
-            removing.value = null;
-        },
-    });
-}
-
-function saveOrders(universe, list) {
-    const orders = {};
-
-    list.forEach((item, position) => {
-        orders[item.id] = position + 1;
-    });
-
-    router.patch(`/universes/${universe.id}/reorder`, { orders }, { preserveScroll: true });
-}
-
-function move(universe, book, direction) {
-    const list = [...universe.books];
-    const index = list.findIndex((item) => item.id === book.id);
-    const target = direction === 'up' ? index - 1 : index + 1;
-
-    if (index < 0 || target < 0 || target >= list.length) {
-        return;
-    }
-
-    [list[index], list[target]] = [list[target], list[index]];
-
-    saveOrders(universe, list);
-}
-
-function moveTo(universe, book, event) {
-    const list = [...universe.books];
-    const from = list.findIndex((item) => item.id === book.id);
-    const requested = Number.parseInt(event.target.value, 10);
-    const to = Math.min(Math.max(Number.isNaN(requested) ? from + 1 : requested, 1), list.length) - 1;
-
-    event.target.value = book.reading_order;
-
-    if (from < 0 || from === to) {
-        return;
-    }
-
-    const [item] = list.splice(from, 1);
-    list.splice(to, 0, item);
-
-    saveOrders(universe, list);
 }
 </script>
 
@@ -222,126 +147,82 @@ function moveTo(universe, book, event) {
             </p>
 
             <div v-else class="space-y-3">
-                <section
+                <div
                     v-for="universe in filtered"
                     :key="universe.id"
-                    class="overflow-hidden rounded-card border border-edge bg-surface shadow-soft transition-colors hover:border-edge-strong"
                 >
-                    <button
-                        type="button"
-                        class="relative flex w-full items-center gap-3 p-4 text-left"
-                        :aria-expanded="expandedId === universe.id"
-                        :aria-controls="`universe-panel-${universe.id}`"
-                        @click="toggle(universe.id)"
-                    >
-                        <span
-                            class="pointer-events-none absolute right-16 top-1/2 hidden h-16 w-16 -translate-y-1/2 text-edge-strong sm:block"
-                            aria-hidden="true"
+                    <section class="overflow-hidden rounded-full border border-edge bg-surface shadow-soft transition-colors hover:border-dorado/60 hover:bg-surface-raised">
+                        <button
+                            type="button"
+                            class="relative flex w-full items-center gap-3 px-4 py-3 text-left sm:gap-4 sm:px-5"
+                            :aria-expanded="expandedId === universe.id"
+                            :aria-controls="`universe-panel-${universe.id}`"
+                            @click="toggle(universe.id)"
                         >
-                            <svg class="h-full w-full" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M60 44c-7-5-16-7-26-7v44c10 0 19 2 26 7 7-5 16-7 26-7V37c-10 0-19 2-26 7Z" stroke-linejoin="round" />
-                                <path d="M60 44v44" stroke-linecap="round" />
-                                <path d="M90 22l1.2 2.6 2.8.4-2 2 .5 2.8L90 28.5l-2.5 1.3.5-2.8-2-2 2.8-.4Z" fill="currentColor" stroke="none" />
-                            </svg>
-                        </span>
-
-                        <span class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-accent sm:h-12 sm:w-12">
-                            <svg
-                                v-if="spines(universe.type).length"
-                                class="h-5 w-5"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
+                            <span
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dorado/40 bg-crema text-dorado shadow-soft sm:h-11 sm:w-11"
                                 aria-hidden="true"
                             >
-                                <rect
-                                    v-for="(spine, index) in spines(universe.type)"
-                                    :key="index"
-                                    :x="spine.x"
-                                    :y="21 - spine.height"
-                                    width="3"
-                                    height="spine.height"
-                                    rx="1"
-                                />
-                            </svg>
-                            <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Zm9-1.5h6.5A1.5 1.5 0 0 1 21 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13V4Z" opacity=".85" />
-                            </svg>
-                        </span>
+                                <svg class="h-6 w-6" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4">
+                                    <path d="M16 10.5c-2.4-1.7-5.2-2.4-8.5-2.4v14c3.3 0 6.1.7 8.5 2.4 2.4-1.7 5.2-2.4 8.5-2.4v-14c-3.3 0-6.1.7-8.5 2.4Z" stroke-linejoin="round" />
+                                    <path d="M16 10.5v14" stroke-linecap="round" />
+                                    <path d="M8 13c2 .2 3.8.7 5.3 1.6M8 16.4c2 .2 3.8.7 5.3 1.6M24 13c-2 .2-3.8.7-5.3 1.6M24 16.4c-2 .2-3.8.7-5.3 1.6" stroke-linecap="round" opacity=".55" />
+                                    <path d="M24.5 4.5l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7Z" class="text-malva" fill="currentColor" stroke="none" />
+                                </svg>
+                            </span>
 
-                        <span class="relative min-w-0 flex-1">
-                            <span class="block text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
-                                {{ universe.type_label }}
+                            <span class="relative min-w-0 flex-1">
+                                <span class="block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-soft">
+                                    {{ universe.type_label }}
+                                </span>
+                                <span class="mt-0.5 block truncate font-serif text-lg leading-tight text-heading sm:text-xl">
+                                    {{ universe.name }}
+                                </span>
+                                <span class="mt-0.5 block text-xs text-ink-muted">
+                                    {{ t('ui.universe_books_count', { count: universe.total_books }) }}
+                                </span>
                             </span>
-                            <span class="mt-0.5 block truncate font-serif text-lg leading-tight text-heading sm:text-xl">
-                                {{ universe.name }}
-                            </span>
-                            <span class="mt-0.5 block text-xs text-ink-muted">
-                                {{ t('ui.universe_books_count', { count: universe.total_books }) }}
-                            </span>
-                        </span>
 
-                        <span
-                            class="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-ink-muted transition-transform duration-300 sm:h-9 sm:w-9"
-                            :class="{ 'rotate-180': expandedId === universe.id }"
-                        >
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="m5 8 5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                    </button>
+                            <span
+                                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-ink-muted transition-transform duration-300 sm:h-9 sm:w-9"
+                                :class="{ 'rotate-180': expandedId === universe.id }"
+                            >
+                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="m5 8 5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                        </button>
+                    </section>
 
                     <div
                         :id="`universe-panel-${universe.id}`"
                         class="grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none"
-                        :class="expandedId === universe.id ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+                        :class="expandedId === universe.id ? 'mt-2 grid-rows-[1fr]' : 'grid-rows-[0fr]'"
                         :inert="expandedId !== universe.id"
                     >
                         <div class="overflow-hidden">
-                            <div class="border-t border-edge bg-surface-sunken/50 p-3 sm:p-4">
+                            <div class="rounded-modal border border-edge bg-surface-sunken/50 p-3 shadow-soft sm:p-4">
                                 <div
                                     v-if="universe.books.length === 0"
                                     class="rounded-card border border-dashed border-edge bg-surface p-6 text-center"
                                 >
                                     <p class="font-serif text-base text-heading">{{ t('ui.universe_empty_help') }}</p>
-                                    <button
-                                        v-if="canManage"
-                                        type="button"
-                                        class="mt-4 inline-flex items-center gap-1.5 rounded-control bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-strong"
-                                        @click="addingTo = universe"
-                                    >
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path d="M10 4v12M4 10h12" stroke-linecap="round" />
-                                        </svg>
-                                        {{ t('ui.universe_add_books') }}
-                                    </button>
                                 </div>
 
-                                <div v-else class="grid gap-2.5 lg:grid-cols-2">
+                                <div v-else class="space-y-2.5">
                                     <article
                                         v-for="book in universe.books"
                                         :key="book.id"
-                                        class="flex items-start gap-3 rounded-control border border-edge bg-surface p-3 shadow-soft"
+                                        class="flex items-center gap-3 rounded-full border border-edge bg-surface py-1.5 pl-2 pr-4 shadow-soft transition-colors hover:border-dorado/60 hover:bg-surface-raised"
                                     >
-                                        <input
-                                            v-if="canManage"
-                                            type="number"
-                                            min="1"
-                                            :max="universe.books.length"
-                                            :value="book.reading_order"
-                                            class="h-9 w-11 shrink-0 rounded-control border border-edge bg-surface-sunken text-center font-serif text-sm font-bold text-accent-strong focus:border-accent focus:ring-accent"
-                                            :aria-label="t('ui.universe_order')"
-                                            :title="t('ui.universe_order')"
-                                            @change="moveTo(universe, book, $event)"
-                                        >
                                         <span
-                                            v-else
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft font-serif text-sm font-bold text-accent-strong"
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-dorado/40 bg-crema font-serif text-sm font-bold tabular-nums text-madera shadow-soft"
                                             :title="t('ui.universe_order')"
                                         >
                                             {{ book.reading_order }}
                                         </span>
 
-                                        <span class="relative flex h-16 w-11 shrink-0 items-center justify-center overflow-hidden rounded bg-surface-sunken font-serif text-sm text-accent shadow-soft">
+                                        <span class="relative flex h-11 w-8 shrink-0 items-center justify-center overflow-hidden rounded-control bg-surface-sunken font-serif text-xs text-madera ring-1 ring-edge/60">
                                             {{ book.title.charAt(0) }}
                                             <img
                                                 v-if="book.cover_url"
@@ -353,135 +234,54 @@ function moveTo(universe, book, event) {
                                             >
                                         </span>
 
-                                        <div class="min-w-0 flex-1">
-                                            <strong class="block truncate font-serif text-sm leading-snug text-heading">
+                                        <div class="flex min-w-0 flex-1 items-baseline gap-1.5">
+                                            <strong class="truncate font-serif text-sm leading-snug text-heading">
                                                 {{ book.title }}
                                             </strong>
-                                            <span class="block truncate text-xs text-ink-muted">
+                                            <span class="shrink-0 text-xs text-ink-soft" aria-hidden="true">·</span>
+                                            <span class="truncate text-xs text-ink-muted">
                                                 {{ book.author || t('ui.unknown_author') }}
                                             </span>
-                                            <RatingStars
-                                                v-if="book.rating"
-                                                class="mt-1"
-                                                :model-value="book.rating"
-                                                :label="t('ui.rating_stars')"
-                                            />
                                         </div>
 
-                                        <div v-if="canManage" class="flex shrink-0 flex-col gap-1">
-                                            <button
-                                                type="button"
-                                                class="rounded-control border border-edge p-1.5 text-ink hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-35"
-                                                :disabled="book.reading_order === 1"
-                                                :aria-label="t('ui.move_up')"
-                                                :title="t('ui.move_up')"
-                                                @click="move(universe, book, 'up')"
-                                            >
-                                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                                    <path d="M10 15V5m0 0-4 4m4-4 4 4" stroke-linecap="round" stroke-linejoin="round" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="rounded-control border border-edge p-1.5 text-ink hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-35"
-                                                :disabled="book.reading_order === universe.books.length"
-                                                :aria-label="t('ui.move_down')"
-                                                :title="t('ui.move_down')"
-                                                @click="move(universe, book, 'down')"
-                                            >
-                                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                                    <path d="M10 5v10m0 0 4-4m-4 4-4-4" stroke-linecap="round" stroke-linejoin="round" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="rounded-control border border-danger p-1.5 text-danger hover:bg-danger/10"
-                                                :aria-label="t('ui.universe_remove_book')"
-                                                :title="t('ui.universe_remove_book')"
-                                                @click="confirmRemove(universe, book)"
-                                            >
-                                                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                                    <path d="M4 10h12" stroke-linecap="round" />
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <RatingStars
+                                            v-if="book.rating"
+                                            class="shrink-0"
+                                            :model-value="book.rating"
+                                            :label="t('ui.rating_stars')"
+                                        />
                                     </article>
                                 </div>
 
-                                <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+                                <div class="mt-3 flex flex-wrap items-center justify-end gap-2 border-t border-edge pt-3">
+                                    <Link
+                                        :href="`/universes/${universe.id}`"
+                                        class="rounded-control border border-edge bg-surface px-4 py-2 text-sm text-ink hover:bg-surface-raised"
+                                    >
+                                        {{ t('ui.view') }}
+                                    </Link>
+                                    <Link
+                                        v-if="canManage"
+                                        :href="`/universes/${universe.id}/edit`"
+                                        class="rounded-control border border-edge bg-surface px-4 py-2 text-sm text-ink hover:bg-surface-raised"
+                                    >
+                                        {{ t('ui.edit_universe') }}
+                                    </Link>
                                     <button
                                         v-if="canManage"
                                         type="button"
-                                        class="inline-flex items-center gap-1.5 rounded-control bg-accent px-3 py-2 text-sm font-medium text-on-accent hover:bg-accent-strong"
-                                        @click="addingTo = universe"
+                                        class="rounded-control border border-danger bg-surface px-4 py-2 text-sm text-danger hover:bg-danger/10"
+                                        @click="confirmDelete(universe)"
                                     >
-                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path d="M10 4v12M4 10h12" stroke-linecap="round" />
-                                        </svg>
-                                        {{ t('ui.universe_add_books') }}
+                                        {{ t('ui.delete') }}
                                     </button>
-
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <Link
-                                            :href="`/universes/${universe.id}`"
-                                            class="rounded-control border border-edge bg-surface px-3 py-2 text-sm text-ink hover:border-accent hover:text-accent"
-                                        >
-                                            {{ canManage ? t('ui.universe_manage') : t('ui.universe_open') }}
-                                        </Link>
-                                        <Link
-                                            v-if="canManage"
-                                            :href="`/universes/${universe.id}/edit`"
-                                            class="rounded-control border border-edge bg-surface px-3 py-2 text-sm text-ink hover:border-accent hover:text-accent"
-                                        >
-                                            {{ t('ui.edit') }}
-                                        </Link>
-                                        <button
-                                            v-if="canManage"
-                                            type="button"
-                                            class="rounded-control border border-danger px-3 py-2 text-sm text-danger hover:bg-danger/10"
-                                            @click="confirmDelete(universe)"
-                                        >
-                                            {{ t('ui.delete') }}
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-            </div>
-        </div>
-
-        <AddBooksModal
-            v-if="addingTo"
-            :show="true"
-            :universe="addingTo"
-            @close="addingTo = null"
-        />
-
-        <Modal v-if="removing" :show="true" max-width="md" @close="removing = null">
-            <div class="p-6">
-                <h2 class="font-serif text-lg text-heading">{{ t('ui.universe_remove_book') }}</h2>
-                <p class="mt-2 text-sm text-ink-muted">{{ t('ui.universe_remove_book_confirm') }}</p>
-
-                <div class="mt-5 flex justify-end gap-2">
-                    <button
-                        type="button"
-                        class="rounded-control border border-edge px-4 py-2 text-ink hover:bg-surface-raised"
-                        @click="removing = null"
-                    >
-                        {{ t('ui.cancel') }}
-                    </button>
-                    <button
-                        type="button"
-                        class="rounded-control bg-danger px-4 py-2 text-on-accent hover:bg-danger-strong"
-                        @click="removeBook"
-                    >
-                        {{ t('ui.remove') }}
-                    </button>
                 </div>
             </div>
-        </Modal>
+        </div>
 
         <Modal v-if="deleting" :show="true" max-width="md" @close="deleting = null">
             <div class="p-6">

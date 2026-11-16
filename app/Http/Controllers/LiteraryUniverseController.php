@@ -61,15 +61,13 @@ class LiteraryUniverseController extends Controller
         ]);
     }
 
-    public function show(Request $request, LiteraryUniverse $universe): Response
+    public function show(LiteraryUniverse $universe): Response
     {
         $this->authorize('view', $universe);
 
         $universe->load('universeBooks.book');
 
         return Inertia::render('LiteraryUniverses/Show', [
-            'canManage' => request()->user()->isMaster(),
-            'openAdd' => (bool) $request->session()->pull('openAdd'),
             'universe' => [
                 'id' => $universe->id,
                 'name' => $universe->name,
@@ -116,26 +114,44 @@ class LiteraryUniverseController extends Controller
 
         $universe = LiteraryUniverse::create($data);
 
-        $redirect = redirect()->route('literary-universes.show', $universe);
-
         if ($request->boolean('add')) {
-            $redirect->with('openAdd', true);
+            return redirect()->route('literary-universes.edit', $universe)
+                ->with('openAdd', true)
+                ->with('success', __('ui.universe_created'));
         }
 
-        return $redirect->with('success', __('ui.universe_created'));
+        return redirect()->route('literary-universes.show', $universe)
+            ->with('success', __('ui.universe_created'));
     }
 
-    public function edit(LiteraryUniverse $universe): Response
+    public function edit(Request $request, LiteraryUniverse $universe): Response
     {
         $this->authorize('update', $universe);
 
+        $universe->load('universeBooks.book');
+
         return Inertia::render('LiteraryUniverses/Edit', [
+            'openAdd' => (bool) $request->session()->pull('openAdd'),
             'universe' => [
                 'id' => $universe->id,
                 'name' => $universe->name,
                 'description' => $universe->description,
                 'type' => $universe->type,
             ],
+            'books' => $universe->universeBooks
+                ->sortBy('reading_order')
+                ->values()
+                ->map(fn (LiteraryUniverseBook $ub) => [
+                    'id' => $ub->book->id,
+                    'title' => $ub->book->title,
+                    'author' => $ub->book->author,
+                    'isbn' => $ub->book->isbn,
+                    'reading_order' => $ub->reading_order,
+                    'cover_url' => $ub->book->cover_path
+                        ? route('covers.show', $ub->book, false)
+                        : null,
+                ])
+                ->all(),
             'types' => collect(LiteraryUniverse::TYPES)->map(fn ($label, $key) => [
                 'key' => $key,
                 'label' => __($label),

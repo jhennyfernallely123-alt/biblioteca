@@ -96,7 +96,7 @@ it('abre el modal de agregar libros tras crear la colección', function () {
     $universe = LiteraryUniverse::firstOrFail();
 
     $this->actingAs($user)
-        ->get(route('literary-universes.show', $universe))
+        ->get(route('literary-universes.edit', $universe))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->where('openAdd', true));
 });
@@ -126,6 +126,26 @@ it('edita un universo propio', function () {
     expect($universe->fresh()->type)->toBe('trilogy');
 });
 
+it('muestra los libros de la colección en la pantalla de edición', function () {
+    $user = User::factory()->master()->create();
+    $universe = LiteraryUniverse::factory()->for($user)->create();
+    $first = Book::factory()->for($user)->create(['title' => 'Primero']);
+    $second = Book::factory()->for($user)->create(['title' => 'Segundo']);
+
+    $universe->books()->attach($first->id, ['reading_order' => 2]);
+    $universe->books()->attach($second->id, ['reading_order' => 1]);
+
+    $this->actingAs($user)
+        ->get(route('literary-universes.edit', $universe))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('LiteraryUniverses/Edit')
+            ->has('books', 2)
+            ->where('books.0.title', 'Segundo')
+            ->where('books.0.reading_order', 1)
+            ->where('books.1.title', 'Primero')
+            ->where('books.1.reading_order', 2));
+});
+
 it('no permite editar a quien no es master', function () {
     $user = User::factory()->create();
     $universe = LiteraryUniverse::factory()->for(User::factory()->master())->create();
@@ -135,7 +155,6 @@ it('no permite editar a quien no es master', function () {
         'type' => 'saga',
     ])->assertForbidden();
 });
-
 it('elimina un universo propio', function () {
     $user = User::factory()->master()->create();
     $universe = LiteraryUniverse::factory()->for($user)->create();
@@ -248,8 +267,7 @@ it('muestra a cualquier usuario los libros que el master añadió a la colecció
             ->where('universe.name', 'Trilogía')
             ->has('books', 1)
             ->where('books.0.title', 'La comunidad del anillo')
-            ->where('books.0.reading_order', 1)
-            ->where('canManage', false));
+            ->where('books.0.reading_order', 1));
 });
 
 it('no permite crear un universo a quien no es master', function () {
@@ -485,4 +503,103 @@ it('no permite reordenar con IDs incompletos', function () {
     ])->assertSessionHasErrors('orders');
 
     expect($universe->fresh()->universeBooks->first()->reading_order)->toBe(1);
+});
+
+it('agrega libros desde una búsqueda externa al universo', function () {
+    $user = User::factory()->master()->create();
+    $universe = LiteraryUniverse::factory()->for($user)->create();
+
+    $this->actingAs($user)->postJson(route('literary-universes.books.from-lookup', $universe), [
+        'books' => [
+            [
+                'title' => 'El hobbit',
+                'author' => 'J.R.R. Tolkien',
+                'isbn' => '978-8445002452',
+                'publisher' => 'Minotauro',
+                'published_year' => 1991,
+                'cover_url' => 'https://example.com/cover.jpg',
+            ],
+            [
+                'title' => 'Duna',
+                'author' => 'Frank Herbert',
+            ],
+        ],
+    ])->assertCreated();
+
+    expect($universe->fresh()->books()->count())->toBe(2);
+    expect($user->fresh()->books()->count())->toBe(2);
+
+    $orders = $universe->fresh()->universeBooks()->pluck('reading_order', 'book_id');
+    $hobbit = $user->fresh()->books()->where('title', 'El hobbit')->first();
+    $duna = $user->fresh()->books()->where('title', 'Duna')->first();
+
+    expect($orders[$hobbit->id])->toBe(1);
+    expect($orders[$duna->id])->toBe(2);
+    expect($hobbit->isbn)->toBe('9788445002452');
+    expect($duna->isbn)->toBeNull();
+});
+
+it('no duplica un libro que ya está en el universo', function () {
+    $user = User::factory()->master()->create();
+    $universe = LiteraryUniverse::factory()->for($user)->create();
+    $existing = Book::factory()->for($user)->create(['title' => 'Ya existe', 'isbn' => '111']);
+
+    $universe->books()->attach($existing->id, ['reading_order' => 1]);
+
+    $this->actingAs($user)->postJson(route('literary-universes.books.from-lookup', $universe), [
+        'books' => [
+            [
+                'title' => 'Ya existe',
+                'author' => 'Autor',
+                'isbn' => '111',
+            ],
+        ],
+    ])->assertCreated();
+
+    expect($universe->fresh()->books()->count())->toBe(1);
+    expect($user->fresh()->books()->count())->toBe(1);
+});
+
+it('no crea un libro duplicado en la biblioteca si ya existe', function () {
+    $user = User::factory()->master()->create();
+    $universe = LiteraryUniverse::factory()->for($user)->create();
+    $existing = Book::factory()->for($user)->create(['title' => 'Libro A', 'isbn' => '222']);
+
+    $this->actingAs($user)->postJson(route('literary-universes.books.from-lookup', $universe), [
+        'books' => [
+            [
+                'title' => 'Libro A',
+                'author' => 'Autor A',
+                'isbn' => '222',
+            ],
+        ],
+    ])->assertCreated();
+
+    expect($user->fresh()->books()->count())->toBe(1);
+    expect($universe->fresh()->books()->count())->toBe(1);
+    expect($universe->fresh()->books()->first()->id)->toBe($existing->id);
+});
+
+it('no permite agregar libros desde búsqueda a quien no es master', function () {
+    $user = User::factory()->create();
+    $universe = LiteraryUniverse::factory()->for(User::factory()->master())->create();
+
+    $this->actingAs($user)->postJson(route('literary-universes.books.from-lookup', $universe), [
+        'books' => [
+            ['title' => 'X', 'author' => 'Y'],
+        ],
+    ])->assertForbidden();
+
+    expect($universe->fresh()->books()->count())->toBe(0);
+});
+
+it('rechaza agregar cero libros desde búsqueda', function () {
+    $user = User::factory()->master()->create();
+    $universe = LiteraryUniverse::factory()->for($user)->create();
+
+    $this->actingAs($user)->postJson(route('literary-universes.books.from-lookup', $universe), [
+        'books' => [],
+    ])->assertUnprocessable();
+
+    expect($universe->fresh()->books()->count())->toBe(0);
 });

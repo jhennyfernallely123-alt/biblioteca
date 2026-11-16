@@ -17,14 +17,28 @@ La interfaz parte de una estética de biblioteca antigua y nocturna, con verdes,
 - Reordenar libros dentro de una estantería y moverlos entre estanterías mediante arrastre.
 - Interfaz en español, catalán, gallego, inglés, portugués, francés, alemán e italiano.
 
-## Tecnologías
+## Lenguajes
 
-- Laravel 13 y PHP 8.3+
-- Inertia.js y Vue 3
-- Tailwind CSS 4 y Vite
-- MySQL (base de datos `biblioteca`)
-- Laravel Breeze para autenticación
-- Pest para pruebas de backend y Vitest para pruebas de frontend
+- **PHP 8.3+** — lógica de backend y controladores
+- **JavaScript (ES modules)** — interactividad de frontend con Vue 3
+- **CSS** — estilos con Tailwind CSS 4 y tokens de diseño
+- **SQL** — consultas a la base de datos MySQL
+
+## Herramientas
+
+- **Laravel 13** — framework de PHP
+- **Inertia.js + Vue 3** — aplicación de una sola página sin recargas
+- **Vite** — compilación y servidor de assets
+- **Laravel Breeze** — autenticación con correo y contraseña
+- **Laravel Sanctum** — autenticación de API
+- **Laravel Socialite** — inicio de sesión con redes sociales
+- **Laravel Pint** — formateo de código PHP
+- **Pest + PHPUnit** — pruebas de backend
+- **Vitest + @vue/test-utils + jsdom** — pruebas de frontend
+- **Composer** — gestión de dependencias de PHP
+- **npm** — gestión de dependencias de JavaScript
+- **MySQL** — base de datos `biblioteca`
+- **Git** — control de versiones
 
 ## Requisitos
 
@@ -100,7 +114,6 @@ app/
 database/
   migrations/          Esquema de la base de datos
   factories/           Datos de prueba
-docs/                  Diseño funcional y visual, especificaciones y planes
 lang/                  Catálogo de textos de la interfaz
 resources/
   css/                 Tokens de diseño y texturas
@@ -111,9 +124,6 @@ tests/                 Pruebas de backend
 
 ## Documentación
 
-- [`docs/DISENO.md`](docs/DISENO.md): identidad visual, componentes y registro de cambios.
-- [`docs/superpowers/specs/2026-10-22-biblioteca-design.md`](docs/superpowers/specs/2026-10-22-biblioteca-design.md): diseño funcional y técnico del MVP.
-- [`docs/superpowers/specs/2026-10-26-multilenguaje-design.md`](docs/superpowers/specs/2026-10-26-multilenguaje-design.md): catálogo de idiomas y funcionamiento del multilingüismo.
 - [`AGENTS.md`](AGENTS.md): reglas de trabajo del proyecto.
 
 ## Despliegue
